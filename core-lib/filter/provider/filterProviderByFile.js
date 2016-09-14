@@ -1,5 +1,5 @@
 var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
-var log = require('../skillVCLogger.js').getLogger('FilterProviderByFile');
+var log = require('../../skillVCLogger.js').getLogger('FilterProviderByFile');
 
 /**
  * Provides an intent from a single file
@@ -29,7 +29,7 @@ FilterProviderByFile.prototype.contructor = FilterProviderByFile;
 
 FilterProviderByFile.prototype._processFile = function(file, cards) {
 	try {
-		return [{'itemId' : itemId : 'item' : new (require(process.cwd()+path.sep+file)) }];
+		return [{'itemId' : itemId , 'item' : new (require(process.cwd()+path.sep+file)) }];
 	}
 	catch (err) {
 		log.error("Error loading filter "+itemId+". Error:"+err);

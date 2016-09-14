@@ -1,4 +1,4 @@
-var log = require('../skillVCLogger.js').getLogger('DefaultFilterChainManager');
+var log = require('../skillVCLogger.js').getLogger('FilterChainExecutor');
 
 //FIXME: Change to DefaultFilterChainManager and should take a provider, not the list of filters
 
@@ -8,17 +8,8 @@ var log = require('../skillVCLogger.js').getLogger('DefaultFilterChainManager');
  * 
  * @param {Filter} filters Filters to use.  Can be null and filters later set via addFilter
  */
-function DefaultFilterChainManager(filters) {
+function FilterChainExecutor(filters) {
 	this._filters = (filters) ? filters : [];
-}
-
-/**
- * Adds a filter to the chain
- * 
- * @param {Filter} filter The filter to add to the chain
- */
-DefaultFilterChainManager.prototype.addFilter = function(filter) {
-	if (filter != null) this._filters.push(filter);
 }
 
 /**
@@ -26,7 +17,7 @@ DefaultFilterChainManager.prototype.addFilter = function(filter) {
  * 
  * @param {Filter} filters The filters to add to the chain
  */
-DefaultFilterChainManager.prototype.addFilters = function(filters) {
+FilterChainExecutor.prototype.addFilters = function(filters) {
 	if (filters != null) {
 		if (Array.isArray(filters)) {
 			for (var i=0;i<filters.length;i++) {
@@ -45,7 +36,7 @@ DefaultFilterChainManager.prototype.addFilters = function(filters) {
  * @param  {[type]} filterContext [description]
  * @return {[type]}               [description]
  */
-DefaultFilterChainManager.prototype.execute = function(svContext) {
+FilterChainExecutor.prototype.execute = function(svContext) {
 	var fcm = this._filters; // take care of scope
 	var i = 0;
 
@@ -70,4 +61,4 @@ DefaultFilterChainManager.prototype.execute = function(svContext) {
 	filterChainCallback.success(); //start things off
 }
 
-module.exports = DefaultFilterChainManager;
+module.exports = FilterChainExecutor;

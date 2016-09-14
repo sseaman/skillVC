@@ -1,32 +1,19 @@
+var AbstractProviderManager = require('../provider/abstractProviderManager.js');
 var log = require('../skillVCLogger.js').getLogger('DefaultIntentHandlerManager');
 /**
  * Manages intents
  * 
  * @param {[IntentHandlers]} intentHandlers Array of intent handlers
  */
-function DefaultIntentHandlerManager(intentProviders) {
-	this._intentProviders = intentProviders;
+function DefaultIntentHandlerManager(providers) {
 	this._handlers = {};
 	this._handlerNotFound = {};
+
+	AbstractProviderManager.apply(this, [providers]);
 }
 
-/**
- * Returns the list of registers intent providers
- * @return {[type]} [description]
- */
-DefaultIntentHandlerManager.prototype.getRegisteredIntentProviders = function() {
-	return this._intentProviders;
-}
-
-/**
- * Register an intent provider.
- * 
- * @param  {[type]} intentHandler [description]
- * @return {[type]}               [description]
- */
-DefaultIntentHandlerManager.prototype.registerIntentProvider = function(intentProvider) {
-	this._intentProvider.push(intentProvider);
-}
+DefaultIntentHandlerManager.prototype = AbstractProviderManager.prototype;
+DefaultIntentHandlerManager.prototype.contructor = DefaultIntentHandlerManager;
 
 /**
  * Handle an intent that has occurred
@@ -38,14 +25,17 @@ DefaultIntentHandlerManager.prototype.registerIntentProvider = function(intentPr
  */
 DefaultIntentHandlerManager.prototype.handleIntent = function(svContext) {
 	var intentName = svContext.lambda.event.request.intent.name;
+	var providers = this.getRegisteredProviders();
+
 	log.verbose("Handling intent "+intentName);
 
 	var handler = this._handlers[intentName];
 	if (handler == null && !this._handlerNotFound[intentName]) { // intent isn't in cache and was never looked for
 		log.debug("Handler not loaded. Attempting to load");
-		for (var i=0;i<this._intentProviders.length;i++) {
+
+		for (var i=0;i<providers.length;i++) {
 			// This could be expensive at is could cause all of the file loading to occur when looking for a intent
-			handler = this._intentProviders[i].getItem(intentName);
+			handler = providers[i].getItem(intentName);
 			if (handler != null) {
 				this._handlers[intentName] = handler; // found it. set it so I never have to look again
 				log.debug("Handler loaded");

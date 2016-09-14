@@ -1,20 +1,19 @@
+var AbstractProviderManager = require('../provider/abstractProviderManager.js');
+
 /**
  * Manages cards
  *
  * @param {[CardProvider]} cardProviders An array of card providers that will supply cards
  */
-function DefaultCardManager(cardProviders) {
-	// if I really want to be overly nice.. but I want to keep things performant, so commented our for now
-	// for (var i=0;i<cardProviders.length;i++) {
-	// 	if (!typeof(cardProviders[i].getItem) == "function") {
-	// 		throw Error ("CardProvider specified in array does not implement .getItem(String)");
-	// 	}
-	// }
-
-	this._cardProviders = cardProviders;
+function DefaultCardManager(providers) {
 	this._cards = {};
 	this._cardNotFound = {};
+	
+	AbstractProviderManager.apply(this, [providers]);
 }
+
+DefaultCardManager.prototype = AbstractProviderManager.prototype;
+DefaultCardManager.prototype.contructor = DefaultCardManager;
 
 /**
  * Returns the specificed card by looking through the defined providers.
@@ -27,11 +26,12 @@ function DefaultCardManager(cardProviders) {
  */
 DefaultCardManager.prototype.getCard = function(cardId) {
 	var card = this._cards[cardId];
+	var providers = this.getRegisteredProviders();
 
 	if (card == null && !this._cardNotFound[cardId]) { // card isn't in cache and was never looked for
-		for (var i=0;i<this._cardProviders.length;i++) {
+		for (var i=0;i<providers.length;i++) {
 			// This could be expensive at is could cause all of the file loading to occur when looking for a card
-			card = this._cardProviders[i].getItem(cardId);
+			card = providers[i].getItem(cardId);
 
 			if (card != null) {
 				this._cards[cardId] = card; // found it. set it so I never have to look again

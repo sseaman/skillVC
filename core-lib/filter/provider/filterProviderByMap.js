@@ -15,5 +15,6 @@ FilterProviderByMap.prototype.contructor = FilterProviderByMap;
 
 FilterProviderByMap.prototype._processor = function(itemId, item) {
 	return item;
+}
 
 module.exports = FilterProviderByMap;

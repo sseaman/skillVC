@@ -1,5 +1,5 @@
 var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
-var log = require('../skillVCLogger.js').getLogger('IntentHandlerProviderByFile');
+var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByFile');
 
 /**
  * Provides an intent from a single file

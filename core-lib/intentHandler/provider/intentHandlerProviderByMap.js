@@ -15,5 +15,6 @@ IntentHandlerProviderByMap.prototype.contructor = IntentHandlerProviderByMap;
 
 IntentHandlerProviderByMap.prototype._processor = function(itemId, item) {
 	return item;
+}
 
 module.exports = IntentHandlerProviderByMap;

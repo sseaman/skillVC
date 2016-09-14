@@ -46,7 +46,7 @@ FilterProviderByDirectory.prototype.contructor = FilterProviderByDirectory;
 
 FilterProviderByDirectory.prototype._processor = function(itemId, file) {
 	try {
-		return [{'itemId' : itemId : 'item' : new (require(process.cwd()+path.sep+file)) }];
+		return [{'itemId' : itemId , 'item' : new (require(process.cwd()+path.sep+file)) }];
 	}
 	catch (err) {
 		log.error("Error loading filter "+itemId+". Error:"+err);

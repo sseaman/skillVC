@@ -1,5 +1,5 @@
 var CardManagerFactory = require('./card/cardManagerFactory.js');
-var FilterChainManager = require('./filter/filterChainManager.js');
+var FilterChainExecutor = require('./filter/filterChainExecutor.js');
 var FilterManagerFactory = require('./filter/FilterManagerFactory.js');
 var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var SkillResponseFilter = require('./filter/skillResponseFilter.js');
@@ -39,7 +39,7 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 
 	// make things available to anyone
 	this._skillVCContext.appConfig.cardManager = this.registerCardManager(event, context);
-	this._skillVCContext.appConfig.filterChainManager = new FilterChainManager();
+	this._skillVCContext.appConfig.filterChainManager = new FilterChainExecutor(); //FIXME: change this to the right thing
 	this._skillVCContext.lambda = { 
 		'context' : context,
 		'event' : event
@@ -136,7 +136,7 @@ SkillVC.prototype.registerCardManager = function(event, context) {
 SkillVC.prototype.registerPreIntentFilters = function(event, context, callback) {
 	var filters = (this._skillVCContext.appConfig.filterManager.pre != null)
 			? this._skillVCContext.appConfig.filterManager.pre
-			: FilterManagerFactory.createByDirectory('../assets/filters');
+			: FilterManagerFactory.createByDirectory('../assets/filters');  //TODO: How do I specify pre vs post?
 	callback.success( (filters == null || filters.length == 0) ? [] : filters);
 }
 
@@ -153,7 +153,7 @@ SkillVC.prototype.registerPostIntentFilters = function(event, context, callback)
 	var filters = [];
 	var newFilters = (this._skillVCContext.appConfig.filterManager.post != null)
 			? this._skillVCContext.appConfig.filterManager.post
-			: FilterManagerFactory.create([]);
+			: FilterManagerFactory.createByDirectory('../assets/filters');
 	if (newFilters != null && newFilters.length > 0) filters.push(newFilters);
 
 	// takes everything done by the filters and puts it in the lambda context for handling by Alexa
