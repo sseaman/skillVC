@@ -31,10 +31,6 @@ function IntentHandlerProviderByDirectory(directory, options) {
 		? options.filenameParser
 		: new DefaultJSFilenameFormatter();
 
-	this._fileEncoding = (options && options.fileEncoding)
-		? options.fileEncoding
-		: 'utf8';
-
 	AbstractProviderByDirectory.apply(this, [
 		directory, 
 		this._filenameFormatter, 

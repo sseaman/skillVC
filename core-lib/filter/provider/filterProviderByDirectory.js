@@ -23,7 +23,7 @@ function FilterProviderByDirectory(directory, options) {
 	if (!directory) throw Error('directory required');
 
 	this._directory = path.normalize(directory);
-	this._directory += (this._directory.endsWith(path.delimiter))
+	this._directory += (this._directory.endsWith(path.sep))
 		? ''
 		: path.sep;
 
@@ -35,23 +35,57 @@ function FilterProviderByDirectory(directory, options) {
 		? options.fileEncoding
 		: 'utf8';
 
-	AbstractProviderByDirectory.apply(this, [
-		directory, 
-		this._filenameFormatter, 
-		this._processor]);
+	this._filters = { 'pre' : [], 'post' : []};
+
+	var files = fs.readdirSync(this._directory, this._fileEncoding);
+	for (var i=0;i<files.length;i++) {
+		if (this._filenameFormatter.isValid(files[i])) {
+			var loaded = new (require(process.cwd()+path.sep+this._directory+files[i])); 
+
+			var filterStages = ['pre'];
+			if (svUtil.isFunction(loaded.getStages)) { // use the user defined stages
+				var stages = loaded.getStages();
+				filterStages = (Array.isArray(stages)) 
+					? stages
+					: [stages];
+			}
+
+			for (var fsIdx=0;fsIdx<filterStages.length;fsIdx++) {
+				var msg = 'Loaded filter '+files[i]+' into stage '+filterStages[fsIdx];
+
+				// if they specified the order of filter executon
+				if (svUtil.isFunction(loaded.getOrder)) {
+					this._filters[filterStages[fsIdx]][loaded.getOrder()] = loaded;
+					log.verbose(msg + ', position '+loaded.getOrder());
+				}
+				else {  // no order specified, put it at the end
+					this._filters[filterStages[fsIdx]].push(loaded); 
+					log.verbose(msg + ', position '+(this._filters[filterStages[fsIdx]].length-1));
+				}
+			}
+
+			// function to compress array in case someone put one at 1 and the next at 99
+			for (var key in this._filters) {
+				var stages = this._filters[key];
+				var newArray = [];
+				for (var n = 0; n < stages.length; n++) {
+				    if (stages[n]) {
+				      newArray.push(stages[n]);
+				    }
+				}
+				this._filters[key] = newArray;
+			}
+		}
+	}
+
 }
 
-FilterProviderByDirectory.prototype = AbstractProviderByDirectory.prototype;
-FilterProviderByDirectory.prototype.contructor = FilterProviderByDirectory;
+FilterProviderByDirectory.prototype.getPreFilters = function() {
+	return this._filters.pre;
+}
 
-FilterProviderByDirectory.prototype._processor = function(itemId, file) {
-	try {
-		return [{'itemId' : itemId , 'item' : new (require(process.cwd()+path.sep+file)) }];
-	}
-	catch (err) {
-		log.error("Error loading filter "+itemId+". Error:"+err);
-		return null;
-	}
+FilterProviderByDirectory.prototype.getPostFilters = function() {
+	return this._filters.post;
 }
 
 module.exports = FilterProviderByDirectory;

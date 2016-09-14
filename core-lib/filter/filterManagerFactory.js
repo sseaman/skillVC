@@ -8,8 +8,7 @@ function FilterManagerFactory() {
 }
 
 FilterManagerFactory.createByDirectory = function(directory) {
-	return null;
-	//return new DefaultFilterManager([new FilterProviderByDirectory(directory)]);
+	return new DefaultFilterManager([new FilterProviderByDirectory(directory)]);
 }
 
 FilterManagerFactory.createByFile = function(file) {

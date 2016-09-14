@@ -39,7 +39,7 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 
 	// make things available to anyone
 	this._skillVCContext.appConfig.cardManager = this.registerCardManager(event, context);
-	this._skillVCContext.appConfig.filterChainManager = new FilterChainExecutor(); //FIXME: change this to the right thing
+	this._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(); //FIXME: change this to the right thing
 	this._skillVCContext.lambda = { 
 		'context' : context,
 		'event' : event
@@ -50,17 +50,17 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	log.verbose("Registering PreIntent Filters");
 	sv.registerPreIntentFilters(event, context, {
 		success : function(preIHandlers) {
-			sv._skillVCContext.appConfig.filterChainManager.addFilters(preIHandlers);
+			sv._skillVCContext.appConfig.filterChainExecutor.addFilters(preIHandlers);
 
 			log.verbose("Registering Intent Handlers");
 			sv.registerIntentHandlers(event, context, {
 				success : function(iHandlers) {
-					sv._skillVCContext.appConfig.filterChainManager.addFilters(iHandlers);
+					sv._skillVCContext.appConfig.filterChainExecutor.addFilters(iHandlers);
 
 					log.verbose("Registering PostIntent Filters");
 					sv.registerPostIntentFilters(event, context, {
 						success : function(postIHandlers) {
-							sv._skillVCContext.appConfig.filterChainManager.addFilters(postIHandlers);
+							sv._skillVCContext.appConfig.filterChainExecutor.addFilters(postIHandlers);
 							sv._initialized = true;
 							log.verbose("Initialization complete");
 							initCallback.success(); // registration completed
@@ -112,7 +112,7 @@ SkillVC.prototype.handler = function (event, context)  {
 		        if (event.request.type === "LaunchRequest") {
 		        //	handlers.launchRequest(event, context);
 		        } else if (event.request.type === "IntentRequest") {
-		        	sv._skillVCContext.appConfig.filterChainManager.execute(sv._skillVCContext);
+		        	sv._skillVCContext.appConfig.filterChainExecutor.execute(sv._skillVCContext);
 		        } else if (event.request.type === "SessionEndedRequest") {
 		        //   	handlers.sessionEnd(event, context);
 		        }
@@ -136,7 +136,7 @@ SkillVC.prototype.registerCardManager = function(event, context) {
 SkillVC.prototype.registerPreIntentFilters = function(event, context, callback) {
 	var filters = (this._skillVCContext.appConfig.filterManager.pre != null)
 			? this._skillVCContext.appConfig.filterManager.pre
-			: FilterManagerFactory.createByDirectory('../assets/filters');  //TODO: How do I specify pre vs post?
+			: FilterManagerFactory.createByDirectory('../assets/filters').getPreFilters(); 
 	callback.success( (filters == null || filters.length == 0) ? [] : filters);
 }
 
@@ -153,11 +153,12 @@ SkillVC.prototype.registerPostIntentFilters = function(event, context, callback)
 	var filters = [];
 	var newFilters = (this._skillVCContext.appConfig.filterManager.post != null)
 			? this._skillVCContext.appConfig.filterManager.post
-			: FilterManagerFactory.createByDirectory('../assets/filters');
-	if (newFilters != null && newFilters.length > 0) filters.push(newFilters);
+			: FilterManagerFactory.createByDirectory('../assets/filters').getPostFilters();
+	if (newFilters != null && newFilters.length > 0) filters.concat(newFilters);
 
 	// takes everything done by the filters and puts it in the lambda context for handling by Alexa
 	filters.push(new SkillResponseFilter());
+	console.log("Filters:"+filters.length);
 
 	callback.success(filters);
 }

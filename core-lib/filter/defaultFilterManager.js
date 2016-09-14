@@ -11,6 +11,8 @@ var log = require('../skillVCLogger.js').getLogger('DefaultFilterManager');
  */
 function DefaultFilterManager(providers) {
 	this._providers = providers;
+	this._filters = {};
+	this._notFound = {};
 
 	AbstractProviderManager.apply(this, [providers]);
 }
@@ -18,35 +20,42 @@ function DefaultFilterManager(providers) {
 DefaultFilterManager.prototype = AbstractProviderManager.prototype;
 DefaultFilterManager.prototype.contructor = DefaultFilterManager;
 
-/**
- * Filter  that handles async processing by using callbacks to go to the next filter in the 
- * 
- * @param  {[type]} filterContext [description]
- * @return {[type]}               [description]
- */
-DefaultFilterManager.prototype.execute = function(svContext) {
-	var fcm = this._filters; // take care of scope
-	var i = 0;
+DefaultFilterManager.prototype.getPreFilters = function() {
+	var filters = this._filters.pre;
+	var providers = this.getRegisteredProviders();
 
-	var filterCallback = {
-		success : function() {
-			if (i < fcm.length) {
-				log.verbose("Executing filter "+fcm[i].constructor.name);
-				fcm[i++].execute(svContext);
-			}
-		},
-		failure : function() {
-			if (i < fcm.length) {
-				log.verbose("Executing filter "+fcm[i].constructor.name);
-				fcm[i++].executeOnError(svrContext);
+	if (filters == null && !this._notFound.pre) { // isn't in cache and was never looked for
+		for (var i=0;i<providers.length;i++) {
+			filters = providers[i].getPreFilters();
+
+			if (filters != null) {
+				this._filters.pre = filters; // found it. set it so I never have to look again
+				break; // hop out if I find it
 			}
 		}
+		if (filters == null) this._notFound.pre == true; // never will find it, so record this fact so we don't ever look again
 	}
 
-	// Filters should use the dedicated filterCallback and not the main callback
-	svContext.filterCallback = filterCallback;  // set the callback so the filter  can continue if callback is called
-	
-	filterCallback.success(); //start things off
+	return filters;
+}
+
+DefaultFilterManager.prototype.getPostFilters = function() {
+	var filters = this._filters.post;
+	var providers = this.getRegisteredProviders();
+
+	if (filters == null && !this._notFound.post) { // isn't in cache and was never looked for
+		for (var i=0;i<providers.length;i++) {
+			filters = providers[i].getPostFilters();
+
+			if (filters != null) {
+				this._filters.post = filters; // found it. set it so I never have to look again
+				break; // hop out if I find it
+			}
+		}
+		if (filters == null) this._notFound.post == true; // never will find it, so record this fact so we don't ever look again
+	}
+
+	return filters;
 }
 
 module.exports = DefaultFilterManager;
