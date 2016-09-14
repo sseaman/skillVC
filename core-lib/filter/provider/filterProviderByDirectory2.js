@@ -4,6 +4,7 @@ var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory
 var svUtil = require('../../util.js');
 const path = require('path');
 const fs = require('fs');
+var filterProviderAlreadyLoaded = {};
 
 /**
  * Provides cards by loading all of the files in a directory as cards
@@ -22,6 +23,13 @@ const fs = require('fs');
 function FilterProviderByDirectory2(directory, options) {
 	if (!directory) throw Error('directory required');
 
+	this._filters = { 'pre' : [], 'post' : [] };
+	
+	if (filterProviderAlreadyLoaded[directory]) {
+		log.verbose('Filters already loaded. Skipping');
+		return;
+	}
+
 	this._directory = path.normalize(directory);
 	this._directory += (this._directory.endsWith(path.sep))
 		? ''
@@ -35,7 +43,6 @@ function FilterProviderByDirectory2(directory, options) {
 		? options.fileEncoding
 		: 'utf8';
 
-	this._filters = { 'pre' : [], 'post' : []};
 
 	var populate = function(stage, filters, loaded) {
 		var position = filters.length; // default to no getOrder
@@ -76,7 +83,7 @@ function FilterProviderByDirectory2(directory, options) {
 			}
 		}
 	}
-
+	filterProviderAlreadyLoaded[directory] = true;
 }
 
 FilterProviderByDirectory2.prototype.getPreFilters = function() {

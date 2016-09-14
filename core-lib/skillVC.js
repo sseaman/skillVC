@@ -27,7 +27,6 @@ function SkillVC(config) {
 		: defaultConfig;
 
 	this._initialized = false;
-	this._filterManager = null; // the way we load filtes would double load if we call it twice
 }
 
 SkillVC.prototype.init = function(event, context, initCallback) {
@@ -134,41 +133,34 @@ SkillVC.prototype.handler = function (event, context)  {
 }
 
 SkillVC.prototype.registerCardManager = function(event, context) {
-	return (this._skillVCContext.appConfig.cardManager != null)
-		? this._skillVCContext.appConfig.cardManager 
-		: CardManagerFactory.createHandlebarEnabledByDirectory('../assets/cards');
+	var cardManager = this._skillVCContext.appConfig.cardManager;
+	if (!cardManager) {
+		cardManager = CardManagerFactory.createHandlebarEnabledByDirectory('../assets/cards');
+	}
+	return cardManager;
 }
 
 SkillVC.prototype.registerPreIntentFilters = function(event, context, callback) {
 	var filters = this._skillVCContext.appConfig.filterManager.pre;
 	if (!filters) {
-		this._filterManager = FilterManagerFactory.createByDirectory('../assets/filters');
-		filters = this._filterManager.getPreFilters();
+		filters = FilterManagerFactory.createByDirectory('../assets/filters').getPreFilters();
 	}
 	callback.success( (filters == null || filters.length == 0) ? [] : filters);
 }
 
 SkillVC.prototype.registerIntentHandlers = function(event, context, callback) {
-	callback.success( new IntentHandlerFilter(
-		(this._skillVCContext.appConfig.intentHandlerManager != null)
-			? this._skillVCContext.appConfig.intentHandlerManager
-			: IntentHandlerManagerFactory.createByDirectory('../assets/intents')
-		)
-	);
+	var intentHandlerManager = this._skillVCContext.appConfig.intentHandlerManager;
+	if (!intentHandlerManager) {
+		intentHandlerManager = IntentHandlerManagerFactory.createByDirectory('../assets/intents');
+	}
+	callback.success( new IntentHandlerFilter(intentHandlerManager) );
 }
 
 SkillVC.prototype.registerPostIntentFilters = function(event, context, callback) {
 	var filters = [];
 	var newFilters = this._skillVCContext.appConfig.filterManager.postIHandlers;
 	if (!newFilters) {
-		if (this._filterManager) {
-			log.verbose('Filters already loaded. Registering...');
-			newFilters = this._filterManager.getPostFilters();
-		}
-		else {
-			this._filterManager = FilterManagerFactory.createByDirectory('../assets/filters');
-			newFilters = this._filterManager.getPostFilters()
-		}
+		newFilters = FilterManagerFactory.createByDirectory('../assets/filters').getPostFilters();
 	}
 	if (newFilters != null && newFilters.length > 0) filters.concat(newFilters);
 
