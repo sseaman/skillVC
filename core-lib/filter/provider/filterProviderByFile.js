@@ -1,5 +1,5 @@
 var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
-var log = require('../skillVCLogger.js').getLogger('IntentHandlerProviderByFile');
+var log = require('../skillVCLogger.js').getLogger('FilterProviderByFile');
 
 /**
  * Provides an intent from a single file
@@ -11,7 +11,7 @@ var log = require('../skillVCLogger.js').getLogger('IntentHandlerProviderByFile'
  * @param {Object} options Options 
  * @param {Boolean} options.preload Should the file be preloaded or only loaded when a card is requested (defaults to false)
  */
-function IntentHandlerProviderByFile(file, options) {
+function FilterProviderByFile(file, options) {
 	this._file = file;
 
 	this._preload = (options && options.preload) 
@@ -24,23 +24,17 @@ function IntentHandlerProviderByFile(file, options) {
 		this._processFile]);
 }
 
-IntentHandlerProviderByFile.prototype = AbstractProviderByFile.prototype;
-IntentHandlerProviderByFile.prototype.contructor = IntentHandlerProviderByFile;
+FilterProviderByFile.prototype = AbstractProviderByFile.prototype;
+FilterProviderByFile.prototype.contructor = FilterProviderByFile;
 
-IntentHandlerProviderByFile.prototype._processFile = function(file, cards) {
+FilterProviderByFile.prototype._processFile = function(file, cards) {
 	try {
-		var loaded = require(file);
-		var handledIntents = loaded.getIntentsList();
-		var processed = [];
-		for (var i=0;i<handledIntents.length;i++) {
-			processed.push({'itemId' : handledIntents[i], 'item': loaded});
-		}
-		return (processed.length > 0) ? processed : null;
+		return [{'itemId' : itemId : 'item' : new (require(process.cwd()+path.sep+file)) }];
 	}
 	catch (err) {
-		log.error("Error loading intent "+intentId+". Error:"+err);
+		log.error("Error loading filter "+itemId+". Error:"+err);
 		return null;
 	}
 }
 
-module.exports = IntentHandlerProviderByFile;
+module.exports = FilterProviderByFile;

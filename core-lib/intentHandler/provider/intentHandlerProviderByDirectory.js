@@ -1,5 +1,6 @@
 var AbstractProviderByDirectory = require('../../provider/abstractProviderByDirectory.js');
 var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
+var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByDirectory');
 var svUtil = require('../../util.js');
 const path = require('path');
 const fs = require('fs');
@@ -43,25 +44,25 @@ function IntentHandlerProviderByDirectory(directory, options) {
 IntentHandlerProviderByDirectory.prototype = AbstractProviderByDirectory.prototype;
 IntentHandlerProviderByDirectory.prototype.contructor = IntentHandlerProviderByDirectory;
 
-IntentHandlerProviderByDirectory.prototype._processIntent = function(intentId, file) {
+IntentHandlerProviderByDirectory.prototype._processIntent = function(itemId, file) {
 	try {
 		var loaded = new (require(process.cwd()+path.sep+file));
 		if (svUtil.isFunction(loaded.getIntentsList)) { // it specifies its intent list
 			var handledIntents = loaded.getIntentsList();
-			if (!handledIntents) handledIntents = [intentId]; // if it didn't return anything
+			if (!handledIntents) handledIntents = [itemId]; // if it didn't return anything
 			
 			var processed = [];
 			for (var i=0;i<handledIntents.length;i++) {
-				processed.push({itemId : handledIntents[i], item: loaded});
+				processed.push({'itemId' : handledIntents[i], 'item': loaded});
 			}
 			return (processed.length > 0) ? processed : null;
 		}
-		else { // it didn't specify an intent list, so make it what the intentId is
-			return {itemId : intentId, item: loaded};
+		else { // it didn't specify an intent list, so make it what the itemId is
+			return [{'itemId' : itemId, 'item': loaded}];
 		}
 	}
 	catch (err) {
-		console.log("Error loading intent "+intentId+". Error:"+err);
+		log.error("Error loading intent "+itemId+". Error:"+err);
 		return null;
 	}
 }

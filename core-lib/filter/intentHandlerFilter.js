@@ -11,28 +11,32 @@ function IntentHandlerFilter(intentHandlerManager) {
 }
 
 /**
- * Places the response of the invoked intent into the filterContext.filterSession.response 
+ * Places the response of the invoked intent into the svContext.filterSession.response 
+ *
+ * Filterchains should use the dedicated filterChainCallback and not the main callback
  * 
- * @param  {[type]} filterContext [description]
+ * @param  {[type]} svContext [description]
  * @return {[type]}               [description]
  */
-IntentHandlerFilter.prototype.execute = function(filterContext) {
+IntentHandlerFilter.prototype.execute = function(svContext) {
 	log.verbose("Passing off to IntentHandlerManager "+this._intentHandlerManager.constructor.name);
 
-	this._intentHandlerManager.handleIntent(filterContext.skillEvent, filterContext.skillContext, {
+	svContext.callback = {
 		success : function(response) {
-			filterContext.filterSession.response = response;
-			filterContext.filterCallback.success();
+			svContext.session.response = response;
+			svContext.filterChainCallback.success(); 
 		},
 		failure : function(error) {
-			filterContext.filterSession.response = error;
-			filterContext.filterCallback.failure();
+			svContext.session.response = error;
+			svContext.filterChainCallback.failure();
 		}
-	});
+	};
+
+	this._intentHandlerManager.handleIntent(svContext);
 }
 
-IntentHandlerFilter.prototype.executeOnError = function(filterContext) {
-	filterContext.filterCallback.failure();
+IntentHandlerFilter.prototype.executeOnError = function(svContext) {
+	svContext.filterChainCallback.failure();
 }
 
 module.exports = IntentHandlerFilter;

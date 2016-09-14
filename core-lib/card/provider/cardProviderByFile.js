@@ -45,7 +45,7 @@ CardProviderByFile.prototype._processFile = function(file, cards) {
 		var processed = [];
 		for (var key in json) {
 			var card = this._cardBuilder.withCardId(key).withJSON(json[key]).build();
-			processed.push({itemId : key, item: card});
+			processed.push({'itemId' : key, 'item': card});
 		}
 		return (processed.length > 0) ? processed : null;
 	}

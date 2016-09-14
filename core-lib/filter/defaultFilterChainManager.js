@@ -1,10 +1,14 @@
-var log = require('../skillVCLogger.js').getLogger('FilterChainManager');
+var log = require('../skillVCLogger.js').getLogger('DefaultFilterChainManager');
+
+//FIXME: Change to DefaultFilterChainManager and should take a provider, not the list of filters
+
+
 /**
  * Manager for Intercepting filter implementation
  * 
  * @param {Filter} filters Filters to use.  Can be null and filters later set via addFilter
  */
-function FilterChainManager(filters) {
+function DefaultFilterChainManager(filters) {
 	this._filters = (filters) ? filters : [];
 }
 
@@ -13,7 +17,7 @@ function FilterChainManager(filters) {
  * 
  * @param {Filter} filter The filter to add to the chain
  */
-FilterChainManager.prototype.addFilter = function(filter) {
+DefaultFilterChainManager.prototype.addFilter = function(filter) {
 	if (filter != null) this._filters.push(filter);
 }
 
@@ -22,7 +26,7 @@ FilterChainManager.prototype.addFilter = function(filter) {
  * 
  * @param {Filter} filters The filters to add to the chain
  */
-FilterChainManager.prototype.addFilters = function(filters) {
+DefaultFilterChainManager.prototype.addFilters = function(filters) {
 	if (filters != null) {
 		if (Array.isArray(filters)) {
 			for (var i=0;i<filters.length;i++) {
@@ -41,7 +45,7 @@ FilterChainManager.prototype.addFilters = function(filters) {
  * @param  {[type]} filterContext [description]
  * @return {[type]}               [description]
  */
-FilterChainManager.prototype.execute = function(filterContext) {
+DefaultFilterChainManager.prototype.execute = function(svContext) {
 	var fcm = this._filters; // take care of scope
 	var i = 0;
 
@@ -49,18 +53,21 @@ FilterChainManager.prototype.execute = function(filterContext) {
 		success : function() {
 			if (i < fcm.length) {
 				log.verbose("Executing filter "+fcm[i].constructor.name);
-				fcm[i++].execute(filterContext);
+				fcm[i++].execute(svContext);
 			}
 		},
 		failure : function() {
 			if (i < fcm.length) {
 				log.verbose("Executing filter "+fcm[i].constructor.name);
-				fcm[i++].executeOnError(filterContext);
+				fcm[i++].executeOnError(svrContext);
 			}
 		}
 	}
-	filterContext.filterCallback = filterChainCallback;  // set the callback so the filter chain can continue if callback is called
-	filterChainCallback.success(); //start thigns off
+
+	// Filterchains should use the dedicated filterChainCallback and not the main callback
+	svContext.filterChainCallback = filterChainCallback;  // set the callback so the filter chain can continue if callback is called
+	
+	filterChainCallback.success(); //start things off
 }
 
-module.exports = FilterChainManager;
+module.exports = DefaultFilterChainManager;

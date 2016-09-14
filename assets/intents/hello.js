@@ -2,13 +2,13 @@ function HelloIntentHandler() {
 }
 
 HelloIntentHandler.prototype.getIntentsList = function() {
-	return this._intents;
+	return ['hello'];
 }
 
-HelloIntentHandler.prototype.handleIntent = function(event, context, callback) {
-	console.log("In Hello:"+context.skillVCContext.cardManager);
+HelloIntentHandler.prototype.handleIntent = function(svContext) {
+	console.log("In Hello:");
 
-	callback.success(context.skillVCContext.cardManager.getCard('card'));
+	svContext.callback.success(svContext.appConfig.cardManager.getCard('card').render());
 }
 
 module.exports = HelloIntentHandler;

@@ -8,7 +8,7 @@
 function AbstractProviderByMap(map, itemProcessor) {
 	this._items = {};
 	for (var key in map) {
-		this._items[key] = itemProcess(key, map[key]);
+		this._items[key] = itemProcessor(key, map[key]);
 	}
 }
 

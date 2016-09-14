@@ -1,3 +1,4 @@
+var log = require('../skillVCLogger.js').getLogger('ProviderByDirectory');
 const fs = require('fs');
 const path = require('path');
 
@@ -39,9 +40,11 @@ function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor
 					itemId = cp._filenameFormatter.parse(files[fileIdx])[0];
 
 					if (!cp._items[itemId] && !cp._itemNotFound[itemId]) { // wasn't already retrieved
+						log.debug('Async loading file: '+files[fileIdx]);
 						processed = cp._itemProcessor(itemId, cp._directory + files[fileIdx]);
 
 						for (var pIdx=0;pIdx<processed.length;pIdx++) {
+							log.debug('Item loaded: '+processed[pIdx].itemId);
 							cp._items[processed[pIdx].itemId] = processed[pIdx].item;
 						}
 					}
@@ -49,6 +52,7 @@ function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor
 			}
 		}
 		else if (err) {
+			log.error('Could not read directory '+directory);
 			throw Error('Could not read directory '+directory);
 		}
 	});
@@ -66,12 +70,17 @@ AbstractProviderByDirectory.prototype.getItem = function(itemId) {
 	if (item == null && !this._itemNotFound[itemId]) { 
 		// if I don't find it in the cache, look for it as this could still be loading and could be faster 
 		// if there are a lot of files in the dircetory
-		var processed = this._itemProcessor(itemId, this._directory + this._filenameFormatter.format(itemId));
+		var file = this._directory + this._filenameFormatter.format(itemId);
+		log.debug('Item '+itemId+ ' not yet loaded. Loading file: '+file);
+
+		var processed = this._itemProcessor(itemId, file);
 		if (processed == null) {
+			log.debug('Item not able to be loaded');
 			this._itemNotFound[itemId] = true; 
 		}
 		else {
 			for (var i=0;i<processed.length;i++) {
+				log.debug('Item loaded: '+processed[i].itemId);
 				this._items[processed[i].itemId] = processed[i].item;
 			}
 			item = this._items[itemId];

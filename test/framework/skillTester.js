@@ -36,9 +36,7 @@ function SkillTester (index, config) {
 }
 
 SkillTester.prototype.test = function(intent, requestOptions, callback) {
-	var testCallback = (callback) 
-		? callback
-		: this.logCallback();
+	var testCallback = (callback) ? callback : this.logCallback();
 
 	this._index.handler(this.buildRequest(intent, requestOptions), testCallback);
 }

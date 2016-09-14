@@ -32,6 +32,7 @@ DefaultCardManager.prototype.getCard = function(cardId) {
 		for (var i=0;i<this._cardProviders.length;i++) {
 			// This could be expensive at is could cause all of the file loading to occur when looking for a card
 			card = this._cardProviders[i].getItem(cardId);
+
 			if (card != null) {
 				this._cards[cardId] = card; // found it. set it so I never have to look again
 				break; // hop out if I find it

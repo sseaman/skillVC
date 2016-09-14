@@ -7,14 +7,13 @@ var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
 function IntentHandlerProviderByMap(map) {
 	AbstractProviderByMap.apply(this, [
 		map, 
-		this._processCard]);
+		this._processor]);
 }
 
 IntentHandlerProviderByMap.prototype = AbstractProviderByMap.prototype;
 IntentHandlerProviderByMap.prototype.contructor = IntentHandlerProviderByMap;
 
-IntentHandlerProviderByMap.prototype._processCard = function(cardId, card) {
-	return card;
-}
+IntentHandlerProviderByMap.prototype._processor = function(itemId, item) {
+	return item;
 
 module.exports = IntentHandlerProviderByMap;

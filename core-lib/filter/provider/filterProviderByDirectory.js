@@ -1,8 +1,9 @@
 var AbstractProviderByDirectory = require('../../provider/abstractProviderByDirectory.js');
-var DefaultJSONFilenameFormatter = require ('../../provider/defaultJSONFilenameFormatter.js');
-var DefaultCardBuilder = require ('../defaultCardBuilder.js');
-const fs = require('fs');
+var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
+var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory');
+var svUtil = require('../../util.js');
 const path = require('path');
+const fs = require('fs');
 
 /**
  * Provides cards by loading all of the files in a directory as cards
@@ -15,10 +16,10 @@ const path = require('path');
  * @param {String} options.fileEncoding The encoding of the files.  Defaults to utf8
  * @param {FileNameFormatter} options.filenameFormatter The FilenameFormmatter to use to parse the filenames to determine card name as well
  *     as how to format the cardId to become a filename. This object will only load files that match the formatters isValid() method
- *     Defaults to DefaultJSONFilenameFormatter
+ *     Defaults to DefaultCardFilenameFormatter
  * @param {CardBuilder} options.cardBuilder The CardBuilder to use when building cards. Defaults to DefaultCardBuilder
  */
-function CardProviderByDirectory(directory, options) {
+function FilterProviderByDirectory(directory, options) {
 	if (!directory) throw Error('directory required');
 
 	this._directory = path.normalize(directory);
@@ -28,30 +29,29 @@ function CardProviderByDirectory(directory, options) {
 
 	this._filenameFormatter = (options && options.filenameFormatter)
 		? options.filenameParser
-		: new DefaultJSONFilenameFormatter();
+		: new DefaultJSFilenameFormatter();
 
 	this._fileEncoding = (options && options.fileEncoding)
 		? options.fileEncoding
 		: 'utf8';
 
-	this._cardBuilder = (options && options.cardBuilder) 
-		? options.cardBuilder
-		: new DefaultCardBuilder();
-
 	AbstractProviderByDirectory.apply(this, [
 		directory, 
 		this._filenameFormatter, 
-		this._processFile]);
+		this._processor]);
 }
 
-CardProviderByDirectory.prototype = AbstractProviderByDirectory.prototype;
-CardProviderByDirectory.prototype.contructor = CardProviderByDirectory;
+FilterProviderByDirectory.prototype = AbstractProviderByDirectory.prototype;
+FilterProviderByDirectory.prototype.contructor = FilterProviderByDirectory;
 
-CardProviderByDirectory.prototype._processFile = function(cardId, file) {
-	var contents = fs.readFileSync(file, this._fileEncoding);
-	return (contents != null) 
-		? [{ itemId : cardId, item : this._cardBuilder.withCardId(cardId).withString(contents).build() }]
-		: null;
+FilterProviderByDirectory.prototype._processor = function(itemId, file) {
+	try {
+		return [{'itemId' : itemId : 'item' : new (require(process.cwd()+path.sep+file)) }];
+	}
+	catch (err) {
+		log.error("Error loading filter "+itemId+". Error:"+err);
+		return null;
+	}
 }
 
-module.exports = CardProviderByDirectory;
+module.exports = FilterProviderByDirectory;

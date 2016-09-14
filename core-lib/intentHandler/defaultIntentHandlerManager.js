@@ -36,13 +36,13 @@ DefaultIntentHandlerManager.prototype.registerIntentProvider = function(intentPr
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-DefaultIntentHandlerManager.prototype.handleIntent = function(event, context, callback) {
-	var intentName = event.request.intent.name;
+DefaultIntentHandlerManager.prototype.handleIntent = function(svContext) {
+	var intentName = svContext.lambda.event.request.intent.name;
 	log.verbose("Handling intent "+intentName);
 
 	var handler = this._handlers[intentName];
 	if (handler == null && !this._handlerNotFound[intentName]) { // intent isn't in cache and was never looked for
-		log.debug("Handler not loading. Attempting to load");
+		log.debug("Handler not loaded. Attempting to load");
 		for (var i=0;i<this._intentProviders.length;i++) {
 			// This could be expensive at is could cause all of the file loading to occur when looking for a intent
 			handler = this._intentProviders[i].getItem(intentName);
@@ -60,7 +60,7 @@ DefaultIntentHandlerManager.prototype.handleIntent = function(event, context, ca
 
 	if (handler) {
 		log.verbose("Executing handler");
-		handler.handleIntent(event, context, callback);
+		handler.handleIntent(svContext);
 	}
 }
 
