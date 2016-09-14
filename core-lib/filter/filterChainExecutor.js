@@ -1,56 +1,34 @@
 var log = require('../skillVCLogger.js').getLogger('FilterChainExecutor');
 
-//FIXME: Change to DefaultFilterChainManager and should take a provider, not the list of filters
-
-
-/**
- * Manager for Intercepting filter implementation
- * 
- * @param {Filter} filters Filters to use.  Can be null and filters later set via addFilter
- */
-function FilterChainExecutor(filters) {
-	this._filters = (filters) ? filters : [];
+function FilterChainExecutor(preFilters, postFilters) {
+	this._pre = preFilters;
+	this._post = postFilters;
 }
 
-/**
- * Adds filters to the chain
- * 
- * @param {Filter} filters The filters to add to the chain
- */
-FilterChainExecutor.prototype.addFilters = function(filters) {
-	if (filters != null) {
-		if (Array.isArray(filters)) {
-			for (var i=0;i<filters.length;i++) {
-				this._filters.push(filters[i]);
-			}
-		}
-		else {
-			this._filters.push(filters);
-		}
-	}
-}
-
-/**
- * Filter chain that handles async processing by using callbacks to go to the next filter in the chain
- * 
- * @param  {[type]} filterContext [description]
- * @return {[type]}               [description]
- */
 FilterChainExecutor.prototype.execute = function(svContext) {
-	var fcm = this._filters; // take care of scope
-	var i = 0;
+	var preIdx = 0;
+	var postIdx = 0;
 
+	var fcm = this;
 	var filterChainCallback = {
 		success : function() {
-			if (i < fcm.length) {
-				log.verbose("Executing filter "+fcm[i].constructor.name);
-				fcm[i++].execute(svContext);
+			if (preIdx < fcm._pre.length) {
+				log.verbose("Executing Pre filter "+fcm._pre[preIdx].constructor.name);
+				fcm._pre[preIdx++].executePre(svContext);
+			}
+			else if (postIdx < fcm._post.length) {
+				log.verbose("Executing Post filter "+fcm._post[postIdx].constructor.name);
+				fcm._post[postIdx++].executePost(svContext);
 			}
 		},
 		failure : function() {
-			if (i < fcm.length) {
-				log.verbose("Executing filter "+fcm[i].constructor.name);
-				fcm[i++].executeOnError(svrContext);
+			if (preIdx < fcm._pre.length) {
+				log.verbose("Executing Pre filter "+fcm._pre[preIdx].constructor.name);
+				fcm._pre[preIdx++].executePreOnError(svContext);
+			}
+			else if (postIdx < fcm._post.length) {
+				log.verbose("Executing Post filter "+fcm._post[postIdx].constructor.name);
+				fcm._post[postIdx++].executePostOnError(svContext);
 			}
 		}
 	}

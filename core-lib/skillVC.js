@@ -1,5 +1,5 @@
 var CardManagerFactory = require('./card/cardManagerFactory.js');
-var FilterChainExecutor = require('./filter/filterChainExecutor2.js');
+var FilterChainExecutor = require('./filter/filterChainExecutor.js');
 var FilterManagerFactory = require('./filter/FilterManagerFactory.js');
 var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var SkillResponseFilter = require('./filter/skillResponseFilter.js');

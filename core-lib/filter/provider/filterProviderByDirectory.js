@@ -4,6 +4,7 @@ var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory
 var svUtil = require('../../util.js');
 const path = require('path');
 const fs = require('fs');
+var filterProviderAlreadyLoaded = {};
 
 /**
  * Provides cards by loading all of the files in a directory as cards
@@ -22,6 +23,13 @@ const fs = require('fs');
 function FilterProviderByDirectory(directory, options) {
 	if (!directory) throw Error('directory required');
 
+	this._filters = { 'pre' : [], 'post' : [] };
+	
+	if (filterProviderAlreadyLoaded[directory]) {
+		log.verbose('Filters already loaded. Skipping');
+		return;
+	}
+
 	this._directory = path.normalize(directory);
 	this._directory += (this._directory.endsWith(path.sep))
 		? ''
@@ -35,33 +43,31 @@ function FilterProviderByDirectory(directory, options) {
 		? options.fileEncoding
 		: 'utf8';
 
-	this._filters = { 'pre' : [], 'post' : []};
+
+	var populate = function(stage, filters, loaded) {
+		var position = filters.length; // default to no getOrder
+		if (svUtil.isFunction(loaded.getOrder)) {
+			position = loaded.getOrder();
+			filters[position] = loaded;
+		}
+		else {
+			filters.push(loaded);
+		}
+		log.verbose('Loaded filter '+files[i]+' into stage '+ stage + ', position '+ position);
+	}
 
 	var files = fs.readdirSync(this._directory, this._fileEncoding);
+	var loaded = null;
 	for (var i=0;i<files.length;i++) {
 		if (this._filenameFormatter.isValid(files[i])) {
-			var loaded = new (require(process.cwd()+path.sep+this._directory+files[i])); 
+			loaded = new (require(process.cwd()+path.sep+this._directory+files[i])); 
 
-			var filterStages = ['pre'];
-			if (svUtil.isFunction(loaded.getStages)) { // use the user defined stages
-				var stages = loaded.getStages();
-				filterStages = (Array.isArray(stages)) 
-					? stages
-					: [stages];
+			log.verbose('Loading all filters at once...');
+			if (svUtil.isFunction(loaded.executePre)) {
+				populate('pre', this._filters.pre, loaded);
 			}
-
-			for (var fsIdx=0;fsIdx<filterStages.length;fsIdx++) {
-				var msg = 'Loaded filter '+files[i]+' into stage '+filterStages[fsIdx];
-
-				// if they specified the order of filter executon
-				if (svUtil.isFunction(loaded.getOrder)) {
-					this._filters[filterStages[fsIdx]][loaded.getOrder()] = loaded;
-					log.verbose(msg + ', position '+loaded.getOrder());
-				}
-				else {  // no order specified, put it at the end
-					this._filters[filterStages[fsIdx]].push(loaded); 
-					log.verbose(msg + ', position '+(this._filters[filterStages[fsIdx]].length-1));
-				}
+			if (svUtil.isFunction(loaded.executePost)) {
+				populate('post', this._filters.post, loaded);
 			}
 
 			// function to compress array in case someone put one at 1 and the next at 99
@@ -77,7 +83,7 @@ function FilterProviderByDirectory(directory, options) {
 			}
 		}
 	}
-
+	filterProviderAlreadyLoaded[directory] = true;
 }
 
 FilterProviderByDirectory.prototype.getPreFilters = function() {
