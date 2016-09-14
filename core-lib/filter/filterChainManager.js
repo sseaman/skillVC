@@ -62,24 +62,5 @@ FilterChainManager.prototype.execute = function(filterContext) {
 	filterContext.filterCallback = filterChainCallback;  // set the callback so the filter chain can continue if callback is called
 	filterChainCallback.success(); //start thigns off
 }
-// FilterChainManager.prototype.execute = function(filterContext) {
-// 	var fcm = this._filters; // take care of scope
-// 	var i = 0;
-
-// 	var filterChainCallback = {
-// 		success : function() {
-// 			if (i < fcm.length-1) {
-// 				fcm[++i].execute(filterContext);
-// 			}
-// 		},
-// 		failure : function() {
-// 			if (i < fcm.length-1) {
-// 				fcm[++i].executeOnError(filterContext);
-// 			}
-// 		}
-// 	}
-// 	filterContext.filterCallback = filterChainCallback;  // set the callback so the filter chain can continue if callback is called
-// 	fcm[0].execute(filterContext);  // start things off
-// }
 
 module.exports = FilterChainManager;
