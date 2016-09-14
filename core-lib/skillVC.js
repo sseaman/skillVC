@@ -1,5 +1,5 @@
 var CardManagerFactory = require('./card/cardManagerFactory.js');
-var FilterChainExecutor = require('./filter/filterChainExecutor.js');
+var FilterChainExecutor = require('./filter/filterChainExecutor2.js');
 var FilterManagerFactory = require('./filter/FilterManagerFactory.js');
 var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var SkillResponseFilter = require('./filter/skillResponseFilter.js');
@@ -27,6 +27,7 @@ function SkillVC(config) {
 		: defaultConfig;
 
 	this._initialized = false;
+	this._filterManager = null; // the way we load filtes would double load if we call it twice
 }
 
 SkillVC.prototype.init = function(event, context, initCallback) {
@@ -39,7 +40,7 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 
 	// make things available to anyone
 	this._skillVCContext.appConfig.cardManager = this.registerCardManager(event, context);
-	this._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(); //FIXME: change this to the right thing
+	this._skillVCContext.appConfig.filterChainExecutor = null;//new FilterChainExecutor(); //FIXME: change this to the right thing
 	this._skillVCContext.lambda = { 
 		'context' : context,
 		'event' : event
@@ -50,17 +51,22 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	log.verbose("Registering PreIntent Filters");
 	sv.registerPreIntentFilters(event, context, {
 		success : function(preIHandlers) {
-			sv._skillVCContext.appConfig.filterChainExecutor.addFilters(preIHandlers);
+			//sv._skillVCContext.appConfig.filterChainExecutor.addFilters(preIHandlers);
 
 			log.verbose("Registering Intent Handlers");
 			sv.registerIntentHandlers(event, context, {
 				success : function(iHandlers) {
-					sv._skillVCContext.appConfig.filterChainExecutor.addFilters(iHandlers);
+					//sv._skillVCContext.appConfig.filterChainExecutor.addFilters(iHandlers);
 
 					log.verbose("Registering PostIntent Filters");
 					sv.registerPostIntentFilters(event, context, {
 						success : function(postIHandlers) {
-							sv._skillVCContext.appConfig.filterChainExecutor.addFilters(postIHandlers);
+							//sv._skillVCContext.appConfig.filterChainExecutor.addFilters(postIHandlers);
+							
+							preIHandlers.push(iHandlers);
+							sv._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(
+								preIHandlers, postIHandlers
+								);
 							sv._initialized = true;
 							log.verbose("Initialization complete");
 							initCallback.success(); // registration completed
@@ -134,9 +140,11 @@ SkillVC.prototype.registerCardManager = function(event, context) {
 }
 
 SkillVC.prototype.registerPreIntentFilters = function(event, context, callback) {
-	var filters = (this._skillVCContext.appConfig.filterManager.pre != null)
-			? this._skillVCContext.appConfig.filterManager.pre
-			: FilterManagerFactory.createByDirectory('../assets/filters').getPreFilters(); 
+	var filters = this._skillVCContext.appConfig.filterManager.pre;
+	if (!filters) {
+		this._filterManager = FilterManagerFactory.createByDirectory('../assets/filters');
+		filters = this._filterManager.getPreFilters();
+	}
 	callback.success( (filters == null || filters.length == 0) ? [] : filters);
 }
 
@@ -151,14 +159,21 @@ SkillVC.prototype.registerIntentHandlers = function(event, context, callback) {
 
 SkillVC.prototype.registerPostIntentFilters = function(event, context, callback) {
 	var filters = [];
-	var newFilters = (this._skillVCContext.appConfig.filterManager.post != null)
-			? this._skillVCContext.appConfig.filterManager.post
-			: FilterManagerFactory.createByDirectory('../assets/filters').getPostFilters();
+	var newFilters = this._skillVCContext.appConfig.filterManager.postIHandlers;
+	if (!newFilters) {
+		if (this._filterManager) {
+			log.verbose('Filters already loaded. Registering...');
+			newFilters = this._filterManager.getPostFilters();
+		}
+		else {
+			this._filterManager = FilterManagerFactory.createByDirectory('../assets/filters');
+			newFilters = this._filterManager.getPostFilters()
+		}
+	}
 	if (newFilters != null && newFilters.length > 0) filters.concat(newFilters);
 
 	// takes everything done by the filters and puts it in the lambda context for handling by Alexa
 	filters.push(new SkillResponseFilter());
-	console.log("Filters:"+filters.length);
 
 	callback.success(filters);
 }

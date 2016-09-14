@@ -10,6 +10,12 @@ function IntentHandlerFilter(intentHandlerManager) {
 	this._intentHandlerManager = intentHandlerManager;
 }
 
+// New form. 
+// TODO: Remove old form
+IntentHandlerFilter.prototype.executePre = function(svContext) {
+	this.execute(svContext);
+}
+
 /**
  * Places the response of the invoked intent into the svContext.filterSession.response 
  *

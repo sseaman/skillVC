@@ -1,6 +1,6 @@
 Thoughts:
 
 Make a plugin architecture were people can write quick intent / sample utterances / intentHandlers that can be added on too
-
+git:
 
 Also need to work on a config object that will be read and use to know where to read cards from and what objects to use

@@ -1,5 +1,5 @@
 var DefaultFilterManager = require('./defaultFilterManager.js');
-var FilterProviderByDirectory = require('./provider/FilterProviderByDirectory.js');
+var FilterProviderByDirectory = require('./provider/FilterProviderByDirectory2.js');
 var FilterProviderByFile = require('./provider/FilterProviderByFile.js');
 var FilterProviderByMap = require('./provider/FilterProviderByMap.js');
 

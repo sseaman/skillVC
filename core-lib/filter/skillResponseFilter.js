@@ -5,7 +5,7 @@ var log = require('../skillVCLogger.js').getLogger('SkillResponseFilter');
  */
 function SkillResponseFilter() { }
 
-SkillResponseFilter.prototype.execute = function(svContext) {
+SkillResponseFilter.prototype.executePost = function(svContext) {
 	log.debug('Successful intent execution returned');
 	if (svContext.session.response) {
 		svContext.lambda.context.succeed(svContext.session.response);
@@ -15,7 +15,7 @@ SkillResponseFilter.prototype.execute = function(svContext) {
 	}
 }
 
-SkillResponseFilter.prototype.executeOnError = function(svContext) {
+SkillResponseFilter.prototype.executePostOnError = function(svContext) {
 	log.debug("Unsuccessful intent execution returned");
 	if (svContext.session.response) {
 		svContext.lambda.context.fail(svContext.session.response);
