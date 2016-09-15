@@ -1,9 +1,6 @@
 var AbstractProviderManager = require('../provider/abstractProviderManager.js');
 var log = require('../skillVCLogger.js').getLogger('DefaultFilterManager');
 
-//FIXME: Change to DefaultFilterManager and should take a provider, not the list of filters
-
-
 /**
  * Manager for Intercepting filter implementation
  * 

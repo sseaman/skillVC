@@ -43,7 +43,7 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 
 	// make things available to anyone
 	this._skillVCContext.appConfig.cardManager = this.registerCardManager(event, context);
-	this._skillVCContext.appConfig.filterChainExecutor = null;//new FilterChainExecutor(); //FIXME: change this to the right thing
+	this._skillVCContext.appConfig.filterChainExecutor = null;
 	this._skillVCContext.lambda = { 
 		'context' : context,
 		'event' : event
@@ -54,17 +54,14 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	log.verbose("Registering PreIntent Filters");
 	sv.registerPreIntentFilters(event, context, {
 		success : function(preIHandlers) {
-			//sv._skillVCContext.appConfig.filterChainExecutor.addFilters(preIHandlers);
 
 			log.verbose("Registering Intent Handlers");
 			sv.registerIntentHandlers(event, context, {
 				success : function(iHandlers) {
-					//sv._skillVCContext.appConfig.filterChainExecutor.addFilters(iHandlers);
 
 					log.verbose("Registering PostIntent Filters");
 					sv.registerPostIntentFilters(event, context, {
 						success : function(postIHandlers) {
-							//sv._skillVCContext.appConfig.filterChainExecutor.addFilters(postIHandlers);
 							
 							preIHandlers.push(iHandlers);
 							sv._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(

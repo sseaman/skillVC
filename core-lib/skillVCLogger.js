@@ -51,7 +51,6 @@ SkillVCLogger.setLevels = function(logLevels) {
 	}
 }	
 
-// TODO: Make this externally configurable and be able to set log level per object
 SkillVCLogger.getLogger = function(className) {
 	winston.loggers.add(className, {
 		console : {
