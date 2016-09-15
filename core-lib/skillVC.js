@@ -4,7 +4,8 @@ var FilterManagerFactory = require('./filter/FilterManagerFactory.js');
 var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var SkillResponseFilter = require('./filter/skillResponseFilter.js');
 var IntentHandlerManagerFactory = require('./intentHandler/intentHandlerManagerFactory.js');
-var log = require('./skillVCLogger.js').getLogger('SkillVC');
+var Logger = require('./skillVCLogger.js');
+var log = Logger.getLogger('SkillVC');
 var svUtil = require('./util.js');
 var fs = require('fs');
 
@@ -20,6 +21,9 @@ const defaultConfig = {
 };
 
 function SkillVC(config) {
+	// turn on all logging
+	Logger.setLevels({'all':'debug'});
+
 	// main context object for the whole system
 	this._skillVCContext = {};
 	this._skillVCContext.appConfig = (config != null)
