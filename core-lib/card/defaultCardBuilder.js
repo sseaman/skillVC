@@ -1,4 +1,5 @@
 var Card = require('./card.js');
+var deepExtend = require('deep-extend');
 
 const cardFormat = {
     outputSpeech: {
@@ -59,7 +60,7 @@ DefaultCardBuilder.prototype.withCardId = function(cardId) {
  * @return {CardBuilder}      The instance of the CardBuilder
  */
 DefaultCardBuilder.prototype.withJSON = function(json) {
-	this._cardJSON = this._deepExtend(cardFormat, json);
+	this._cardJSON = deepExtend(cardFormat, json);
 	return this;
 }
 
@@ -70,7 +71,7 @@ DefaultCardBuilder.prototype.withJSON = function(json) {
  * @return {CardBuilder}      The instance of the CardBuilder
  */
 DefaultCardBuilder.prototype.withString = function(string) {
-	this._cardJSON = this._deepExtend(cardFormat, JSON.parse(string));
+	this._cardJSON = deepExtend(cardFormat, JSON.parse(string));
 	return this;
 }
 
@@ -82,37 +83,5 @@ DefaultCardBuilder.prototype.withString = function(string) {
 DefaultCardBuilder.prototype.build = function() {
 	return new Card(this._cardId, this._cardJSON, this._cardFormatterManager);
 }
-
-// from https://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
-DefaultCardBuilder.prototype._deepExtend = function() {
-    // Variables
-    var de = this;
-    var extended = {};
-    var i = 0;
-    var length = arguments.length;
-
-    // Merge the object into the extended object
-    var merge = function (obj) {
-        for ( var prop in obj ) {
-            if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
-                // property is an object, merge properties
-                if (Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
-                    extended[prop] = de._deepExtend(extended[prop], obj[prop] );
-                } else {
-                    extended[prop] = obj[prop];
-                }
-            }
-        }
-    };
-
-    // Loop through each object and conduct a merge
-    for ( ; i < length; i++ ) {
-        var obj = arguments[i];
-        merge(obj);
-    }
-
-    return extended;
-
-};
 
 module.exports = DefaultCardBuilder;

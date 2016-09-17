@@ -23,38 +23,6 @@ module.exports = {
 		return JSON.parse(JSON.stringify(obj));
 	},
 
-	// from https://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
-	deepExtend : function() {
-	    // Variables
-	    var de = this;
-	    var extended = {};
-	    var i = 0;
-	    var length = arguments.length;
-
-	    // Merge the object into the extended object
-	    var merge = function (obj) {
-	        for ( var prop in obj ) {
-	            if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
-	                // property is an object, merge properties
-	                if (Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
-	                    extended[prop] = de._deepExtend(extended[prop], obj[prop] );
-	                } else {
-	                    extended[prop] = obj[prop];
-	                }
-	            }
-	        }
-	    };
-
-	    // Loop through each object and conduct a merge
-	    for ( ; i < length; i++ ) {
-	        var obj = arguments[i];
-	        merge(obj);
-	    }
-
-	    return extended;
-
-	},
-
 	/**
 	 * Returns true if the passed in object is a function
 	 * @param  {Object}  obj The Object to check

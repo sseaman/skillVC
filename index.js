@@ -1,5 +1,5 @@
-var skillVC = new (require('./core-lib/skillVC.js'));
+var SkillVCFactory = require('./core-lib/skillVCFactory.js');
 
 exports.handler = function(event, context) {
-	skillVC.handler(event, context);
+	SkillVCFactory.createfromDirectory().handler(event, context);
 }

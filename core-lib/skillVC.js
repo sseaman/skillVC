@@ -9,26 +9,11 @@ var log = Logger.getLogger('SkillVC');
 var svUtil = require('./util.js');
 var fs = require('fs');
 
-// Here for future use
-const defaultConfig = {
-	applicationId	: null,
-	cardManager	: null,
-	filterManager : {
-		pre	: null,
-		post: null
-	},
-	intentHandlerManager : null
-};
-
 function SkillVC(config) {
-	// turn on all logging
-	Logger.setLevels({'all':'debug'});
-
 	// main context object for the whole system
 	this._skillVCContext = {};
-	this._skillVCContext.appConfig = (config != null)
-		? svUtil.merge(defaultConfig, config) // FIXME: Should be a deepExtend or it wont' get the pre / post
-		: defaultConfig;
+	this._skillVCContext.appConfig = config;
+	Logger.setLevels(this._skillVCContext.appConfig.logLevels);
 
 	this._initialized = false;
 }
@@ -134,35 +119,21 @@ SkillVC.prototype.handler = function (event, context)  {
 }
 
 SkillVC.prototype.registerCardManager = function(event, context) {
-	var cardManager = this._skillVCContext.appConfig.cardManager;
-	if (!cardManager) {
-		cardManager = CardManagerFactory.createHandlebarEnabledByDirectory('../assets/cards');
-	}
-	return cardManager;
+	return this._skillVCContext.appConfig.cardManager;
 }
 
 SkillVC.prototype.registerPreIntentFilters = function(event, context, callback) {
 	var filters = this._skillVCContext.appConfig.filterManager.pre;
-	if (!filters) {
-		filters = FilterManagerFactory.createByDirectory('../assets/filters').getPreFilters();
-	}
 	callback.success( (filters == null || filters.length == 0) ? [] : filters);
 }
 
 SkillVC.prototype.registerIntentHandlers = function(event, context, callback) {
-	var intentHandlerManager = this._skillVCContext.appConfig.intentHandlerManager;
-	if (!intentHandlerManager) {
-		intentHandlerManager = IntentHandlerManagerFactory.createByDirectory('../assets/intents');
-	}
-	callback.success( new IntentHandlerFilter(intentHandlerManager) );
+	callback.success( new IntentHandlerFilter(this._skillVCContext.appConfig.intentHandlerManager) );
 }
 
 SkillVC.prototype.registerPostIntentFilters = function(event, context, callback) {
 	var filters = [];
 	var newFilters = this._skillVCContext.appConfig.filterManager.postIHandlers;
-	if (!newFilters) {
-		newFilters = FilterManagerFactory.createByDirectory('../assets/filters').getPostFilters();
-	}
 	if (newFilters != null && newFilters.length > 0) filters.concat(newFilters);
 
 	// takes everything done by the filters and puts it in the lambda context for handling by Alexa

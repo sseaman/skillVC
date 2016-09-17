@@ -1,3 +1,26 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+var deepExtend = require('deep-extend');
+
+/**
+ * @typedef {Object.<string:Object>} SkillTester~request
+ * @property {Object} request Information on the request to the skill
+ * @property {Object} request.intent 
+ * @property {String} request.intent.name The name of the intent
+ * @property {string} request.requestId The unique Id of the request. Defaults to 'fakeRequestId'
+ * @property {string} request.type The type of the request. Defaults to 'IntentRequest'
+ * @property {Object} session Information on the session for the skill
+ * @property {string} session.application
+ * @property {string} session.application.id The Id of the application (as checked in the skill). Defauls to "fakeApplicationId"
+ * @property {string} session.sessionId The Id of the session. Defaults to 'fakeSessionId'
+ * @property {Object} session.user
+ * @property {string} session.user.userId The Id of the user. Defaults to 'fakeUserId'
+ * @property {boolean} session.new Is this a new session. Defaults to true
+ */
 const request = {
 	request : {
 		intent		: {
@@ -20,27 +43,57 @@ const request = {
 };
 
 /**
- * Tester for testing skills
+ * SkillTester is a simple testing framework for a skill.  It will envoke a skill
+ * with a mock request and return the results
  *
- * Example:
+ * @example
  * // set where index.js is located
  * var skillTester = new SkillTester('../../index.js');
  * // test the 'hello' intent
  * skillTester.test('hello');
  *  
- * @param {[type]} index  [description]
- * @param {[type]} config [description]
+ * @param {String} index  Location of the index.js for the app
+ * @param {Object} [config] Additional configuration options (not yet used)
+ *
+ * @class
+ * @constructor
+ * @requires deep-extend
  */
 function SkillTester (index, config) {
 	this._index = require(index);
 }
 
+/**
+ * Tests the specified intent for the skill.  
+ *
+ * If not requestOptions are specified it will use the default settings in {@link SkillTester~request}
+ * 
+ * @see  {@link SkillTester~request}
+ * @function
+ * @param  {String}   intent         	The name of the intent to to invoke in the skill
+ * @param  {Map}      requestOptions 	A map of the key:values in the request that should be used.  These will override the default values
+ * @param  {SkillTester~callback} callback  	The callback to pass the results of the skill execution to                		
+ */
 SkillTester.prototype.test = function(intent, requestOptions, callback) {
 	var testCallback = (callback) ? callback : this.logCallback();
 
 	this._index.handler(this.buildRequest(intent, requestOptions), testCallback);
 }
 
+/**
+ * @typedef {Object<string,function>} SkillTester~callback
+ * @property {function} success 
+ * @property {JSON} 	success.result The results of the successful skill execution
+ * @property {function} fail 
+ * @property {JSON}   	fail.error The result of an unsuccessful skill execution
+ */
+
+/**
+ * A default callback that takes the JSON result, stringifies it, and sends it to the console
+ *
+ * @function 
+ * @return {SkillTester~callback} A valid callback for handling skill results
+ */
 SkillTester.prototype.logCallback = function() {
 	return {
 		succeed : function(result) {
@@ -52,42 +105,21 @@ SkillTester.prototype.logCallback = function() {
 	}
 }
 
+/**
+ * Builds a valid request JSON obejct for a skill
+ *
+ * If no options are set the defauls (outlined in the {@link SkillTester#test} function) are used
+ *
+ * @function
+ * @see  {@link SkillTester#test}
+ * @param  {String}  intent 	The name of the intent to execute
+ * @param  {Object<string:string>} 	options  	The values of the request object that should override the default values
+ * @return {JSON} The JSON representing the request					
+ */
 SkillTester.prototype.buildRequest = function(intent, options) {
-	var req = this._deepExtend(request, options); 
+	var req = deepExtend(request, options); 
 	req.request.intent.name = intent;
 	return req;
 }
-
-	// from https://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
-SkillTester.prototype._deepExtend = function() {
-	    // Variables
-	    var de = this;
-	    var extended = {};
-	    var i = 0;
-	    var length = arguments.length;
-
-	    // Merge the object into the extended object
-	    var merge = function (obj) {
-	        for ( var prop in obj ) {
-	            if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
-	                // property is an object, merge properties
-	                if (Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
-	                    extended[prop] = de._deepExtend(extended[prop], obj[prop] );
-	                } else {
-	                    extended[prop] = obj[prop];
-	                }
-	            }
-	        }
-	    };
-
-	    // Loop through each object and conduct a merge
-	    for ( ; i < length; i++ ) {
-	        var obj = arguments[i];
-	        merge(obj);
-	    }
-
-	    return extended;
-
-	},
 
 module.exports = SkillTester;
