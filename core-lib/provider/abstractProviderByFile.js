@@ -1,16 +1,24 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 const fs = require('fs');
 
 /**
- * Provides items by a single file with multiple items defined in the file
+ * Provides items by single file with multiple items defined in the file
  * 
  * items are loaded asynchronously but if a item is requested before being loaded 
  * it will be immediately loaded and then skipped by the asychronous processing.
  *
+ * @abstract
+ * @constructor
  * @param {String} file The file to read all items from
- * @param {Object} options Options for the was the directory is process
- * @param {Boolean} options.preload Should the file be preloaded or only loaded when a item is requested (defaults to false)
- * @param {String} options.fileEncoding The encoding of the files.  Defaults to utf8
- * @param {itemBuilder} options.itemBuilder The itemBuilder to use when building items. Defaults to DefaultitemBuilder
+ * @param {Boolean} preload Should the file be preloaded or only loaded when a item is requested
+ * @param {Method} itemProcessor  The method to call to process an item that is read from the file
  */
 function AbstractProviderByFile(file, preload, itemProcessor) {
 	if (!file) throw Error('file required');
@@ -35,7 +43,8 @@ function AbstractProviderByFile(file, preload, itemProcessor) {
 
 /**
  * Returns the item based on the itemId
- * 
+ *
+ * @function
  * @param  {String} itemId The id of the item to retrieve. If the file is not already loaded, it will load it to look for the item
  * @return {item}  The item.  Null if no item is found
  */
@@ -54,7 +63,8 @@ AbstractProviderByFile.prototype.getItem = function(itemId) {
 
 /**
  * Returns all items that were loaded
- * 
+ *
+ * @function
  * @return {Map} Map of the items where the Key is the itemId and the Value is the item itself
  */
 AbstractProviderByFile.prototype.getItems = function() {

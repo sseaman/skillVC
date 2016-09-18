@@ -1,3 +1,11 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
 var DefaultCardBuilder = require ('../defaultCardBuilder.js');
 const fs = require('fs');
@@ -10,9 +18,15 @@ const fs = require('fs');
  *
  * @param {String} file The file to read all cards from
  * @param {Object} options Options for the was the directory is process
- * @param {Boolean} options.preload Should the file be preloaded or only loaded when a card is requested (defaults to false)
- * @param {String} options.fileEncoding The encoding of the files.  Defaults to utf8
- * @param {CardBuilder} options.cardBuilder The CardBuilder to use when building cards. Defaults to DefaultCardBuilder
+ * @param {Boolean} [options.preload=false] Should the file be preloaded or only loaded when a card is requested.  It is generally
+ *         more efficient to load only when the card is requested.
+ * @param {String} [options.fileEncoding =utf8] The encoding of the files
+ * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards
+ *
+ * @class 
+ * @constructor
+ * @implements {Provider}
+ * @see {@link DefaultCardBuilder}
  */
 function CardProviderByFile(file, options) {
 	this._file = file;
@@ -38,7 +52,16 @@ function CardProviderByFile(file, options) {
 AbstractProviderByFile.prototype = AbstractProviderByFile.prototype;
 AbstractProviderByFile.prototype.contructor = CardProviderByFile;
 
-CardProviderByFile.prototype._processFile = function(file, cards) {
+/**
+ * Process a file tha may have many cards in it.  Converts each json card to a {@link Card} and results
+ * an array of the resulting cards
+ *
+ * @protected
+ * @function
+ * @param  {String} file  The file to process
+ * @return {Array.Provider~processorResult} The results of the processing
+ */
+CardProviderByFile.prototype._processFile = function(file) {
 	var contents = fs.readFileSync(file, this._fileEncoding);
 	if (contents) {
 		var json = JSON.parse(contents);

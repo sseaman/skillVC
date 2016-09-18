@@ -1,3 +1,11 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var log = require('../skillVCLogger.js').getLogger('ProviderByDirectory');
 const fs = require('fs');
 const path = require('path');
@@ -8,11 +16,12 @@ const path = require('path');
  * Items are loaded asynchronously but if an item is requested before being loaded 
  * it will be immediately loaded and then skipped by the asychronous processing.
  *
+ * @abstract
+ * @constructor
  * @param {String} directory The directory to read all items from
- * @param {Object} options Options for the was the directory is process
- * @param {String} options.fileEncoding The encoding of the files.  Defaults to utf8
- * @param {FileNameFormatter} options.filenameFormatter The FilenameFormmatter to use to parse the filenames to determine item file name as well
+ * @param {FileNameFormatter} filenameFormatter The FilenameFormmatter to use to parse the filenames to determine item file name as well
  *     as how to format the itemId to become a filename. This object will only load files that match the formatters isValid() method
+ * @param {Method} itemProcessor  The method to call to process an item that is read from the directory
  */
 function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor) {
 	if (!directory) throw Error('directory required');
@@ -60,9 +69,10 @@ function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor
 
 /**
  * Returns the item based on the itemId
- * 
+ *
+ * @function
  * @param  {String} itemId The id of the item to retrieve. If the item is not already loaded, it will load it
- * @return {Object}  The item.  Null if no item is found
+ * @return {Object} The item.  Null if no item is found
  */
 AbstractProviderByDirectory.prototype.getItem = function(itemId) {
 	var item = this._items[itemId];
@@ -91,7 +101,8 @@ AbstractProviderByDirectory.prototype.getItem = function(itemId) {
 
 /**
  * Returns all items that were loaded
- * 
+ *
+ * @function
  * @return {Map} Map of the items where the Key is the itemId and the Value is the item itself
  */
 AbstractProviderByDirectory.prototype.getItems = function() {

@@ -1,3 +1,11 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var Handlebars = require('handlebars');
 var util = require('../../util.js');
 
@@ -8,11 +16,14 @@ var util = require('../../util.js');
  * This allows the passed in formatters to still work as a normal helper but keep the context of the object itself,
  * something that is lost because handlebars justs wants a function when registering a helper
  * 
- * @param {Map} formatterMap Map of formatters where the key is the id of the helper (what will match in the {{ }})
+ * @param {Object.<string,Formatter>} formatterMap Map of formatters where the key is the id of the helper (what will match in the {{ }})
  *                           and the value is the Formatter object that implements .format(value) and returns a string
- * @param {Handlebars instance} handlebarsInstance OPTIONAL.  An instance (cannot be global) of handlebars to use.
+ * @param {Handlerbars} [handlebarsInstance=Handlebars.create()] An instance (cannot be global) of handlebars to use.
  *                           This allows for the preregistration of handlebars functionality if required.
  *                           Defaults to Handlebars.create();
+ * @class
+ * @constructor
+ * @implements {FormatterManager}
  */
 function HandlebarsFormatterManager(formatterMap, handlebarsInstance) {
 	this._handlebars = (handlebarsInstance)
@@ -25,8 +36,9 @@ function HandlebarsFormatterManager(formatterMap, handlebarsInstance) {
 
 /**
  * Returns the formatter stored under the formatterId
- * 
- * @param  {String]} formatterId The Id of the formatter to return
+ *
+ * @function
+ * @param  {String} formatterId The Id of the formatter to return
  * @return {Formatter} The formatter, null if not found;
  */
 HandlebarsFormatterManager.prototype.getFormatter = function(formatterId) {
@@ -39,8 +51,9 @@ HandlebarsFormatterManager.prototype.getFormatter = function(formatterId) {
  * This supports full objects to use with handlebars and not just a function, as handlebars defaults to with helpers.
  * This allows the passed in formatters to still work as a normal helper but keep the context of the object itself,
  * something that is lost because handlebars justs wants a function when registering a helper
- * 
- * @param {Map} formatterMap Map of formatters where the key is the id of the helper (what will match in the {{ }})
+ *
+ * @function
+ * @param {Object.<string, Formatter>} formatterMap Map of formatters where the key is the id of the helper (what will match in the {{ }})
  *                           and the value is the Formatter object that implements .format(value) and returns a string
  */
 HandlebarsFormatterManager.prototype.addFormatters = function(formatterMap) {
@@ -67,9 +80,10 @@ HandlebarsFormatterManager.prototype.addFormatters = function(formatterMap) {
  *
  * If formatters have been registered the values will first be passed to the formatter to format the value and 
  * the resulting string will be placed in the placeholder ({{ }}) location in the passed in string
- * 
+ *
+ * @function
  * @param  {String} string    The string to format
- * @param  {Map}    valuesMap The values map where the key is equal to some variable in the handlebars placeholder ({{}})
+ * @param  {Object.<string, Object>}    valuesMap The values map where the key is equal to some variable in the handlebars placeholder ({{}})
  *                            and the value is the value to place in the placeholder (once passed through a formatter, if registered)
  * @return {String}           The final formatted string
  */

@@ -1,9 +1,21 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var AbstractProviderManager = require('../provider/abstractProviderManager.js');
 
 /**
  * Manages cards
  *
- * @param {[CardProvider]} cardProviders An array of card providers that will supply cards
+ * @param {Array.CardProvider} [cardProviders] An array of card providers that will supply cards
+ *
+ * @class 
+ * @constructor
+ * @implements {CardManager}
  */
 function DefaultCardManager(providers) {
 	this._cards = {};
@@ -20,7 +32,8 @@ DefaultCardManager.prototype.contructor = DefaultCardManager;
  *
  * Optimized to only look once and if not found, will never look through the provider again.  This prevents
  * adding cards to the provider at a later time, but improves repeated lookup performance
- * 
+ *
+ * @function
  * @param  {String} cardId The id of the card
  * @return {Card} The card.  If not found, returns null
  */

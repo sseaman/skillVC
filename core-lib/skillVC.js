@@ -1,3 +1,4 @@
+/** @private */
 var CardManagerFactory = require('./card/cardManagerFactory.js');
 var FilterChainExecutor = require('./filter/filterChainExecutor.js');
 var FilterManagerFactory = require('./filter/FilterManagerFactory.js');

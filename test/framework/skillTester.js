@@ -4,6 +4,8 @@
  * @version .1
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
+
+/** @private */
 var deepExtend = require('deep-extend');
 
 /**
@@ -57,7 +59,6 @@ const request = {
  *
  * @class
  * @constructor
- * @requires deep-extend
  */
 function SkillTester (index, config) {
 	this._index = require(index);
@@ -68,11 +69,12 @@ function SkillTester (index, config) {
  *
  * If not requestOptions are specified it will use the default settings in {@link SkillTester~request}
  * 
- * @see  {@link SkillTester~request}
- * @function
  * @param  {String}   intent         	The name of the intent to to invoke in the skill
  * @param  {Map}      requestOptions 	A map of the key:values in the request that should be used.  These will override the default values
- * @param  {SkillTester~callback} callback  	The callback to pass the results of the skill execution to                		
+ * @param  {SkillTester~callback} callback  	The callback to pass the results of the skill execution to     
+ * 
+ * @see  {@link SkillTester~request}
+ * @function
  */
 SkillTester.prototype.test = function(intent, requestOptions, callback) {
 	var testCallback = (callback) ? callback : this.logCallback();
@@ -91,8 +93,9 @@ SkillTester.prototype.test = function(intent, requestOptions, callback) {
 /**
  * A default callback that takes the JSON result, stringifies it, and sends it to the console
  *
- * @function 
  * @return {SkillTester~callback} A valid callback for handling skill results
+ * 
+ * @function
  */
 SkillTester.prototype.logCallback = function() {
 	return {
@@ -110,11 +113,12 @@ SkillTester.prototype.logCallback = function() {
  *
  * If no options are set the defauls (outlined in the {@link SkillTester#test} function) are used
  *
- * @function
- * @see  {@link SkillTester#test}
  * @param  {String}  intent 	The name of the intent to execute
  * @param  {Object<string:string>} 	options  	The values of the request object that should override the default values
- * @return {JSON} The JSON representing the request					
+ * @return {JSON} The JSON representing the request		
+ *
+ * @function
+ * @see  {@link SkillTester#test} 
  */
 SkillTester.prototype.buildRequest = function(intent, options) {
 	var req = deepExtend(request, options); 

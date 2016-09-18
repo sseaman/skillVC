@@ -1,3 +1,11 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var Card = require('./card.js');
 var deepExtend = require('deep-extend');
 
@@ -24,6 +32,10 @@ const cardFormat = {
  * Builder to build a card 
  *
  * Allows only the sections of the card that you care about to be set and provides defaults for everything else
+ *
+ * @class 
+ * @constructor
+ * @implements {CardBuilder}
  */
 function DefaultCardBuilder() {
     this._cardJSON = '';
@@ -33,7 +45,8 @@ function DefaultCardBuilder() {
 
 /**
  * Sets the FormatterManager of the card
- * 
+ *
+ * @function
  * @param  {FormatterManager} formatterManager The FormatterManager for use with the card
  * @return {CardBuilder}      The instance of the CardBuilder
  */
@@ -44,7 +57,8 @@ DefaultCardBuilder.prototype.withFormatterManager = function(formatterManager) {
 
 /**
  * Sets the id of the card
- * 
+ *
+ * @function
  * @param  {String} cardId The id of the card
  * @return {CardBuilder}      The instance of the CardBuilder
  */
@@ -55,8 +69,9 @@ DefaultCardBuilder.prototype.withCardId = function(cardId) {
 
 /**
  * The passed in JSON will be merged with a card definition 
- * 
- * @param  {Object} json JSON that matches the parts of a card definition that is to be set
+ *
+ * @function
+ * @param  {JSON} json JSON that matches the parts of a card definition that is to be set
  * @return {CardBuilder}      The instance of the CardBuilder
  */
 DefaultCardBuilder.prototype.withJSON = function(json) {
@@ -66,7 +81,8 @@ DefaultCardBuilder.prototype.withJSON = function(json) {
 
 /**
  * The passed in String will converted to JSON and merged with a card definition 
- * 
+ *
+ * @function
  * @param  {String} string String that when converted to JSON matches the parts of a card definition that is to be set
  * @return {CardBuilder}      The instance of the CardBuilder
  */
@@ -77,8 +93,9 @@ DefaultCardBuilder.prototype.withString = function(string) {
 
 /**
  * Builds the final card based on all of the mergining
- * 
- * @return {Object} JSON that represents the card
+ *
+ * @function
+ * @return {Card} The card
  */
 DefaultCardBuilder.prototype.build = function() {
 	return new Card(this._cardId, this._cardJSON, this._cardFormatterManager);

@@ -1,9 +1,19 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var log = require('../skillVCLogger.js').getLogger('abstractProviderManager');
 
 /**
- * Abstract Manager for providers
- * 
- * @param {[Provider]} providers Providers to use.  Can be null and added later via registerProvider
+ * Abstract Manager for providers.  Keeps an array of the providers for use by extending objects
+ *
+ * @abstract
+ * @constructor
+ * @param {Array.Provider} providers Providers to use.  Can be null and added later via registerProvider
  */
 function AbstractProviderManager(providers) {
 	this._providers = providers;
@@ -11,7 +21,9 @@ function AbstractProviderManager(providers) {
 
 /**
  * Returns the list of registers  providers
- * @return {[Provider]} All of the registered providers
+ *
+ * @function
+ * @return {Array.Provider} All of the registered providers
  */
 AbstractProviderManager.prototype.getRegisteredProviders = function() {
 	return this._providers;
@@ -19,8 +31,9 @@ AbstractProviderManager.prototype.getRegisteredProviders = function() {
 
 /**
  * Adds providers
- * 
- * @param {[Provider]} provider  Providers to use.  Can be an individual provider or an array
+ *
+ * @function
+ * @param {Array.Provider|Provider} provider Providers to register.  Can be an individual provider or an array
  */
 AbstractProviderManager.prototype.registerProvider = function(providers) {
 	if (providers != null) {
