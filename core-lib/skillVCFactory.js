@@ -21,11 +21,25 @@ function SkillVCFactory() {}
 
 /**
  * Creates and instance of SkillVC using Convention-over-Configuration.  Assest (cards, filters, and intent handlers)
- * are placed in their respective directories and processed when required.
+ * are placed in their respective directories and processed when required.  It uses the Handlebars card formatter to allow
+ * the most dynamic modification of cards.
  *
  * This method of configuration is the most straightforward and allows for a clear separation of concerns.  For most simple
  * applications that do not require the quickest execution, this is the best choice.
+ *
+ * The directories it will search are:
  * 
+ * - {app_root}/cards
+ * - {app_root}/filters
+ * - {app_root}/intents
+ *
+ * where {app_root} is the detected root of the application
+ *
+ * @todo This is currently coded to use ../assets which is specific to my test implemenation
+ * @function
+ * @see  {@link CardManagerFactory#createHandlebarEnabledByDirectory}
+ * @see  {@link FilterManagerFactory#createByDirectory}
+ * @see  {@link IntentHandlerManagerFactory"createByDirectory}
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
 SkillVCFactory.createfromDirectory = function() {
@@ -46,7 +60,9 @@ SkillVCFactory.createfromDirectory = function() {
  *
  * This method of configuration has the advantage of supporting javascript objects that can be both filters, intent handlers,
  * and other suported executions as the scan will look for everything in each file
- * 
+ *
+ * @todo Implement this
+ * @function
  * @param  {Array.String} files The files to scan
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
@@ -61,6 +77,8 @@ SkillVCFactory.createFromScan = function(files) {
  * This is the most efficient way to run SkilLVC as it does not have to scan files to determine what to load,
  * however it requires the creation and maintenance of a JSON file
  * 
+ * @todo Implement this
+ * @function
  * @param  {JSON} config The configuration of the filters, intent handlers, and other code points
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */

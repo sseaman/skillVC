@@ -1,3 +1,10 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
 /** @private */
 var CardManagerFactory = require('./card/cardManagerFactory.js');
 var FilterChainExecutor = require('./filter/filterChainExecutor.js');

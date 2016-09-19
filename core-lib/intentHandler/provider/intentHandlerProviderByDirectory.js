@@ -1,3 +1,11 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var AbstractProviderByDirectory = require('../../provider/abstractProviderByDirectory.js');
 var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
 var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByDirectory');
@@ -6,18 +14,23 @@ const path = require('path');
 const fs = require('fs');
 
 /**
- * Provides cards by loading all of the files in a directory as cards
+ * Provides intents by loading all of the files in a directory as intents
  * 
- * Cards are loaded asynchronously but if a card is requested before being loaded 
+ * Intents are loaded asynchronously but if an intent is requested before being loaded 
  * it will be immediately loaded and then skipped by the asychronous processing.
  *
- * @param {String} directory The directory to read all cards from
+ * If the intent being loaded does not implement {@link IntentHandler~getIntentList} then the filename
+ * will be treated as the name of the intent and registered as such.
+ *
+ * @constructor
+ * @implements {Provider}
+ * @see {@link AbstractProviderByDirectory}
+ * @see {@link DefaultJSFilenameFormatter}
+ * @param {String} directory The directory to read all intents from
  * @param {Object} options Options for the was the directory is process
- * @param {String} options.fileEncoding The encoding of the files.  Defaults to utf8
- * @param {FileNameFormatter} options.filenameFormatter The FilenameFormmatter to use to parse the filenames to determine card name as well
- *     as how to format the cardId to become a filename. This object will only load files that match the formatters isValid() method
- *     Defaults to DefaultCardFilenameFormatter
- * @param {CardBuilder} options.cardBuilder The CardBuilder to use when building cards. Defaults to DefaultCardBuilder
+ * @param {FileNameFormatter} [options.filenameFormatter=DefaultJSONFilenameFormatter] The FilenameFormmatter to use to parse the 
+ *     filenames to determine card name as well as how to format the cardId to become a filename. This object will only 
+ *     load files that match the formatters isValid() method
  */
 function IntentHandlerProviderByDirectory(directory, options) {
 	if (!directory) throw Error('directory required');
@@ -40,6 +53,15 @@ function IntentHandlerProviderByDirectory(directory, options) {
 IntentHandlerProviderByDirectory.prototype = AbstractProviderByDirectory.prototype;
 IntentHandlerProviderByDirectory.prototype.contructor = IntentHandlerProviderByDirectory;
 
+/**
+ * Uses nodejs require to load the file.  If the intent is not found this method
+ * will favor performance and never look for the file again.
+ * 
+ * @protected
+ * @param  {String} itemId The id of the item
+ * @param  {String} file   The file to load the intent from
+ * @return {Provider~processorResult}  The loaded card information
+ */
 IntentHandlerProviderByDirectory.prototype._processIntent = function(itemId, file) {
 	try {
 		var loaded = new (require(process.cwd()+path.sep+file));

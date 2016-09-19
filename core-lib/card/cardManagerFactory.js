@@ -14,10 +14,11 @@ var DefaultCardBuilder = require('./defaultCardBuilder.js');
 var DefaultCardManager = require('./defaultCardManager.js');
 
 /**
- * Static factory that can create CardManagers depending on the specific needs of the skill
+ * Static factory that can create CardManagers depending on the specific needs of the skill.  
+ * This should never need to be called and is here as a placeholder.
  *
- * @class
  * @constructor
+ * @see  {@link CardManager}
  */
 function CardManagerFactory() {
 	

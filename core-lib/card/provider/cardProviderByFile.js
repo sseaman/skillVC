@@ -16,17 +16,16 @@ const fs = require('fs');
  * Cards are loaded asynchronously but if a card is requested before being loaded 
  * it will be immediately loaded and then skipped by the asychronous processing.
  *
+ * @constructor
+ * @implements {Provider}
+ * @see {@link AbstractProviderByFile}
+ * @see {@link DefaultCardBuilder}
  * @param {String} file The file to read all cards from
- * @param {Object} options Options for the was the directory is process
+ * @param {Object} options Options for the file loading
  * @param {Boolean} [options.preload=false] Should the file be preloaded or only loaded when a card is requested.  It is generally
  *         more efficient to load only when the card is requested.
  * @param {String} [options.fileEncoding =utf8] The encoding of the files
  * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards
- *
- * @class 
- * @constructor
- * @implements {Provider}
- * @see {@link DefaultCardBuilder}
  */
 function CardProviderByFile(file, options) {
 	this._file = file;

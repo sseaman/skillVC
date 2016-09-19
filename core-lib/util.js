@@ -1,10 +1,17 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
 module.exports = {
 
 	/**
 	 * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
-	 * @param obj1
-	 * @param obj2
-	 * @returns obj3 a new object based on obj1 and obj2
+	 * 
+	 * @param {Map} obj1 The first object
+	 * @param {Map} obj2 The second object
+	 * @returns A new object based on obj1 and obj2
 	 */
 	merge : function (obj1,obj2) {
 	    var obj3 = {};
@@ -17,7 +24,7 @@ module.exports = {
 	 * Does a deep copy of an object using JSON stringify and parse
 	 * 
 	 * @param  {Object} obj The object to copy
-	 * @return {Object}     A copy of the passed in object
+	 * @return {Object} A copy of the passed in object
 	 */
 	deepClone : function(obj) {
 		return JSON.parse(JSON.stringify(obj));
@@ -25,6 +32,7 @@ module.exports = {
 
 	/**
 	 * Returns true if the passed in object is a function
+	 * 
 	 * @param  {Object}  obj The Object to check
 	 * @return {Boolean}     true if it is a function, false otherwise
 	 */
@@ -35,13 +43,13 @@ module.exports = {
 	},
 
 	/**
-	 * Allops a loop with async functions
+	 * Allows a loop with async functions
 	 * See: http://stackoverflow.com/questions/4288759/asynchronous-for-cycle-in-javascript
 	 * 
-	 * @param  {[type]}   iterations [description]
-	 * @param  {[type]}   func       [description]
-	 * @param  {Function} callback   [description]
-	 * @return {[type]}              [description]
+	 * @param  {number}   iterations The number of iterations to do
+	 * @param  {Function} func       The function to call
+	 * @param  {Function} callback   The callback function
+	 * @return {Object}              Returns the loop control
 	 */
 	asyncLoop : function(iterations, func, callback) {
 	    var index = 0;

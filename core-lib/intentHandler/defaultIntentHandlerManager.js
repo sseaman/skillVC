@@ -1,9 +1,20 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var AbstractProviderManager = require('../provider/abstractProviderManager.js');
 var log = require('../skillVCLogger.js').getLogger('DefaultIntentHandlerManager');
+
 /**
- * Manages intents
- * 
- * @param {[IntentHandlers]} intentHandlers Array of intent handlers
+ * Manages intent handlers.
+ *
+ * @constructor
+ * @implements {IntentHandlerManager}
+ * @param {Array.Provider} An array of providers that will provide the intent handlers
  */
 function DefaultIntentHandlerManager(providers) {
 	this._handlers = {};
@@ -16,12 +27,13 @@ DefaultIntentHandlerManager.prototype = AbstractProviderManager.prototype;
 DefaultIntentHandlerManager.prototype.contructor = DefaultIntentHandlerManager;
 
 /**
- * Handle an intent that has occurred
- * 
- * @param  {[type]}   event    [description]
- * @param  {[type]}   context  [description]
- * @param  {Function} callback [description]
- * @return {[type]}            [description]
+ * Handle an intent that has occurred by calling all of the providers looking for an 
+ * {@link IntentHandler} that is registered for the intent.  If the intent handler is not found this method will
+ * favor performance and never look for it again.
+ *
+ * @function
+ * @see  {@link IntentHandler}
+ * @param  {SVContext} svContext The context to execute with
  */
 DefaultIntentHandlerManager.prototype.handleIntent = function(svContext) {
 	var intentName = svContext.lambda.event.request.intent.name;

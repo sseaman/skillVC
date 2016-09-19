@@ -92,17 +92,483 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
 
         
+                
+<h4 class="name" id="SVContext">SVContext</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
             
-<h4 class="name" id="deepExtend"><span class="type-signature"></span>deepExtend<span class="type-signature"></span></h4>
+<span class="param-type">Object.&lt;string, Object></span>
+
+
+        </li>
+    </ul>
 
 
 
 
 
+    <h5 class="subsection-title">Properties:</h5>
 
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>appConfig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Contains all the configuration information that was passed into @{link SkillVC} when it was created.
+                             This is useful for when you want to inject your own configuration info into @{link SkillVC}
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>logLevels</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The logging levels for @{link SkillVC}.  See <a href="SkillVCLogger.html">SkillVCLogger</a> for more information</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cardManger</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="CardManager.html">CardManager</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The registered <a href="CardManager.html">CardManager</a> that will be used by SkillVC</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>filterChainExecutor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The registered <a href="FilterChainExecutor.html">FilterChainExecutor</a> that will be used to execute the filter chain</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>filterManager</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pre</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="FilterManager.html">FilterManager</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <a href="FilterManager.html">FilterManager</a> for all pre filters</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>post</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="FilterManager.html">FilterManager</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <a href="FilterManager.html">FilterManager</a> for all post filters</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>intentHandlerManager</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="IntentHandlerManager.html">IntentHandlerManager</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The registered <a href="IntentHandlerManager.html">IntentHandlerManager</a></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>appId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The applicationId that will be checked to ensure that something / someone is not tying to 
+                         incorrectly invoke your skill</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>appSession</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Map for use by anything in @{link SkillVC} that may want to keep a session for the life of @{link SkillVC}</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="IntentHandler.html#~callback">IntentHandler~callback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The callback that all intents should use to report if they were successful or not</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lambda</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The objects passed from lambda that
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The lambda skill event object</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The lamdba skill context object</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>session</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A session that is alive only for a single execution of SVHandler can be used to pass information between
+                           objects but do not need to live forever (use appSession for longer lived objects)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -110,9 +576,6 @@
 <dl class="details">
 
     
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>.1</li></ul></dd>
-    
 
     
 
@@ -129,22 +592,9 @@
     
 
     
-    <dt class="tag-author">Author:</dt>
-    <dd class="tag-author">
-        <ul>
-            <li>Sloan Seaman</li>
-        </ul>
-    </dd>
-    
 
     
-    <dt class="tag-copyright">Copyright:</dt>
-    <dd class="tag-copyright"><ul class="dummy"><li>2016 and on</li></ul></dd>
-    
 
-    
-    <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0</li></ul></dd>
     
 
     
@@ -152,7 +602,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="test_framework_skillTester.js.html">test/framework/skillTester.js</a>, <a href="test_framework_skillTester.js.html#line8">line 8</a>
+        <a href="core-lib_svContext.js.html">core-lib/svContext.js</a>, <a href="core-lib_svContext.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -168,11 +618,7 @@
 
 
 
-        
-    
-
-    
-
+            
     
 
     
@@ -186,13 +632,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="Card.html">Card</a></li><li><a href="CardManagerFactory.html">CardManagerFactory</a></li><li><a href="CardProviderByDirectory.html">CardProviderByDirectory</a></li><li><a href="CardProviderByFile.html">CardProviderByFile</a></li><li><a href="CardProviderByMap.html">CardProviderByMap</a></li><li><a href="DefaultCardBuilder.html">DefaultCardBuilder</a></li><li><a href="DefaultCardManager.html">DefaultCardManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="SkillTester.html">SkillTester</a></li></ul><h3>Interfaces</h3><ul><li><a href="CardBuilder.html">CardBuilder</a></li><li><a href="CardManager.html">CardManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="Provider.html">Provider</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deepExtend">deepExtend</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByDirectory.html">AbstractProviderByDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="Card.html">Card</a></li><li><a href="CardManagerFactory.html">CardManagerFactory</a></li><li><a href="CardProviderByDirectory.html">CardProviderByDirectory</a></li><li><a href="CardProviderByFile.html">CardProviderByFile</a></li><li><a href="CardProviderByMap.html">CardProviderByMap</a></li><li><a href="DefaultCardBuilder.html">DefaultCardBuilder</a></li><li><a href="DefaultCardManager.html">DefaultCardManager</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="SkillResponseFilter.html">SkillResponseFilter</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li><li><a href="SkillVCLogger.html">SkillVCLogger</a></li></ul><h3>Interfaces</h3><ul><li><a href="CardBuilder.html">CardBuilder</a></li><li><a href="CardManager.html">CardManager</a></li><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="Provider.html">Provider</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Sat Sep 17 2016 20:26:55 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Sun Sep 18 2016 16:58:55 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -9,18 +9,26 @@
 var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
 
 /**
- * Uses the passed in map to provide cards. 
+ * Uses the passed in map to provide cards. This provider will still use the CardBuilder to 
+ * build the card from the passed in JSON.
  *
- * This provider will still use the CardBuilder to build the card from the passed in JSON
+ * This allows the most control of SkillVC's loading of cards however it requires the
+ * most knowledge of how the system works.  This should only be used if you know what you
+ * are doing and want the utmost control.
  *
- * @param {Map} map The object structure of the raw cards to use.  
- * @param {Object} options Options for the was the directory is process
- * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards
- *
- * @class 
+ * @example
+ * {
+ * 	 'cardName' : { json for card },
+ * 	 'anotherCardName' : { json for card },
+ * 	 etc...
+ * }
+ * 
  * @constructor
  * @implements {Provider}
  * @see {@link DefaultCardBuilder}
+ * @param {Map} map The object structure of the raw cards to use.  
+ * @param {Object} options Options for the was the directory is process
+ * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards
  */
 function CardProviderByMap(map, options) {
 	this._cardBuilder = (options && options.cardBuilder) 

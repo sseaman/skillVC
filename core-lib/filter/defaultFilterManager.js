@@ -1,10 +1,25 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var AbstractProviderManager = require('../provider/abstractProviderManager.js');
 var log = require('../skillVCLogger.js').getLogger('DefaultFilterManager');
 
 /**
- * Manager for Intercepting filter implementation
- * 
- * @param {Filter} filters Filters to use.  Can be null and filters later set via addFilter
+ * Manager for managing filters.
+ *
+ * Supports N number of providers or various types (directory, file, map, etc.) to allow for highly dynamic 
+ * configuration
+ *
+ * @constructor
+ * @implements {AbstractProviderManager}
+ * @implements {FilterManager}
+ * @see {@link AbstractProviderManager}
+ * @param {Provider} Providers to manage / use.  Can be null and providers later added via register methods
  */
 function DefaultFilterManager(providers) {
 	this._providers = providers;
@@ -17,6 +32,12 @@ function DefaultFilterManager(providers) {
 DefaultFilterManager.prototype = AbstractProviderManager.prototype;
 DefaultFilterManager.prototype.contructor = DefaultFilterManager;
 
+/**
+ * Returns the pre filters.  
+ *
+ * @function
+ * @return {Array.Filter} The pre filters in the order they should be executed
+ */
 DefaultFilterManager.prototype.getPreFilters = function() {
 	var filters = this._filters.pre;
 	var providers = this.getRegisteredProviders();
@@ -36,6 +57,12 @@ DefaultFilterManager.prototype.getPreFilters = function() {
 	return filters;
 }
 
+/**
+ * Returns the post filters.  
+ *
+ * @function
+ * @return {Array.Filter} The post filters in the order they should be executed
+ */
 DefaultFilterManager.prototype.getPostFilters = function() {
 	var filters = this._filters.post;
 	var providers = this.getRegisteredProviders();

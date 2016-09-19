@@ -1,15 +1,25 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
 var log = require('../../skillVCLogger.js').getLogger('FilterProviderByFile');
 
 /**
- * Provides an intent from a single file
+ * Provides an filter from a single file
  * 
- * Intent is loaded asynchronously but if a intent is requested before being loaded 
- * it will be immediately loaded and then skipped by the asychronous processing.
+ * Filter will be loaded synchronously as there is no way to determine when a filter is required asynchronously
  *
+ * @constructor
+ * @implements {Provider}
+ * @see {@link AbstractProviderByFile}
  * @param {String} file The file that represnts an intent
- * @param {Object} options Options 
- * @param {Boolean} options.preload Should the file be preloaded or only loaded when a card is requested (defaults to false)
+ * @param {Object} [options] Options 
+ * @param {Boolean} [options.preload=false] Should the file be preloaded or only loaded when a card is requested
  */
 function FilterProviderByFile(file, options) {
 	this._file = file;
@@ -27,7 +37,15 @@ function FilterProviderByFile(file, options) {
 FilterProviderByFile.prototype = AbstractProviderByFile.prototype;
 FilterProviderByFile.prototype.contructor = FilterProviderByFile;
 
-FilterProviderByFile.prototype._processFile = function(file, cards) {
+/**
+ * Uses node.js require to load the file and register it with the provider system
+ * 
+ * @function
+ * @protected
+ * @param  {String} file  the file to load
+ * @return {Array.Provider~processorResult} An array of processor results (array length is always 1 as only one file is loaded)
+ */
+FilterProviderByFile.prototype._processFile = function(file) {
 	try {
 		return [{'itemId' : itemId , 'item' : new (require(process.cwd()+path.sep+file)) }];
 	}

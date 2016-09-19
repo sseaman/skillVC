@@ -1,10 +1,29 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var log = require('../skillVCLogger.js').getLogger('SkillResponseFilter');
 
 /**
- * Last item in every filter as it actually tells Lambda if it succeeded or not
+ * Last item in every filter chian as it converts the intent and filter executions
+ * into something Lmabda understands
+ *
+ * @constructor
+ * @implements {Filter}
  */
 function SkillResponseFilter() { }
 
+/**
+ * Takes the successful response from svContext.session.response and places call
+ * svContext.lambda.context.succeed with the response
+ * 
+ * @function
+ * @param  {SVContext} svContext The SVContext to execute with
+ */
 SkillResponseFilter.prototype.executePost = function(svContext) {
 	log.debug('Successful intent execution returned');
 	if (svContext.session.response) {
@@ -15,6 +34,13 @@ SkillResponseFilter.prototype.executePost = function(svContext) {
 	}
 }
 
+/**
+ * Takes the unsuccessful response from svContext.session.response and places call
+ * svContext.lambda.context.fail with the response
+ * 
+ * @function
+ * @param  {SVContext} svContext The SVContext to execute with
+ */
 SkillResponseFilter.prototype.executePostOnError = function(svContext) {
 	log.debug("Unsuccessful intent execution returned");
 	if (svContext.session.response) {

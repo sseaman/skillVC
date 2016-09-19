@@ -1,7 +1,16 @@
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
 var winston = require('winston');
 
 /**
- * Providers a centralized logger mechanism with per object definable logging level
+ * Providers a centralized logger mechanism with per object definable logging levels using 
+ * {@link https://github.com/winstonjs/winston|winston}
  *
  * The levels can be set by providing a map where the keys are the objects and the values
  * the log levels.  If no level is provided, it defaults to info
@@ -10,7 +19,7 @@ var winston = require('winston');
  *
  * If the level is set to 'none', logging is disabled
  *
- * Examples:
+ * @example
  * var Logger = require('./skillVCLogger.js');
  * var log = Logger.getLogger('SkillVC'); // use to actually do the logging
  *
@@ -18,11 +27,19 @@ var winston = require('winston');
  * Logger.setLevels({'all':'debug'}); // everything set to debug
  * Logger.setLevels({'all':'none'});  // turn off all logging
  * Logger.getLevels({'SkillVC', 'debug'}) // turns on debugging for SkillVC.  All others will be turned off
- * 
- * @param {[type]} levels [description]
+ *
+ * @constructor
+ * @see {@link https://github.com/winstonjs/winston|winston}
+ * @param {Map} levels The logging levels
  */
 function SkillVCLogger(logLevels) { }
 
+/**
+ * Allows for runtime setting of log levels.  Can be called at anytime to adjust log levels
+ * 
+ * @function
+ * @param {Map} logLevels The logging levels for any object
+ */
 SkillVCLogger.setLevels = function(logLevels) {
 	levels = logLevels;
 
@@ -51,13 +68,23 @@ SkillVCLogger.setLevels = function(logLevels) {
 	}
 }	
 
+/**
+ * Get a {@link https://github.com/winstonjs/winston|winston} logging instance that is configured
+ * based upon the set logging levels.
+ *
+ * If no logging levels have been set it will default to level 'info'
+ * 
+ * @function
+ * @param  {String} className The name of the javascript file (class) to create a logger for
+ * @return {Winston.Logger} A usable and configured instance of a Winston logger.
+ */
 SkillVCLogger.getLogger = function(className) {
 	winston.loggers.add(className, {
 		console : {
 		    json : false,
 		    timestamp : true,
 		    label: className,
-		    level : 'debug'
+		    level : 'info'
 		}
 	});
 	return winston.loggers.get(className);

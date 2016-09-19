@@ -26,7 +26,6 @@ const path = require('path');
  *     load files that match the formatters isValid() method
  * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards. Defaults to DefaultCardBuilder
  *
- * @class 
  * @constructor
  * @implements {Provider}
  * @see {@link DefaultCardBuilder}

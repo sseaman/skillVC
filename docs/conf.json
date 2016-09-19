@@ -18,9 +18,7 @@
     "source": {
         "include": [
             "../test/",
-            "../core-lib/card/",
-            "../core-lib/provider/"
-
+            "../core-lib/"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
