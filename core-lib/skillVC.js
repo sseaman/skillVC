@@ -196,7 +196,7 @@ SkillVC.prototype.registerCardManager = function(svContext) {
  * @function
  * @param {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
  *                                  may be available in the context
- * @param {SkillVC~callback}		The callback to use when registration has completed
+ * @param {SkillVC~callback} callback	The callback to use when registration has completed
  */
 SkillVC.prototype.registerPreIntentFilters = function(esvContext, callback) {
 	var filters = svContext.appConfig.filterManager.pre;
@@ -215,7 +215,7 @@ SkillVC.prototype.registerPreIntentFilters = function(esvContext, callback) {
  * @function
  * @param  {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
  *                                  may be available in the context
- * @param {SkillVC~callback}		The callback to use when registration has completed
+ * @param {SkillVC~callback} callback	The callback to use when registration has completed
  */
 SkillVC.prototype.registerIntentHandlers = function(svContext, callback) {
 	callback.success( new IntentHandlerFilter(svContext.appConfig.intentHandlerManager) );
@@ -234,7 +234,7 @@ SkillVC.prototype.registerIntentHandlers = function(svContext, callback) {
  * @function
  * @param  {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
  *                                  may be available in the context
- * @param {SkillVC~callback}		The callback to use when registration has completed
+ * @param {SkillVC~callback} callback	The callback to use when registration has completed
  */
 SkillVC.prototype.registerPostIntentFilters = function(svContext, callback) {
 	var filters = [];
