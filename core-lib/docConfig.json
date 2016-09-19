@@ -17,8 +17,8 @@
     "linenums": true,
     "source": {
         "include": [
-            "../test/",
-            "../core-lib/"
+            "./test/",
+            "./core-lib/"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
@@ -28,7 +28,7 @@
         "recurse": true,
         "private": false,
         "lenient": true,
-        "destination": "../docs"
+        "destination": "./docs"
       
     }
 }
