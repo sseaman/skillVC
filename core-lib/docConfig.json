@@ -1,4 +1,6 @@
 {
+    "_comment" : "Configuration for generating documentation for SkillVC",
+    
     "applicationName": "SkillVC",
     "disqus": "",
     "googleAnalytics": "",

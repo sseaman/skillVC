@@ -13,7 +13,16 @@ var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var IntentHandlerManagerFactory = require('./intentHandler/intentHandlerManagerFactory.js');
 
 /**
- * Creates an instance of SkillVCFactory.  This should never need to be called and is here as a placeholder.
+ * SkillVCFactory makes it simple to have a fully functional VC (view / controller) system by simply making a one line
+ * index.js for your skill.
+ *
+ * @example <caption>Example usage of SkillVCFactory</caption>
+ * 
+ * var SkillVCFactory = require('./core-lib/skillVCFactory.js');
+ * 
+ * exports.handler = function(event, context) {
+ *	  SkillVCFactory.createfromDirectory().handler(event, context);
+ * }
  * 
  * @constructor
  */
