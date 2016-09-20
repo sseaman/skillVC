@@ -45,7 +45,7 @@ FilterChainExecutor.prototype.execute = function(svContext) {
 				log.verbose("Executing Pre filter "+fcm._pre[preIdx].constructor.name);
 				fcm._pre[preIdx++].executePre(svContext);
 			}
-			else if (postIdx < fcm._post.length && svUtil.isFunction(cm._post[postIdx].executePost)) {
+			else if (postIdx < fcm._post.length && svUtil.isFunction(fcm._post[postIdx].executePost)) {
 				log.verbose("Executing Post filter "+fcm._post[postIdx].constructor.name);
 				fcm._post[postIdx++].executePost(svContext);
 			}

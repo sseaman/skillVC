@@ -17,23 +17,37 @@ const fs = require('fs');
  * @abstract
  * @constructor
  * @param {String} file The file to read all items from
- * @param {Boolean} preload Should the file be preloaded or only loaded when a item is requested
  * @param {Method} itemProcessor  The method to call to process an item that is read from the file
+ * @param {Object.<String, Object>} options Options for configuration. This can also be used as a map to pass to the itemProcessor
+ *        if the implementing class wants to pass information into the itemProcessor method
+ * @param {Boolean} [options.preload=false] Should the file be preloaded or only loaded when a item is requested
+ * @param {String} [options.fileEncoding=utf8] The file encoding to use when reading files and directories
+ * @param {Object.<String, Object>} [options.itemMap] A map that may be passed in to prime the internal map with.
  */
-function AbstractProviderByFile(file, preload, itemProcessor) {
+function AbstractProviderByFile(file, itemProcessor, options) {
 	if (!file) throw Error('file required');
-	if (!preload) throw Error('preload required');
 	if (!itemProcessor) throw Error('itemProcessor required');
 
 	this._file = file;
-	this._preload = _preload;
 	this._itemProcessor = itemProcessor;
+	this._options = options;
 
-	this._items = {};
+	this._fileEncoding = (options && options.fileEncoding)
+		? options.fileEncoding
+		: 'utf8';
+
+	this._preload = (options && options.preload) 
+		? options.preload
+		: false;
+
+	this._items = (options && options.itemMap) 
+		? options.itemMap
+		: {};
+
 	this._fileLoaded = false;
 
 	if (this._preload) { // this is a blocking call as it is sync
-		var processed = cp._itemProcessor(file, this_items);
+		var processed = cp._itemProcessor(file, this_items, this._options);
 		for (var i=0;i<processed.length;i++) {
 			this._items[processed[i].itemId] = processed[i].item;
 		}
@@ -51,7 +65,7 @@ function AbstractProviderByFile(file, preload, itemProcessor) {
 AbstractProviderByFile.prototype.getItem = function(itemId) {
 	var item = this._items[itemId];
 	if (!item && !this._fileLoaded) {
-		var processed = this._itemProcessor(this._file, this._items); // didn't find it and haven't looked for it
+		var processed = this._itemProcessor(this._file, this._items, this._options); // didn't find it and haven't looked for it
 		for (var i=0;i<processed.length;i++) {
 			this._items[processed[i].itemId] = processed[i].item;
 		}

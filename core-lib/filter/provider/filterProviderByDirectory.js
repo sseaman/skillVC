@@ -6,6 +6,7 @@
  */
 
 /** @private */
+var AbstractProviderBySyncDirectory = require('../../provider/abstractProviderBySyncDirectory.js');
 var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
 var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory');
 var svUtil = require('../../util.js');
@@ -20,7 +21,7 @@ var filterProviderAlreadyLoaded = {};
  *
  * @constructor
  * @implements {Provider}
- * @see {@link Abstract}
+ * @see {@link AbstractProviderBySyncDirectory}
  * @param {String} directory The directory to read all cards from
  * @param {Object} [options] Options for the was the directory is process
  * @param {String} [options.fileEncoding=utf8] The encoding of the files.
@@ -38,21 +39,7 @@ function FilterProviderByDirectory(directory, options) {
 		return;
 	}
 
-	this._directory = path.normalize(directory);
-	this._directory += (this._directory.endsWith(path.sep))
-		? ''
-		: path.sep;
-
-	this._filenameFormatter = (options && options.filenameFormatter)
-		? options.filenameParser
-		: new DefaultJSFilenameFormatter();
-
-	this._fileEncoding = (options && options.fileEncoding)
-		? options.fileEncoding
-		: 'utf8';
-
-
-	var populate = function(stage, filters, loaded) {
+	this._populate = function(stage, filters, loaded) {
 		var position = filters.length; // default to no getOrder
 		if (svUtil.isFunction(loaded.getOrder)) {
 			position = loaded.getOrder();
@@ -61,37 +48,40 @@ function FilterProviderByDirectory(directory, options) {
 		else {
 			filters.push(loaded);
 		}
-		log.verbose('Loaded filter '+files[i]+' into stage '+ stage + ', position '+ position);
+		log.verbose('Loaded filter '+loaded.constructor.name+' into stage '+ stage + ', position '+ position);
 	}
 
-	var files = fs.readdirSync(this._directory, this._fileEncoding);
-	var loaded = null;
-	for (var i=0;i<files.length;i++) {
-		if (this._filenameFormatter.isValid(files[i])) {
-			loaded = new (require(process.cwd()+path.sep+this._directory+files[i])); 
+	AbstractProviderBySyncDirectory.apply(this, [
+		directory, 
+		this._process]);
 
-			log.verbose('Loading all filters at once...');
-			if (svUtil.isFunction(loaded.executePre) || svUtil.isFunction(loaded.executePreOnError)) {
-				populate('pre', this._filters.pre, loaded);
-			}
-			if (svUtil.isFunction(loaded.executePost)|| svUtil.isFunction(loaded.executePostOnError)) {
-				populate('post', this._filters.post, loaded);
-			}
-
-			// function to compress array in case someone put one at 1 and the next at 99
-			for (var key in this._filters) {
-				var stages = this._filters[key];
-				var newArray = [];
-				for (var n = 0; n < stages.length; n++) {
-				    if (stages[n]) {
-				      newArray.push(stages[n]);
-				    }
-				}
-				this._filters[key] = newArray;
-			}
+	// function to compress array in case someone put one at 1 and the next at 99
+	for (var key in this._filters) {
+		var stages = this._filters[key];
+		var newArray = [];
+		for (var n = 0; n < stages.length; n++) {
+		    if (stages[n]) {
+		      newArray.push(stages[n]);
+		    }
 		}
+		this._filters[key] = newArray;
 	}
+
 	filterProviderAlreadyLoaded[directory] = true;
+}
+
+FilterProviderByDirectory.prototype = Object.create(AbstractProviderBySyncDirectory.prototype);
+FilterProviderByDirectory.prototype.constructor = FilterProviderByDirectory;
+
+
+FilterProviderByDirectory.prototype._process = function(loaded, options) {
+	log.verbose('Loading all filters at once...');
+	if (svUtil.isFunction(loaded.executePre) || svUtil.isFunction(loaded.executePreOnError)) {
+		this._populate('pre', this._filters.pre, loaded);
+	}
+	if (svUtil.isFunction(loaded.executePost)|| svUtil.isFunction(loaded.executePostOnError)) {
+		this._populate('post', this._filters.post, loaded);
+	}
 }
 
 /**

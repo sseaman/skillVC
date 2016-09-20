@@ -37,11 +37,12 @@ function CardProviderByMap(map, options) {
 
 	AbstractProviderByMap.apply(this, [
 		map, 
-		this._processCard]);
+		this._processCard,
+		options]);
 }
 
-CardProviderByMap.prototype = AbstractProviderByMap.prototype;
-CardProviderByMap.prototype.contructor = CardProviderByMap;
+CardProviderByMap.prototype = Object.create(AbstractProviderByMap.prototype);
+CardProviderByMap.prototype.constructor = CardProviderByMap;
 
 /**
  * Uses the CardBuilder to build a card.

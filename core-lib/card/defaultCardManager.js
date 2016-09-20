@@ -24,8 +24,8 @@ function DefaultCardManager(providers) {
 	AbstractProviderManager.apply(this, [providers]);
 }
 
-DefaultCardManager.prototype = AbstractProviderManager.prototype;
-DefaultCardManager.prototype.contructor = DefaultCardManager;
+DefaultCardManager.prototype = Object.create(AbstractProviderManager.prototype);
+DefaultCardManager.prototype.constructor = DefaultCardManager;
 
 /**
  * Returns the specificed card by looking through the defined providers.

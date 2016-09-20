@@ -24,11 +24,12 @@ var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
 function FilterProviderByMap(map) {
 	AbstractProviderByMap.apply(this, [
 		map, 
-		this._processor]);
+		this._processor,
+		options]);
 }
 
-FilterProviderByMap.prototype = AbstractProviderByMap.prototype;
-FilterProviderByMap.prototype.contructor = FilterProviderByMap;
+FilterProviderByMap.prototype = Object.create(AbstractProviderByMap.prototype);
+FilterProviderByMap.prototype.constructor = FilterProviderByMap;
 
 /**
  * Since there is no processing required for filters, it just returns the item that was passed in

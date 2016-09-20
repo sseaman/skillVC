@@ -16,12 +16,21 @@
  * @constructor
  * @param {Map} map The object structure of the raw items to use.  
  * @param {Method} itemProcessor  The method to call to process an item in the map (done at constuction of this object)
+ * @param {Object.<String, Object>} options Options for configuration. This can also be used as a map to pass to the itemProcessor
+ *        if the implementing class wants to pass information into the itemProcessor method
  */
-function AbstractProviderByMap(map, itemProcessor) {
-	this._items = {};
+function AbstractProviderByMap(map, itemProcessor, options) {
+	this._items = (options && options.itemMap) 
+		? options.itemMap
+		: {};
+		
+	this._options = options;
+
 	for (var key in map) {
-		this._items[key] = itemProcessor(key, map[key]);
+		this._items[key] = itemProcessor(key, map[key], options);
 	}
+
+
 }
 
 /**

@@ -1,6 +1,7 @@
 {
     "_comment" : "Configuration for generating documentation for SkillVC",
-    
+    "_comment" : "To build: jsdoc -c ./core-lib/docConfig.json ",
+     
     "applicationName": "SkillVC",
     "disqus": "",
     "googleAnalytics": "",

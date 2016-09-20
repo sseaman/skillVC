@@ -23,8 +23,8 @@ function DefaultIntentHandlerManager(providers) {
 	AbstractProviderManager.apply(this, [providers]);
 }
 
-DefaultIntentHandlerManager.prototype = AbstractProviderManager.prototype;
-DefaultIntentHandlerManager.prototype.contructor = DefaultIntentHandlerManager;
+DefaultIntentHandlerManager.prototype = Object.create(AbstractProviderManager.prototype);
+DefaultIntentHandlerManager.prototype.constructor = DefaultIntentHandlerManager;
 
 /**
  * Handle an intent that has occurred by calling all of the providers looking for an 

@@ -30,26 +30,18 @@ const fs = require('fs');
 function CardProviderByFile(file, options) {
 	this._file = file;
 
-	this._fileEncoding = (options && options.fileEncoding)
-		? options.fileEncoding
-		: 'utf8';
-
 	this._cardBuilder = (options && options.cardBuilder) 
 		? options.cardBuilder
 		: new DefaultCardBuilder();
 
-	this._preload = (options && options.preload) 
-		? options.preload
-		: false;
-
 	AbstractProviderByFile.apply(this, [
 		file, 
-		this._preload, 
-		this._processFile]);
+		this._processFile,
+		options]);
 }
 
-AbstractProviderByFile.prototype = AbstractProviderByFile.prototype;
-AbstractProviderByFile.prototype.contructor = CardProviderByFile;
+AbstractProviderByFile.prototype = Object.create(AbstractProviderByFile.prototype);
+AbstractProviderByFile.prototype.constructor = CardProviderByFile;
 
 /**
  * Process a file tha may have many cards in it.  Converts each json card to a {@link Card} and results

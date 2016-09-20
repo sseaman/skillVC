@@ -29,8 +29,8 @@ function DefaultFilterManager(providers) {
 	AbstractProviderManager.apply(this, [providers]);
 }
 
-DefaultFilterManager.prototype = AbstractProviderManager.prototype;
-DefaultFilterManager.prototype.contructor = DefaultFilterManager;
+DefaultFilterManager.prototype = Object.create(AbstractProviderManager.prototype);
+DefaultFilterManager.prototype.constructor = DefaultFilterManager;
 
 /**
  * Returns the pre filters.  

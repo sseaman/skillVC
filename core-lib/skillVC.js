@@ -75,20 +75,21 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	};
 	this._skillVCContext.appConfig.filterChainExecutor = null;
 
-	this._skillVCContext.appConfig.cardManager = this.registerCardManager(svContext);
+	log.verbose("Registering CardManager");
+	this._skillVCContext.appConfig.cardManager = this.registerCardManager(this._skillVCContext);
 
 	var sv = this;
 	// might be a way to do this with promises, but I'm not going to put the time into it yet
 	log.verbose("Registering PreIntent Filters");
-	sv.registerPreIntentFilters(svContext, {
+	sv.registerPreIntentFilters(sv._skillVCContext, {
 		success : function(preIHandlers) {
 
 			log.verbose("Registering Intent Handlers");
-			sv.registerIntentHandlers(svContext, {
+			sv.registerIntentHandlers(sv._skillVCContext, {
 				success : function(iHandlers) {
 
 					log.verbose("Registering PostIntent Filters");
-					sv.registerPostIntentFilters(svContext, {
+					sv.registerPostIntentFilters(sv._skillVCContext, {
 						success : function(postIHandlers) {
 							
 							preIHandlers.push(iHandlers);
@@ -198,7 +199,7 @@ SkillVC.prototype.registerCardManager = function(svContext) {
  *                                  may be available in the context
  * @param {SkillVC~callback} callback	The callback to use when registration has completed
  */
-SkillVC.prototype.registerPreIntentFilters = function(esvContext, callback) {
+SkillVC.prototype.registerPreIntentFilters = function(svContext, callback) {
 	var filters = svContext.appConfig.filterManager.pre;
 	callback.success( (filters == null || filters.length == 0) ? [] : filters);
 }

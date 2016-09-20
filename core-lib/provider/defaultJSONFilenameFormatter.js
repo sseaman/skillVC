@@ -55,4 +55,4 @@ DefaultJSONFilenameFormatter.prototype.isValid = function(fileName) {
 	return fileName.endsWith(this._delimiter + this._suffix);
 }
 
-module.exports = DefaultCardFilenameFormatter;
+module.exports = DefaultJSONFilenameFormatter;

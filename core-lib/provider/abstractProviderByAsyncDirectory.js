@@ -6,6 +6,7 @@
  */
 
 /** @private */
+var DefaultJSFilenameFormatter = require ('./defaultJSFilenameFormatter.js');
 var log = require('../skillVCLogger.js').getLogger('ProviderByDirectory');
 const fs = require('fs');
 const path = require('path');
@@ -19,24 +20,40 @@ const path = require('path');
  * @abstract
  * @constructor
  * @param {String} directory The directory to read all items from
- * @param {FileNameFormatter} filenameFormatter The FilenameFormmatter to use to parse the filenames to determine item file name as well
- *     as how to format the itemId to become a filename. This object will only load files that match the formatters isValid() method
  * @param {Method} itemProcessor  The method to call to process an item that is read from the directory
+ * @param {Object.<String, Object>} options Options for configuration. This can also be used as a map to pass to the itemProcessor
+ *        if the implementing class wants to pass information into the itemProcessor method
+ * @param {FilenameFomatter} [options.filenameFormatter=DefaultJSFilenameFormatter] The FilenameFormmatter to use to 
+ *     parse the filenames to determine item file name as well as how to format the itemId to become a filename. 
+ *     This object will only load files that match the formatters isValid() method
+ * @param {String} [options.fileEncoding=utf8] The file encoding to use when reading files and directories
+ * @param {Object.<String, Object>} [options.itemMap] A map that may be passed in to prime the internal map with.
  */
-function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor) {
+function AbstractProviderByAsyncDirectory(directory, itemProcessor, options) {
 	if (!directory) throw Error('directory required');
-	if (!fileNameFormatter) throw Error('fileNameFormatter required');
 	if (!itemProcessor) throw Error('itemProcessor required');
 
 	this._directory = path.normalize(directory);
-	this._directory += (this._directory.endsWith(path.delimiter))
+	this._directory += (this._directory.endsWith(path.sep))
 		? ''
 		: path.sep;
 
-	this._filenameFormatter = fileNameFormatter;
 	this._itemProcessor = itemProcessor;
 
-	this._items = {};
+	this._options = options;
+
+	this._filenameFormatter = (options && options.filenameFormatter)
+		? options.filenameFormatter
+		: new DefaultJSFilenameFormatter();
+
+	this._fileEncoding = (options && options.fileEncoding)
+		? options.fileEncoding
+		: 'utf8';
+
+	this._items = (options && options.itemMap) 
+		? options.itemMap
+		: {};
+
 	this._itemNotFound = {};
 
 	var cp = this; // scope
@@ -50,7 +67,7 @@ function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor
 
 					if (!cp._items[itemId] && !cp._itemNotFound[itemId]) { // wasn't already retrieved
 						log.debug('Async loading file: '+files[fileIdx]);
-						processed = cp._itemProcessor(itemId, cp._directory + files[fileIdx]);
+						processed = cp._itemProcessor(itemId, cp._directory + files[fileIdx], cp._options);
 
 						for (var pIdx=0;pIdx<processed.length;pIdx++) {
 							log.debug('Item loaded: '+processed[pIdx].itemId);
@@ -74,7 +91,7 @@ function AbstractProviderByDirectory(directory, fileNameFormatter, itemProcessor
  * @param  {String} itemId The id of the item to retrieve. If the item is not already loaded, it will load it
  * @return {Object} The item.  Null if no item is found
  */
-AbstractProviderByDirectory.prototype.getItem = function(itemId) {
+AbstractProviderByAsyncDirectory.prototype.getItem = function(itemId) {
 	var item = this._items[itemId];
 
 	if (item == null && !this._itemNotFound[itemId]) { 
@@ -83,7 +100,7 @@ AbstractProviderByDirectory.prototype.getItem = function(itemId) {
 		var file = this._directory + this._filenameFormatter.format(itemId);
 		log.debug('Item '+itemId+ ' not yet loaded. Loading file: '+file);
 
-		var processed = this._itemProcessor(itemId, file);
+		var processed = this._itemProcessor(itemId, file, this._options);
 		if (processed == null) {
 			log.debug('Item not able to be loaded');
 			this._itemNotFound[itemId] = true; 
@@ -105,8 +122,8 @@ AbstractProviderByDirectory.prototype.getItem = function(itemId) {
  * @function
  * @return {Map} Map of the items where the Key is the itemId and the Value is the item itself
  */
-AbstractProviderByDirectory.prototype.getItems = function() {
+AbstractProviderByAsyncDirectory.prototype.getItems = function() {
 	return this._items;
 }
 
-module.exports = AbstractProviderByDirectory;
+module.exports = AbstractProviderByAsyncDirectory;

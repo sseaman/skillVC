@@ -30,22 +30,18 @@ var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByFi
 function IntentHandlerProviderByFile(file, options) {
 	this._file = file;
 
-	this._preload = (options && options.preload) 
-		? options.preload
-		: false;
-
 	this._filenameFormatter = (options && options.filenameFormatter) 
 		? options.filenameFormatter
 		: new DefaultJSFilenameFormatter();
 
 	AbstractProviderByFile.apply(this, [
 		file, 
-		this._preload, 
-		this._processFile]);
+		this._processFile,
+		options]);
 }
 
-IntentHandlerProviderByFile.prototype = AbstractProviderByFile.prototype;
-IntentHandlerProviderByFile.prototype.contructor = IntentHandlerProviderByFile;
+IntentHandlerProviderByFile.prototype = Object.create(AbstractProviderByFile.prototype);
+IntentHandlerProviderByFile.prototype.constructor = IntentHandlerProviderByFile;
 
 /**
  * Load the file and registers it based on the list of intents specified by {@link IntentHandler.getIntentsList}. If 

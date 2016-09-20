@@ -6,7 +6,7 @@
  */
 
 /** @private */
-var AbstractProviderByDirectory = require('../../provider/abstractProviderByDirectory.js');
+var AbstractProviderByAsyncDirectory = require('../../provider/abstractProviderByAsyncDirectory.js');
 var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
 var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByDirectory');
 var svUtil = require('../../util.js');
@@ -24,7 +24,7 @@ const fs = require('fs');
  *
  * @constructor
  * @implements {Provider}
- * @see {@link AbstractProviderByDirectory}
+ * @see {@link AbstractProviderByAsyncDirectory}
  * @see {@link DefaultJSFilenameFormatter}
  * @param {String} directory The directory to read all intents from
  * @param {Object} options Options for the was the directory is process
@@ -35,23 +35,14 @@ const fs = require('fs');
 function IntentHandlerProviderByDirectory(directory, options) {
 	if (!directory) throw Error('directory required');
 
-	this._directory = path.normalize(directory);
-	this._directory += (this._directory.endsWith(path.delimiter))
-		? ''
-		: path.sep;
-
-	this._filenameFormatter = (options && options.filenameFormatter)
-		? options.filenameParser
-		: new DefaultJSFilenameFormatter();
-
-	AbstractProviderByDirectory.apply(this, [
+	AbstractProviderByAsyncDirectory.apply(this, [
 		directory, 
-		this._filenameFormatter, 
-		this._processIntent]);
+		this._process,
+		options]);
 }
 
-IntentHandlerProviderByDirectory.prototype = AbstractProviderByDirectory.prototype;
-IntentHandlerProviderByDirectory.prototype.contructor = IntentHandlerProviderByDirectory;
+IntentHandlerProviderByDirectory.prototype = Object.create(AbstractProviderByAsyncDirectory.prototype);
+IntentHandlerProviderByDirectory.prototype.constructor = IntentHandlerProviderByDirectory;
 
 /**
  * Uses nodejs require to load the file.  If the intent is not found this method
@@ -62,7 +53,7 @@ IntentHandlerProviderByDirectory.prototype.contructor = IntentHandlerProviderByD
  * @param  {String} file   The file to load the intent from
  * @return {Provider~processorResult}  The loaded card information
  */
-IntentHandlerProviderByDirectory.prototype._processIntent = function(itemId, file) {
+IntentHandlerProviderByDirectory.prototype._process = function(itemId, file) {
 	try {
 		var loaded = new (require(process.cwd()+path.sep+file));
 		if (svUtil.isFunction(loaded.getIntentsList)) { // it specifies its intent list

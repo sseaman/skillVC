@@ -12,6 +12,15 @@
  */
 
 /**
+ * Returns the item stored under the itemId.  May be null
+ * 
+ * @function
+ * @name Provider#getItem
+ * @param {String} itemId The Id of the item to return
+ * @return {Object} The item corresponding to the itemId
+ */
+
+/**
  * @typedef {Object} Provider~processorResult
  *
  * @property {Object.<string, string>} itemId : item 

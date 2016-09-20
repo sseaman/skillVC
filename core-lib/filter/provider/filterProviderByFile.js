@@ -24,18 +24,14 @@ var log = require('../../skillVCLogger.js').getLogger('FilterProviderByFile');
 function FilterProviderByFile(file, options) {
 	this._file = file;
 
-	this._preload = (options && options.preload) 
-		? options.preload
-		: false;
-
 	AbstractProviderByFile.apply(this, [
 		file, 
-		this._preload, 
-		this._processFile]);
+		this._processFile,
+		options]);
 }
 
-FilterProviderByFile.prototype = AbstractProviderByFile.prototype;
-FilterProviderByFile.prototype.contructor = FilterProviderByFile;
+FilterProviderByFile.prototype = Object.create(AbstractProviderByFile.prototype);
+FilterProviderByFile.prototype.constructor = FilterProviderByFile;
 
 /**
  * Uses node.js require to load the file and register it with the provider system

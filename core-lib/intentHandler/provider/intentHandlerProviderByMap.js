@@ -29,11 +29,12 @@ var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
 function IntentHandlerProviderByMap(map) {
 	AbstractProviderByMap.apply(this, [
 		map, 
-		this._processor]);
+		this._processor,
+		options]);
 }
 
-IntentHandlerProviderByMap.prototype = AbstractProviderByMap.prototype;
-IntentHandlerProviderByMap.prototype.contructor = IntentHandlerProviderByMap;
+IntentHandlerProviderByMap.prototype = Object.create(AbstractProviderByMap.prototype);
+IntentHandlerProviderByMap.prototype.constructor = IntentHandlerProviderByMap;
 
 /**
  * As the map is already primed and loaded, this method does nothing but return the item that is passed in
