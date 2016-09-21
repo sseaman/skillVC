@@ -24,7 +24,7 @@ var alreadyLoaded = {};
  * @param {String} directory The directory to read all cards from
  * @param {Object.<String, Object>} options Options for configuration. This can also be used as a map to pass to the itemProcessor
  *        if the implementing class wants to pass information into the itemProcessor method
- * @param {FilenameFomatter} [options.filenameFormatter=DefaultJSFilenameFormatter] The FilenameFormmatter to use to 
+ * @param {FilenameFormatter} [options.filenameFormatter=DefaultJSFilenameFormatter] The FilenameFormmatter to use to 
  *     parse the filenames to determine item file name as well as how to format the itemId to become a filename. 
  *     This object will only load files that match the formatters isValid() method
  * @param {String} [options.fileEncoding=utf8] The file encoding to use when reading files and directories

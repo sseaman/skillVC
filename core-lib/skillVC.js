@@ -78,6 +78,9 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	log.verbose("Registering CardManager");
 	this._skillVCContext.appConfig.cardManager = this.registerCardManager(this._skillVCContext);
 
+	log.verbose("Registering SessionHandlerManager");
+	this._skillVCContext.appConfig.sessionHanlerManager = this.registerSessionHandlerManager(this._skillVCContext);
+
 	var sv = this;
 	// might be a way to do this with promises, but I'm not going to put the time into it yet
 	log.verbose("Registering PreIntent Filters");
@@ -150,17 +153,20 @@ SkillVC.prototype.handler = function (event, context)  {
     			// give a session for people to use
     			sv._skillVCContext.session = {};
 
-    			//TODO: Need to figure out how to handle session and launch
-				if (event.session.new) {
-		        //	handlers.sessionStart(event);
+				if (event.session.new && sv._skillVCContext.appConfig.sessionHandlerManager) {
+					sv._skillVCContext.appConfig.sessionHandlerManager.executeStart(sv._skillVCContext);
 		    	}
 
 		        if (event.request.type === "LaunchRequest") {
 		        //	handlers.launchRequest(event, context);
-		        } else if (event.request.type === "IntentRequest") {
+		        } 
+		        else if (event.request.type === "IntentRequest") {
 		        	sv._skillVCContext.appConfig.filterChainExecutor.execute(sv._skillVCContext);
-		        } else if (event.request.type === "SessionEndedRequest") {
-		        //   	handlers.sessionEnd(event, context);
+		        } 
+		        else if (event.request.type === "SessionEndedRequest" &&
+		        	sv._skillVCContext.appConfig.sessionHandlerManager) 
+		        {
+		       		sv._skillVCContext.appConfig.sessionHandlerManager.executeEnd(sv._skillVCContext);
 		        }
     		},
     		failure : function(err) {
@@ -246,6 +252,21 @@ SkillVC.prototype.registerPostIntentFilters = function(svContext, callback) {
 	filters.push(new SkillResponseFilter());
 
 	callback.success(filters);
+}
+
+/**
+ * Called when SkillVC is looking to register/load SessionHandlers.  By default this method uses the
+ * SessionHandlerManager specified by svContext.appConfig.sessionHanlerManager.
+ * 
+ * Extending SkillVC and overriding this method will allow for a more customized approach
+ * 
+ * @function
+ * @param  {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
+ *                                  may be available in the context
+ * @return {SessionHandlerManager}  The SessionHandlerManager to use
+ */
+SkillVC.prototype.registerSessionHandlerManager = function(svContext) {
+	return svContext.appConfig.sessionHanlerManager;
 }
 
 /**
