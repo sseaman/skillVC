@@ -21,6 +21,23 @@ module.exports = {
 	},
 
 	/**
+	 * Compresses an array that might have many empty items between entries
+	 *
+	 * @function
+	 * @param {Array.Object} array The array to compress
+	 * @returns {Array.Object} The compressed array
+	 */
+	compressArray : function(array) {
+		var newArray = [];
+		for (var n = 0; n < array.length; n++) {
+		    if (array[n]) {
+		      newArray.push(array[n]);
+		    }
+		}
+		return newArray;
+	},
+
+	/**
 	 * Does a deep copy of an object using JSON stringify and parse
 	 * 
 	 * @param  {Object} obj The object to copy

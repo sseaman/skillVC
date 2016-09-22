@@ -63,10 +63,10 @@ CardProviderByDirectory.prototype.constructor = CardProviderByDirectory;
  * @param  {String} file   The file to process
  * @return {Provider~processorResult}  The loaded card information
  */
-CardProviderByDirectory.prototype._process = function(cardId, file, options) {
+CardProviderByDirectory.prototype._process = function(itemId, file, options) {
 	var contents = fs.readFileSync(file, this._fileEncoding);
 	return (contents != null) 
-		? [{ itemId : cardId, item : this._cardBuilder.withCardId(cardId).withString(contents).build() }]
+		? [{ 'itemId' : itemId, 'item' : this._cardBuilder.withCardId(itemId).withString(contents).build() }]
 		: null;
 }
 

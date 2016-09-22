@@ -43,10 +43,10 @@ FilterProviderByFile.prototype.constructor = FilterProviderByFile;
  */
 FilterProviderByFile.prototype._processFile = function(file) {
 	try {
-		return [{'itemId' : itemId , 'item' : new (require(process.cwd()+path.sep+file)) }];
+		return [{'itemId' : file , 'item' : new (require(process.cwd()+path.sep+file)) }];
 	}
 	catch (err) {
-		log.error("Error loading filter "+itemId+". Error:"+err);
+		log.error("Error loading filter "+file+". Error:"+err);
 		return null;
 	}
 }

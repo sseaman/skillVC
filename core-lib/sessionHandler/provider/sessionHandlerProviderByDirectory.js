@@ -57,14 +57,7 @@ function SessionHandlerProviderByDirectory(directory, options) {
 
 	// function to compress array in case someone put one at 1 and the next at 99
 	for (var key in this._items) {
-		var stages = this._items[key];
-		var newArray = [];
-		for (var n = 0; n < stages.length; n++) {
-		    if (stages[n]) {
-		      newArray.push(stages[n]);
-		    }
-		}
-		this._items[key] = newArray;
+		this._items[key] = svUtil.compressArray(this._items[key]);
 	}
 
 	alreadyLoaded[directory] = true;

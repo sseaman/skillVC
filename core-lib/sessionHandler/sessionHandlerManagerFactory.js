@@ -6,10 +6,10 @@
  */
 
 /** @private */
-var DefaultFilterManager = require('./defaultFilterManager.js');
-var FilterProviderByDirectory = require('./provider/FilterProviderByDirectory.js');
-var FilterProviderByFile = require('./provider/FilterProviderByFile.js');
-var FilterProviderByMap = require('./provider/FilterProviderByMap.js');
+var DefaultSessionHandlerManager = require('./defaultSessionHandlerManager.js');
+var SessionHandlerProviderByDirectory = require('./provider/sessionHandlerProviderByDirectory.js');
+var SessionHandlerProviderByFile = require('./provider/sessionHandlerProviderByFile.js');
+var SessionHandlerProviderByMap = require('./provider/sessionHandlerProviderByMap.js');
 
 /**
  * Creates an instance of SessionHandlerManager.  This should never need to be called and is here as a placeholder.

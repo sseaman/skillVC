@@ -4,3 +4,7 @@ Make a plugin architecture were people can write quick intent / sample utterance
 git:
 
 Also need to work on a config object that will be read and use to know where to read cards from and what objects to use
+
+Move convention providers under provider/convention
+Make a providers/scan
+Make a providers/config

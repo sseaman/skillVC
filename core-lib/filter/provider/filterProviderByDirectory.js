@@ -12,7 +12,7 @@ var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory
 var svUtil = require('../../util.js');
 const path = require('path');
 const fs = require('fs');
-var filterProviderAlreadyLoaded = {};
+var alreadyLoaded = {};
 
 /**
  * Provides filters by loading all of the files in a directory as filters
@@ -34,7 +34,7 @@ function FilterProviderByDirectory(directory, options) {
 
 	this._filters = { 'pre' : [], 'post' : [] };
 	
-	if (filterProviderAlreadyLoaded[directory]) {
+	if (alreadyLoaded[directory]) {
 		log.verbose('Filters already loaded. Skipping');
 		return;
 	}
@@ -57,17 +57,10 @@ function FilterProviderByDirectory(directory, options) {
 
 	// function to compress array in case someone put one at 1 and the next at 99
 	for (var key in this._filters) {
-		var stages = this._filters[key];
-		var newArray = [];
-		for (var n = 0; n < stages.length; n++) {
-		    if (stages[n]) {
-		      newArray.push(stages[n]);
-		    }
-		}
-		this._filters[key] = newArray;
+		this._filters[key] = svUtil.compressArray(this._filters[key]);
 	}
 
-	filterProviderAlreadyLoaded[directory] = true;
+	alreadyLoaded[directory] = true;
 }
 
 FilterProviderByDirectory.prototype = Object.create(AbstractProviderBySyncDirectory.prototype);
