@@ -79,7 +79,7 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	this._skillVCContext.appConfig.cardManager = this.registerCardManager(this._skillVCContext);
 
 	log.verbose("Registering SessionHandlerManager");
-	this._skillVCContext.appConfig.sessionHanlerManager = this.registerSessionHandlerManager(this._skillVCContext);
+	this._skillVCContext.appConfig.sessionHandlerManager = this.registerSessionHandlerManager(this._skillVCContext);
 
 	var sv = this;
 	// might be a way to do this with promises, but I'm not going to put the time into it yet
@@ -157,10 +157,7 @@ SkillVC.prototype.handler = function (event, context)  {
 					sv._skillVCContext.appConfig.sessionHandlerManager.executeStart(sv._skillVCContext);
 		    	}
 
-		        if (event.request.type === "LaunchRequest") {
-		        //	handlers.launchRequest(event, context);
-		        } 
-		        else if (event.request.type === "IntentRequest") {
+		        if (event.request.type === "IntentRequest" || event.request.type === "LaunchRequest") {
 		        	sv._skillVCContext.appConfig.filterChainExecutor.execute(sv._skillVCContext);
 		        } 
 		        else if (event.request.type === "SessionEndedRequest" &&
@@ -215,6 +212,9 @@ SkillVC.prototype.registerPreIntentFilters = function(svContext, callback) {
  * the {@link IntentHandlerManager} specified by svContext.appConfig.intentHandlerManager.  To have the 
  * IntentHandlerManager by part of the execution cycle the passed in IntentHandlerManager is wrapped
  * by a {@link IntentHandlerFilter}.
+ *
+ * Note: When creating an IntentHandler, if you specifiying an intent name of 'launch' 
+ * it will cause the IntentHandler to be invoked on a @link{http://tinyurl.com/jpdl5cc|LaunchRequest}
  * 
  * Extending SkillVC and overriding this method will allow for a more customized approach but will need
  * to take into consideration that SkillVC requires a {@link IntentHandlerFilter} to actually execute

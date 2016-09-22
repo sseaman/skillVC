@@ -22,6 +22,9 @@
 
 /**
  * Return the list of intents that the implementing object can handle
+ *
+ * The default IntentHandlerManager in SkillVC suports specifiying an intent name of 'launch' which will be invoked on a 
+ * @link{http://tinyurl.com/jpdl5cc|LaunchRequest}
  * 
  * @function
  * @name  IntentHandler#getIntentsList
@@ -35,3 +38,4 @@
  * @property {function} failure
  * @property {JSON}   	failure.error The result of an unsuccessful intent execution
  */
+

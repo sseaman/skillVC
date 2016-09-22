@@ -31,12 +31,18 @@ DefaultIntentHandlerManager.prototype.constructor = DefaultIntentHandlerManager;
  * {@link IntentHandler} that is registered for the intent.  If the intent handler is not found this method will
  * favor performance and never look for it again.
  *
+ * If the svContext.lambda.event.request.type is of type @link{http://tinyurl.com/jpdl5cc|LaunchRequest}, the code will
+ * look for a handler registered under the intent name 'launch'
+ *
  * @function
  * @see  {@link IntentHandler}
  * @param  {SVContext} svContext The context to execute with
  */
 DefaultIntentHandlerManager.prototype.handleIntent = function(svContext) {
-	var intentName = svContext.lambda.event.request.intent.name;
+	var intentName = (svContext.lambda.event.request.type == 'LaunchRequest') 
+		? 'launch'
+		: svContext.lambda.event.request.intent.name;
+
 	var providers = this.getRegisteredProviders();
 
 	log.verbose("Handling intent "+intentName);
