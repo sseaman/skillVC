@@ -6,9 +6,9 @@
  */
 
 /** @private */
-var CardProviderByDirectory = require ('./provider/cardProviderByDirectory.js');
-var CardProviderByFile = require ('./provider/cardProviderByFile.js');
-var CardProviderByMap = require ('./provider/cardProviderByMap.js');
+var CardProviderByDirectory = require ('../provider/convention/cardProviderByDirectory.js');
+var CardProviderByFile = require ('../provider/convention/cardProviderByFile.js');
+var CardProviderByMap = require ('../provider/convention/cardProviderByMap.js');
 var HandlebarsFormatterManager = require('./formatter/handlebarsFormatterManager.js');
 var DefaultCardBuilder = require('./defaultCardBuilder.js');
 var DefaultCardManager = require('./defaultCardManager.js');

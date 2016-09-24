@@ -6,13 +6,13 @@
  */
 
 /** @private */
-var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
+var AbstractProviderByFile = require('../abstractProviderByFile.js');
 var log = require('../../skillVCLogger.js').getLogger('FilterProviderByFile');
 
 /**
- * Provides an filter from a single file
+ * Provides a SessionHandler from a single file
  * 
- * Filter will be loaded synchronously as there is no way to determine when a filter is required asynchronously
+ * SessionHandler will be loaded synchronously as there is no way to determine when a SessionHandler is required asynchronously
  *
  * @constructor
  * @implements {Provider}
@@ -21,7 +21,7 @@ var log = require('../../skillVCLogger.js').getLogger('FilterProviderByFile');
  * @param {Object} [options] Options 
  * @param {Boolean} [options.preload=false] Should the file be preloaded or only loaded when a card is requested
  */
-function FilterProviderByFile(file, options) {
+function SessionHandlerProviderByFile(file, options) {
 	this._file = file;
 
 	AbstractProviderByFile.apply(this, [
@@ -30,8 +30,8 @@ function FilterProviderByFile(file, options) {
 		options]);
 }
 
-FilterProviderByFile.prototype = Object.create(AbstractProviderByFile.prototype);
-FilterProviderByFile.prototype.constructor = FilterProviderByFile;
+SessionHandlerProviderByFile.prototype = Object.create(AbstractProviderByFile.prototype);
+SessionHandlerProviderByFile.prototype.constructor = SessionHandlerProviderByFile;
 
 /**
  * Uses node.js require to load the file and register it with the provider system
@@ -41,14 +41,14 @@ FilterProviderByFile.prototype.constructor = FilterProviderByFile;
  * @param  {String} file  the file to load
  * @return {Array.Provider~processorResult} An array of processor results (array length is always 1 as only one file is loaded)
  */
-FilterProviderByFile.prototype._processFile = function(file) {
+SessionHandlerProviderByFile.prototype._processFile = function(file) {
 	try {
 		return [{'itemId' : file , 'item' : new (require(process.cwd()+path.sep+file)) }];
 	}
 	catch (err) {
-		log.error("Error loading filter "+file+". Error:"+err);
+		log.error("Error loading sessionHandler "+file+". Error:"+err);
 		return null;
 	}
 }
 
-module.exports = FilterProviderByFile;
+module.exports = SessionHandlerProviderByFile;

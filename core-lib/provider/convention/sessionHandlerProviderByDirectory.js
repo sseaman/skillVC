@@ -6,8 +6,8 @@
  */
 
 /** @private */
-var AbstractProviderBySyncDirectory = require('../../provider/abstractProviderBySyncDirectory.js');
-var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
+var AbstractProviderBySyncDirectory = require('../abstractProviderBySyncDirectory.js');
+var DefaultJSFilenameFormatter = require ('../defaultJSFilenameFormatter.js');
 var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory');
 var svUtil = require('../../util.js');
 const path = require('path');

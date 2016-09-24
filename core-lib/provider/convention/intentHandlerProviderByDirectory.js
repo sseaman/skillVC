@@ -6,8 +6,8 @@
  */
 
 /** @private */
-var AbstractProviderByAsyncDirectory = require('../../provider/abstractProviderByAsyncDirectory.js');
-var DefaultJSFilenameFormatter = require ('../../provider/defaultJSFilenameFormatter.js');
+var AbstractProviderByAsyncDirectory = require('../abstractProviderByAsyncDirectory.js');
+var DefaultJSFilenameFormatter = require ('../defaultJSFilenameFormatter.js');
 var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByDirectory');
 var svUtil = require('../../util.js');
 const path = require('path');

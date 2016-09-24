@@ -6,9 +6,9 @@
  */
 
 /** @private */
-var AbstractProviderByAsyncDirectory = require('../../provider/abstractProviderByAsyncDirectory.js');
-var DefaultJSONFilenameFormatter = require ('../../provider/defaultJSONFilenameFormatter.js');
-var DefaultCardBuilder = require ('../defaultCardBuilder.js');
+var AbstractProviderByAsyncDirectory = require('../abstractProviderByAsyncDirectory.js');
+var DefaultJSONFilenameFormatter = require ('../defaultJSONFilenameFormatter.js');
+var DefaultCardBuilder = require ('../../card/defaultCardBuilder.js');
 const fs = require('fs');
 const path = require('path');
 var svUtil = require('../../util.js');

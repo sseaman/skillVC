@@ -6,7 +6,7 @@
  */
 
 /** @private */
-var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
+var AbstractProviderByMap = require('../abstractProviderByMap.js');
 
 /**
  * Uses the passed in map to provide cards. This provider will still use the CardBuilder to 
@@ -27,10 +27,12 @@ var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
  * @implements {Provider}
  * @see {@link DefaultCardBuilder}
  * @param {Map} map The object structure of the raw cards to use.  
- * @param {Object} options Options for the was the directory is process
+ * @param {Object.<String, Object} Options for processing.  See {@link AbstractProviderByMap}
  * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards
  */
 function CardProviderByMap(map, options) {
+	this._map = map;
+
 	this._cardBuilder = (options && options.cardBuilder) 
 		? options.cardBuilder
 		: new DefaultCardBuilder();
@@ -54,7 +56,7 @@ CardProviderByMap.prototype.constructor = CardProviderByMap;
  * @return {Card}          The resulting card
  */
 CardProviderByMap.prototype._processCard = function(cardId, card) {
-	return this._cardBuilder.withCardId(cardId).withJSON(card).build();
+	return card;
 }
 
 module.exports = CardProviderByMap;

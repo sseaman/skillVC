@@ -6,10 +6,10 @@
  */
 
 /** @private */
-var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
+var AbstractProviderByMap = require('../abstractProviderByMap.js');
 
 /**
- * Uses the passed in map to provide Filters. 
+ * Uses the passed in map to provide SessionHandlers. 
  * 
  * The Map should contain two keys: 'pre' and 'post'.  The values of each should be
  * the an array of {@link Filter} objects.
@@ -20,28 +20,29 @@ var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
  * @implements {Provider}
  * @see {@link AbstractProviderByMap}
  * @param {Map} map The object structure of the raw Filters to use.  
+ * @param {Object.<String, Object} Options for processing.  See {@link AbstractProviderByMap}
  */
-function FilterProviderByMap(map) {
+function SessionHandlerProviderByMap(map, options) {
 	AbstractProviderByMap.apply(this, [
 		map, 
 		this._processor,
 		options]);
 }
 
-FilterProviderByMap.prototype = Object.create(AbstractProviderByMap.prototype);
-FilterProviderByMap.prototype.constructor = FilterProviderByMap;
+SessionHandlerProviderByMap.prototype = Object.create(AbstractProviderByMap.prototype);
+SessionHandlerProviderByMap.prototype.constructor = SessionHandlerProviderByMap;
 
 /**
- * Since there is no processing required for filters, it just returns the item that was passed in
+ * Since there is no processing required for SessionHandlers, it just returns the item that was passed in
  * 
  * @protected
  * @function
  * @param  {String} itemId The key
  * @param  {Filter} item 
- * @return {Filter} The filter that was passed in as item
+ * @return {Filter} The SessionHandler that was passed in as item
  */
-FilterProviderByMap.prototype._processor = function(itemId, item) {
+SessionHandlerProviderByMap.prototype._processor = function(itemId, item) {
 	return item;
 }
 
-module.exports = FilterProviderByMap;
+module.exports = SessionHandlerProviderByMap;

@@ -12,6 +12,8 @@ var FilterManagerFactory = require('./filter/FilterManagerFactory.js');
 var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var IntentHandlerManagerFactory = require('./intentHandler/intentHandlerManagerFactory.js');
 var SessionHandlerManagerFactory = require('./sessionHandler/sessionHandlerManagerFactory.js');
+var DefaultProviderByScanning = require('./provider/scan/DefaultProviderByScanning.js');
+var Logger = require('./skillVCLogger.js');
 
 /**
  * SkillVCFactory makes it simple to have a fully functional VC (view / controller) system by simply making a one line
@@ -53,6 +55,8 @@ function SkillVCFactory() {}
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
 SkillVCFactory.createfromDirectory = function() {
+	Logger.setLevels({'all' : 'debug'});  // fix thie later
+
 	return new SkillVC({
 		'cardManager' 	: CardManagerFactory.createHandlebarEnabledByDirectory('../assets/cards'),
 		'filterManager'	: {
@@ -70,7 +74,8 @@ SkillVCFactory.createfromDirectory = function() {
  * SkillVC as it requires the synchronous loading and parsing of every specified file prior to actual skill handling.
  *
  * This method of configuration has the advantage of supporting javascript objects that can be both filters, intent handlers,
- * and other suported executions as the scan will look for everything in each file
+ * and session handlers as the scan will look for everything in each file.  Cards, as they are pure JSON, they
+ * are detected by the name of the file (.json)
  *
  * @todo Implement this
  * @function
@@ -78,12 +83,15 @@ SkillVCFactory.createfromDirectory = function() {
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
 SkillVCFactory.createFromScan = function(files) {
+	Logger.setLevels({'all' : 'debug'});  // fix thie later
+	
 	var scanner = new DefaultProviderByScanning(files);
+
 	return new SkillVC({
 		'cardManager' 	: CardManagerFactory.createHandlebarEnabledByMap(scanner.getItem('cards')),
 		'filterManager' : {
-			'pre'		: FilterManagerFactory.createByMap(scanner.getItem('filters')['pre']),
-			'post'		: FilterManagerFactory.createByMap(scanner.getItem('filters')['post'])
+			'pre'		: FilterManagerFactory.createByMap(scanner.getItem('filters')).getPreFilters(),
+			'post'		: FilterManagerFactory.createByMap(scanner.getItem('filters')).getPostFilters()
 		},
 		'intentHandlerManager' : IntentHandlerManagerFactory.createByMap(scanner.getItem('intentHandlers')),
 		'sessionHandlerManager': SessionHandlerManagerFactory.createByMap(scanner.getItem('sessionHandlers')),

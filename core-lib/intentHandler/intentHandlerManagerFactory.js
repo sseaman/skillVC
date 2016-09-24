@@ -7,9 +7,9 @@
 
 /** @private */
 var DefaultIntentHandlerManager = require('./defaultIntentHandlerManager.js');
-var IntentHandlerProviderByDirectory = require('./provider/intentHandlerProviderByDirectory.js');
-var IntentHandlerProviderByFile = require('./provider/intentHandlerProviderByFile.js');
-var IntentHandlerProviderByMap = require('./provider/intentHandlerProviderByMap.js');
+var IntentHandlerProviderByDirectory = require('../provider/convention/intentHandlerProviderByDirectory.js');
+var IntentHandlerProviderByFile = require('../provider/convention/intentHandlerProviderByFile.js');
+var IntentHandlerProviderByMap = require('../provider/convention/intentHandlerProviderByMap.js');
 
 /**
  * Static factor for creating IntentHandlerManagers. This should never need to be called and is here as a placeholder.

@@ -29,8 +29,6 @@ function AbstractProviderByMap(map, itemProcessor, options) {
 	for (var key in map) {
 		this._items[key] = itemProcessor(key, map[key], options);
 	}
-
-
 }
 
 /**

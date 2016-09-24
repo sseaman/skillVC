@@ -7,9 +7,9 @@
 
 /** @private */
 var DefaultFilterManager = require('./defaultFilterManager.js');
-var FilterProviderByDirectory = require('./provider/FilterProviderByDirectory.js');
-var FilterProviderByFile = require('./provider/FilterProviderByFile.js');
-var FilterProviderByMap = require('./provider/FilterProviderByMap.js');
+var FilterProviderByDirectory = require('../provider/convention/FilterProviderByDirectory.js');
+var FilterProviderByFile = require('../provider/convention/FilterProviderByFile.js');
+var FilterProviderByMap = require('../provider/convention/FilterProviderByMap.js');
 
 /**
  * Creates an instance of FilterManager.  This should never need to be called and is here as a placeholder.

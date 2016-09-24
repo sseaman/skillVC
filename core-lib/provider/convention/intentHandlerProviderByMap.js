@@ -6,7 +6,7 @@
  */
 
 /** @private */
-var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
+var AbstractProviderByMap = require('../abstractProviderByMap.js');
 
 /**
  * Uses the passed in map to provide intentHandlers. 
@@ -25,8 +25,9 @@ var AbstractProviderByMap = require('../../provider/abstractProviderByMap.js');
  * @constructor
  * @implements {Provider}
  * @param {Map} map The object structure of the raw intents to use.  
+ * @param {Object.<String, Object} Options for processing.  See {@link AbstractProviderByMap}
  */ 
-function IntentHandlerProviderByMap(map) {
+function IntentHandlerProviderByMap(map, options) {
 	AbstractProviderByMap.apply(this, [
 		map, 
 		this._processor,

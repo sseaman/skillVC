@@ -6,7 +6,7 @@
  */
 
 /** @private */
-var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
+var AbstractProviderByFile = require('../abstractProviderByFile.js');
 var svUtil = require('../../util.js');
 var log = require('../../skillVCLogger.js').getLogger('IntentHandlerProviderByFile');
 

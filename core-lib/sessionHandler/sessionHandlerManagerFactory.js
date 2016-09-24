@@ -7,9 +7,9 @@
 
 /** @private */
 var DefaultSessionHandlerManager = require('./defaultSessionHandlerManager.js');
-var SessionHandlerProviderByDirectory = require('./provider/sessionHandlerProviderByDirectory.js');
-var SessionHandlerProviderByFile = require('./provider/sessionHandlerProviderByFile.js');
-var SessionHandlerProviderByMap = require('./provider/sessionHandlerProviderByMap.js');
+var SessionHandlerProviderByDirectory = require('../provider/convention/sessionHandlerProviderByDirectory.js');
+var SessionHandlerProviderByFile = require('../provider/convention/sessionHandlerProviderByFile.js');
+var SessionHandlerProviderByMap = require('../provider/convention/sessionHandlerProviderByMap.js');
 
 /**
  * Creates an instance of SessionHandlerManager.  This should never need to be called and is here as a placeholder.
@@ -49,10 +49,10 @@ SessionHandlerManagerFactory.createByFile = function(files) {
 		for (var i=0;i<files.length;i++) {
 			providers.push(new SessionHandlerProviderByFile(files[i]));
 		}
-		return new SessionHandlerFilterManager(providers);
+		return new DefaultSessionHandlerManager(providers);
 	}
 	else {
-		return new SessionHandlerFilterManager([new SessionHandlerProviderByFile(file)]);
+		return new DefaultSessionHandlerManager([new SessionHandlerProviderByFile(file)]);
 	}
 }
 
@@ -66,7 +66,7 @@ SessionHandlerManagerFactory.createByFile = function(files) {
  * @return {SessionHandlerManager} The SessionHandlerManager.
  */
 SessionHandlerManagerFactory.createByMap = function(map) {
-	return new SessionHandlerFilterManager([new SessionHandlerProviderByMap(map)]);
+	return new DefaultSessionHandlerManager([new SessionHandlerProviderByMap(map)]);
 }
 
 module.exports = SessionHandlerManagerFactory;

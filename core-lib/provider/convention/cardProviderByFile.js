@@ -6,8 +6,8 @@
  */
 
 /** @private */
-var AbstractProviderByFile = require('../../provider/abstractProviderByFile.js');
-var DefaultCardBuilder = require ('../defaultCardBuilder.js');
+var AbstractProviderByFile = require('../abstractProviderByFile.js');
+var DefaultCardBuilder = require ('../../card/defaultCardBuilder.js');
 const fs = require('fs');
 
 /**

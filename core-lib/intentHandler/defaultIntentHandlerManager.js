@@ -70,6 +70,10 @@ DefaultIntentHandlerManager.prototype.handleIntent = function(svContext) {
 		log.verbose("Executing handler");
 		handler.handleIntent(svContext);
 	}
+	else {
+		// need to fire the callback so that the chain continues
+		svContext.callback.failure();
+	}
 }
 
 module.exports = DefaultIntentHandlerManager;

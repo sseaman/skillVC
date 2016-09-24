@@ -5,17 +5,14 @@ StartFilter.prototype.getStages = function() {
 	return ['pre', 'post'];
 }
 
-StartFilter.prototype.execute = function(svContext) {
-	svContext.filterChainCallback.success();
-}
-
-
 StartFilter.prototype.executePre = function(svContext) {
+	console.log("PRE");
 	svContext.filterChainCallback.success();
 }
 
-StartFilter.prototype.executePost = function(svContext) {
-	svContext.filterChainCallback.success();
+StartFilter.prototype.executePostOnError = function(svContext) {
+	console.log("POSTERR");
+	svContext.filterChainCallback.failure();
 }
 
 module.exports = StartFilter;

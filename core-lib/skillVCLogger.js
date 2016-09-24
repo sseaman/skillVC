@@ -84,7 +84,9 @@ SkillVCLogger.getLogger = function(className) {
 		    json : false,
 		    timestamp : true,
 		    label: className,
-		    level : 'info'
+		    level : (winston.loggers.loggers[className]) 
+				? winston.loggers.loggers[className].transports.console.level 
+				: 'info'
 		}
 	});
 	return winston.loggers.get(className);

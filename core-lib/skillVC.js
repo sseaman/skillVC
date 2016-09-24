@@ -95,7 +95,9 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 					sv.registerPostIntentFilters(sv._skillVCContext, {
 						success : function(postIHandlers) {
 							
+							// add the intenthandlers into the chain
 							preIHandlers.push(iHandlers);
+
 							sv._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(
 								preIHandlers, postIHandlers
 								);
@@ -245,8 +247,11 @@ SkillVC.prototype.registerIntentHandlers = function(svContext, callback) {
  */
 SkillVC.prototype.registerPostIntentFilters = function(svContext, callback) {
 	var filters = [];
+
 	var newFilters = svContext.appConfig.filterManager.post;
-	if (newFilters != null && newFilters.length > 0) filters.concat(newFilters);
+	if (newFilters != null && newFilters.length > 0) {
+		filters = filters.concat(newFilters);
+	}
 
 	// takes everything done by the filters and puts it in the lambda context for handling by Alexa
 	filters.push(new SkillResponseFilter());
