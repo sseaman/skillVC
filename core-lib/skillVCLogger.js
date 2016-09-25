@@ -26,7 +26,7 @@ var winston = require('winston');
  * Then in your code:
  * Logger.setLevels({'all':'debug'}); // everything set to debug
  * Logger.setLevels({'all':'none'});  // turn off all logging
- * Logger.getLevels({'SkillVC', 'debug'}) // turns on debugging for SkillVC.  All others will be turned off
+ * Logger.getLevels({'SkillVC' : 'debug', 'FilterManager' : 'info'}) // turns on debugging for SkillVC.  All others will be turned off
  *
  * @constructor
  * @see {@link https://github.com/winstonjs/winston|winston}
