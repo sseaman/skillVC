@@ -15,8 +15,8 @@ var DefaultFilenameFormatter = require ('./defaultFilenameFormatter.js');
  * @extends {DefaultFilenameFormatter}
  */
 function DefaultJSONFilenameFormatter(options) { 
-	DefaultFilenameFormatter.apply(this, [
-		{ 'suffix' : 'json' }]);
+	DefaultFilenameFormatter.apply(this, 
+		[ { 'suffix' : 'json' } ] );
 }
 
 DefaultJSONFilenameFormatter.prototype = Object.create(DefaultFilenameFormatter.prototype);

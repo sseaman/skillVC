@@ -5,6 +5,12 @@
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
+/**
+ *  MAIN TODO LIST
+ *  TODO: I coded parts thinking for some stupid reason that JS was pass by ref, not by value.
+ *  	As such, I'm most likely doing a TON of deepCopy and clones that don't need to happen and could improve perf.
+ */
+
 /** @private */
 var CardManagerFactory = require('./card/cardManagerFactory.js');
 var FilterChainExecutor = require('./filter/filterChainExecutor.js');
@@ -49,9 +55,9 @@ function SkillVC(config) {
  * * Clear the appSession
  * * Place the lambda information (event, context) into the {@link SVContext}
  * * Register the @{link CardManager}
- * * Register the @{link Filter|Pre IntentFilters}
+ * * Register the @{link SessionHandlerManager}
+ * * Register the @{link FilterManager}
  * * Register the @{link IntentHandlerManager}
- * * Register the @{link Filter|Post IntentFilters}
  * * Record that init completed (so it doesn't fire ever again)
  * * Call the initCallback.success function
  *
@@ -83,32 +89,31 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 
 	var sv = this;
 	// might be a way to do this with promises, but I'm not going to put the time into it yet
-	log.verbose("Registering PreIntent Filters");
-	sv.registerPreIntentFilters(sv._skillVCContext, {
-		success : function(preIHandlers) {
+	log.verbose("Registering Filters");
+	sv.registerFilterManager(sv._skillVCContext, {
+		success : function(filterManager) {
 
 			log.verbose("Registering Intent Handlers");
 			sv.registerIntentHandlerManager(sv._skillVCContext, {
-				success : function(iHandlers) {
+				success : function(iHandlerManager) {
+					
+					// need to do this to get the intents to be handled as part of the chain
+					log.debug("Injecting IntentHandlerFilter as pre filter");
+					var preFilters = filterManager.getPreFilters();
+					preFilters.push(new IntentHandlerFilter(iHandlerManager));
 
-					log.verbose("Registering PostIntent Filters");
-					sv.registerPostIntentFilters(sv._skillVCContext, {
-						success : function(postIHandlers) {
-							
-							// add the intenthandlers into the chain
-							preIHandlers.push(new IntentHandlerFilter(iHandlers));
+					// need to do this to convert the intent results to something lambda understands
+					log.debug("Adding SkillReponseFilter as last post filter");
+					var postFilters = filterManager.getPostFilters();
+					postFilters.push(new SkillResponseFilter());
 
-							sv._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(
-								preIHandlers, postIHandlers
-								);
-							sv._initialized = true;
-							log.verbose("Initialization complete");
-							initCallback.success(); // registration completed
-						},
-						failure : function(err) {
-							initCallback.failure(err);
-						}
-					});
+					sv._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(
+						preFilters, 
+						postFilters
+						);
+					sv._initialized = true;
+					log.verbose("Initialization complete");
+					initCallback.success(); // registration completed
 				},
 				failure : function(err) {
 					initCallback.failure(err);
@@ -194,6 +199,21 @@ SkillVC.prototype.registerCardManager = function(svContext) {
 }
 
 /**
+ * Called when SkillVC is looking to register/load the SessionHandlerManager.  By default this method uses the
+ * SessionHandlerManager specified by svContext.appConfig.sessionHanlerManager.
+ * 
+ * Extending SkillVC and overriding this method will allow for a more customized approach
+ * 
+ * @function
+ * @param  {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
+ *                                  may be available in the context
+ * @return {SessionHandlerManager}  The SessionHandlerManager to use
+ */
+SkillVC.prototype.registerSessionHandlerManager = function(svContext) {
+	return svContext.appConfig.sessionHanlerManager;
+}
+
+/**
  * Called when SkillVC is looking to register/load the IntentHandlerManager. By default this method uses
  * the {@link IntentHandlerManager} specified by svContext.appConfig.intentHandlerManager.  To have the 
  * IntentHandlerManager by part of the execution cycle the passed in IntentHandlerManager is wrapped
@@ -215,8 +235,8 @@ SkillVC.prototype.registerIntentHandlerManager = function(svContext, callback) {
 }
 
 /**
- * Called when SkillVC is looking to register/load the Pre Filters.  By default this method uses the
- * {@link Filter|Filters} specified by svContext.appConfig.filterManager.pre
+ * Called when SkillVC is looking to register/load the FilterManager.  By default this method uses the
+ * {@link Filter|FilterManager} specified by svContext.appConfig.filterManager
  * 
  * Extending SkillVC and overriding this method will allow for a more customized approach
  * 
@@ -225,55 +245,8 @@ SkillVC.prototype.registerIntentHandlerManager = function(svContext, callback) {
  *                                  may be available in the context
  * @param {SkillVC~callback} callback	The callback to use when registration has completed
  */
-/** FIXME: Change to be the manager */
-SkillVC.prototype.registerPreIntentFilters = function(svContext, callback) {
-	var filters = svContext.appConfig.filterManager.pre;
-	callback.success( (filters == null || filters.length == 0) ? [] : filters);
-}
-
-/**
- * Called when SkillVC is looking to register/load the Post Filters.  By default this method uses the
- * @link Filter|Filters} specified by svContext.appConfig.filterManager.post.
- *
- * A new {@link SkillResponseFilter} is added to the end of the chain so that responses from the intents
- * can be transformed into what Lambda will want as a return object
- * 
- * Extending SkillVC and overriding this method will allow for a more customized approach but will need
- * to take into consideration the JSON structure Lambda wants.
- * 
- * @function
- * @param  {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
- *                                  may be available in the context
- * @param {SkillVC~callback} callback	The callback to use when registration has completed
- */
-/** FIXME: Change to be the manager */
-SkillVC.prototype.registerPostIntentFilters = function(svContext, callback) {
-	var filters = [];
-
-	var newFilters = svContext.appConfig.filterManager.post;
-	if (newFilters != null && newFilters.length > 0) {
-		filters = filters.concat(newFilters);
-	}
-
-	// takes everything done by the filters and puts it in the lambda context for handling by Alexa
-	filters.push(new SkillResponseFilter());
-
-	callback.success(filters);
-}
-
-/**
- * Called when SkillVC is looking to register/load the SessionHandlerManager.  By default this method uses the
- * SessionHandlerManager specified by svContext.appConfig.sessionHanlerManager.
- * 
- * Extending SkillVC and overriding this method will allow for a more customized approach
- * 
- * @function
- * @param  {SVContext} svContext   	The svContext. As this is called during initialization, not all objects 
- *                                  may be available in the context
- * @return {SessionHandlerManager}  The SessionHandlerManager to use
- */
-SkillVC.prototype.registerSessionHandlerManager = function(svContext) {
-	return svContext.appConfig.sessionHanlerManager;
+SkillVC.prototype.registerFilterManager = function(svContext, callback) {
+	callback.success(svContext.appConfig.filterManager);
 }
 
 /**

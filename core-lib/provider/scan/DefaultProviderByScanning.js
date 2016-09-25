@@ -30,9 +30,9 @@ var alreadyLoaded = {};
  *			end : []
  *		},
  *		filters : {
- *			pre : [],
- *			post : []
- *		},
+  *			pre : [],
+  *			post : []
+  *		},
  *		intentHandlers : {},
  *		cards : {}
  * };
@@ -95,8 +95,8 @@ function DefaultProviderByScanning(files, options) {
 
 			// card
 			if (loaded.constructor === {}.constructor) {		
-				log.debug("Loading as card");
 				var cardId = this._cardFilenameFormatter.parse(files[fileIdx])[0];
+				log.debug("Loading as card with id: " + cardId);
 				this._items.cards[cardId] = this._cardBuilder.withCardId(cardId).withJSON(loaded).build();
 			}
 			else {

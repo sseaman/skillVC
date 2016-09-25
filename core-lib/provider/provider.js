@@ -21,6 +21,14 @@
  */
 
 /**
+ * Returns all of the items stored.  May be null
+ * 
+ * @function
+ * @name Provider#getItems
+ * @return {Object} All the items being managed by they provider
+ */
+
+/**
  * @typedef {Object} Provider~processorResult
  *
  * @property {Object.<string, string>} itemId : item 

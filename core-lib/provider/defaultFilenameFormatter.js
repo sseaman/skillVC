@@ -5,6 +5,8 @@
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
+const path = require('path');
+
 /**
  * Formats/Parses a file that has the format: itemId.js
  *
@@ -42,6 +44,7 @@ DefaultFilenameFormatter.prototype.format = function(itemId) {
  * @return {Array.String}        Array of itemId and suffix
  */
 DefaultFilenameFormatter.prototype.parse = function(fileName) {
+	var fileName = path.basename(fileName); // get the filename out 
 	return fileName.split(this._delimiter);
 }
 

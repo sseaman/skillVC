@@ -60,10 +60,7 @@ SkillVCFactory.createfromDirectory = function() {
 	//FIXME:  FilterManger should be passing filterManagers, not filters themselves...
 	return new SkillVC({
 		'cardManager' 	: CardManagerFactory.createHandlebarEnabledByDirectory('../assets/cards'),
-		'filterManager'	: {
-			'pre' 		: FilterManagerFactory.createByDirectory('../assets/filters').getPreFilters(),
-			'post'		: FilterManagerFactory.createByDirectory('../assets/filters').getPostFilters()
-		},
+		'filterManager'	: FilterManagerFactory.createByDirectory('../assets/filters'),
 		'intentHandlerManager' : IntentHandlerManagerFactory.createByDirectory('../assets/intents'),
 		'sessionHandlerManager': SessionHandlerManagerFactory.createByDirectory('../assets/sessionHandlers'),
 		'logLevels' 	: {'all' : 'debug'}
@@ -90,10 +87,7 @@ SkillVCFactory.createFromScan = function(files) {
 
 	return new SkillVC({
 		'cardManager' 	: CardManagerFactory.createHandlebarEnabledByMap(scanner.getItem('cards')),
-		'filterManager' : {
-			'pre'		: FilterManagerFactory.createByMap(scanner.getItem('filters')).getPreFilters(),
-			'post'		: FilterManagerFactory.createByMap(scanner.getItem('filters')).getPostFilters()
-		},
+		'filterManager' : FilterManagerFactory.createByMap(scanner.getItem('filters')),
 		'intentHandlerManager' : IntentHandlerManagerFactory.createByMap(scanner.getItem('intentHandlers')),
 		'sessionHandlerManager': SessionHandlerManagerFactory.createByMap(scanner.getItem('sessionHandlers')),
 		'logLevels'		: {'all' : 'debug'}

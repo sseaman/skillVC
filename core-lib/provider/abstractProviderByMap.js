@@ -42,4 +42,14 @@ AbstractProviderByMap.prototype.getItem = function(itemId) {
 	return this._items[itemId];
 }
 
+/**
+ * Returns all of the items stored.  May be null
+ *
+ * @function
+ * @return {Object} All the items being managed by they provider
+ */
+AbstractProviderByMap.prototype.getItems = function() {
+	return this._items;
+}
+
 module.exports = AbstractProviderByMap;

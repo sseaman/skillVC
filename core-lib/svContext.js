@@ -13,8 +13,7 @@
  * @property {CardManager} appConfig.cardManger The registered {@link CardManager} that will be used by SkillVC
  * @property {Object} appConfig.filterChainExecutor The registered {@link FilterChainExecutor} that will be used to execute the filter chain
  * @property {Object} appConfig.filterManager
- * @property {FilterManager} appConfig.filterManager.pre The {@link FilterManager} for all pre filters
- * @property {FilterManager} appConfig.filterManager.post The {@link FilterManager} for all post filters
+ * @property {FilterManager} appConfig.filterManager The {@link FilterManager} for all filters
  * @property {IntentHandlerManager} appConfig.intentHandlerManager The registered {@link IntentHandlerManager}
  * @property {SessionHandlerManager} [appConfig.sessionHandlerManager] The registered {@link SessionHandlerManager}
  * @property {Object} appId The applicationId that will be checked to ensure that something / someone is not tying to 

@@ -49,7 +49,7 @@ DefaultIntentHandlerManager.prototype.handleIntent = function(svContext) {
 
 	var handler = this._handlers[intentName];
 	if (handler == null && !this._handlerNotFound[intentName]) { // intent isn't in cache and was never looked for
-		log.debug("Handler not loaded. Attempting to load");
+		log.debug("Handler not loaded from providers. Attempting to load");
 
 		for (var i=0;i<providers.length;i++) {
 			// This could be expensive at is could cause all of the file loading to occur when looking for a intent

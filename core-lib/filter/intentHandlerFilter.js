@@ -10,7 +10,7 @@ var InternHandlerManager = require('../intentHandler/defaultIntentHandlerManager
 var log = require('../skillVCLogger.js').getLogger('IntentHandlerFilter');
 
 /**
- * Wrapper for IntentHandlerManager that works as a Filter as everything in SkillVC is 
+ * Wrapper for IntentHandlerManager that works as a Filter and Provider as everything in SkillVC is 
  * treated as a filter in terms of registed execution (at a high level).
  *
  * The use of a wrapper (and existance of a separate IntentHandlerManager) allows for
