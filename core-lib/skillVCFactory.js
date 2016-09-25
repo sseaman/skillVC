@@ -57,6 +57,7 @@ function SkillVCFactory() {}
 SkillVCFactory.createfromDirectory = function() {
 	Logger.setLevels({'all' : 'debug'});  // fix thie later
 
+	//FIXME:  FilterManger should be passing filterManagers, not filters themselves...
 	return new SkillVC({
 		'cardManager' 	: CardManagerFactory.createHandlebarEnabledByDirectory('../assets/cards'),
 		'filterManager'	: {

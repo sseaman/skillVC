@@ -21,6 +21,22 @@ var alreadyLoaded = {};
  * for the method signatures that define each of the types.  This model allows one object to
  * handle all types (except cards).  As cards are pure JSON, they cannot be detected by function
  * signatures and have to be detected by filename signature.
+ *
+ * The internal data structure that is made available via getItem() is:
+ * @example
+ * {
+ *		sessionHandlers : {
+ *			start : [],
+ *			end : []
+ *		},
+ *		filters : {
+ *			pre : [],
+ *			post : []
+ *		},
+ *		intentHandlers : {},
+ *		cards : {}
+ * };
+ * 
  * 
  * @constructor
  * @implements {Provider}
@@ -30,12 +46,11 @@ var alreadyLoaded = {};
  * @see  {@link Card}
  * @param {String} files The files to scan
  * @param {Object.<String, Object>} options
- * @param {FilenameFormatter} [options.cardFilenameFormatter=DefaultJSONFilenameFormatter] 
- *        	The filename formatter to use to detect cards 
- * @param {FilenameFormatter} [options.intentFilenameFormatter=DefaultJSFilenameFormatter] 
+ * @param {FilenameFormatter} [options.cardFilenameFormatter=DefaultFilenameFormatter] 
+ *        	The filename formatter to use to detect cards names from the file name
+ * @param {FilenameFormatter} [options.intentFilenameFormatter=DefaultFilenameFormatter] 
  *        	As intents are not required to have a getIntentsList, and instead can be derived from filename,
- *        	a @{link FilenameFormatter} is required to determine the intent name if no getIntentsList 
- *        	is found
+ *        	a @{link FilenameFormatter} is required to determine the intent name from the file name
  * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards. Defaults to DefaultCardBuilder
  * @param {String} [options.fileEncoding=utf8] The file encoding to use when reading files
  */
@@ -62,11 +77,11 @@ function DefaultProviderByScanning(files, options) {
 		? options.fileEncoding
 		: 'utf8';
 
-	this._jsFilenameFormatter = (options && options.intentFilenameFormatter) 
+	this._intentFilenameFormatter = (options && options.intentFilenameFormatter) 
 		?options.intentFilenameFormatter
 		: new DefaultJSFilenameFormatter();
 
-	this._jsonFilenameFormatter = (options && options.cardFilenameFormatter) 
+	this._cardFilenameFormatter = (options && options.cardFilenameFormatter) 
 		? options.cardFilenameFormatter
 		: new DefaultJSONFilenameFormatter();
 
@@ -74,25 +89,18 @@ function DefaultProviderByScanning(files, options) {
  	for (var fileIdx=0;fileIdx<files.length;fileIdx++) {
 		if (!alreadyLoaded[files[fileIdx]]) {
 			log.verbose("Processing file "+files[fileIdx]);
+
+			// load as json to check if card
 			loaded = require(process.cwd()+path.sep+files[fileIdx]); 
-			
-			// card...
-			// TODO: See if I can detect this by just seeing if the file is nothing by JSON...
-			// 			Would remove the need for the filenameFormatters
-			if (this._jsonFilenameFormatter.isValid(files[fileIdx])) {
-				loaded = require(process.cwd()+path.sep+files[fileIdx]); 
 
-				log.verbose("XX:"+(loaded.constructor === {}.constructor));
-
-
+			// card
+			if (loaded.constructor === {}.constructor) {		
 				log.debug("Loading as card");
-				var contents = fs.readFileSync(files[fileIdx], this._fileEncoding);
-				if (contents != null) {
-					var cardId = this._jsonFilenameFormatter.parse(files[fileIdx])[0];
-					this._items.cards[cardId] = this._cardBuilder.withCardId(cardId).withString(contents).build();
-				}
+				var cardId = this._cardFilenameFormatter.parse(files[fileIdx])[0];
+				this._items.cards[cardId] = this._cardBuilder.withCardId(cardId).withJSON(loaded).build();
 			}
 			else {
+				// load as a constructed object
 				loaded = new (require(process.cwd()+path.sep+files[fileIdx])); 
 
 				// intent
@@ -105,7 +113,7 @@ function DefaultProviderByScanning(files, options) {
 						}
 					}
 					else {
-						this._items.intentHandlers[this._jsFilenameFormatter.parse(files[fileIdx])[0]] = loaded;
+						this._items.intentHandlers[this._intentFilenameFormatter.parse(files[fileIdx])[0]] = loaded;
 					}
 				}
 				// filter

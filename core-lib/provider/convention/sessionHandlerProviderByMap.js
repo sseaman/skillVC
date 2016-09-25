@@ -20,7 +20,7 @@ var AbstractProviderByMap = require('../abstractProviderByMap.js');
  * @implements {Provider}
  * @see {@link AbstractProviderByMap}
  * @param {Map} map The object structure of the raw Filters to use.  
- * @param {Object.<String, Object} Options for processing.  See {@link AbstractProviderByMap}
+ * @param {Object.<String, Object>} Options for processing.  See {@link AbstractProviderByMap}
  */
 function SessionHandlerProviderByMap(map, options) {
 	AbstractProviderByMap.apply(this, [

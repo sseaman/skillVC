@@ -27,7 +27,7 @@ var AbstractProviderByMap = require('../abstractProviderByMap.js');
  * @implements {Provider}
  * @see {@link DefaultCardBuilder}
  * @param {Map} map The object structure of the raw cards to use.  
- * @param {Object.<String, Object} Options for processing.  See {@link AbstractProviderByMap}
+ * @param {Object.<String, Object>} Options for processing.  See {@link AbstractProviderByMap}
  * @param {CardBuilder} [options.cardBuilder=DefaultCardBuilder] The CardBuilder to use when building cards
  */
 function CardProviderByMap(map, options) {
