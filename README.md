@@ -60,7 +60,7 @@ Once you have the objects you want in their correct directories, all that is nee
 handle all of the requests to your skill.  For CoC, with the default directory structure listed above, create an index.js that
 has the following:
 ```
-var SkillVCFactory = require('./core-lib/skillVCFactory.js');
+var SkillVCFactory = require('./lib/skillVCFactory.js');
 
 exports.handler = function(event, context) {
 	SkillVCFactory.createfromDirectory().handler(event, context);
@@ -75,7 +75,7 @@ each object must be full loaded and introspected, it can take SkillVC longer to 
 
 For Scanning, create an index.js that has the following:
 ```
-var SkillVCFactory = require('./core-lib/skillVCFactory.js');
+var SkillVCFactory = require('./lib/skillVCFactory.js');
 
 exports.handler = function(event, context) {
 	SkillVCFactory.createFromScan([
@@ -112,7 +112,7 @@ The map must follow the format and each object must implement the methods requir
 
 For Configuration, create an index.js that has the following:
 ```
-var SkillVCFactory = require('./core-lib/skillVCFactory.js');
+var SkillVCFactory = require('./lib/skillVCFactory.js');
 
 exports.handler = function(event, context) {
 	SkillVCFactory.createFromConfiguration({
@@ -125,7 +125,7 @@ exports.handler = function(event, context) {
 -----
 SkillVC uses a contex object (`map`) to store all objects related to execution as well as callbacks for use by the
 various objects described below.  The context object, `skillVC` is passed to every object and can be manipulated by
-any object.
+any object.  This object is used by every object in SkillVC so it's good to know what all is available.
 
 The context object contains the following:
 * lambda
@@ -140,6 +140,8 @@ The context object contains the following:
     * sessionHandlerManager - The SessionHandlerManager being used by SkillVC to manage Session Handlers
     * logLevel - SkillVC uses [Winston](https://github.com/winstonjs/winston) to internal logging.  See the 
     	`SkillVCLogger` object for configuration options
+* appSession - A `map` that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
+        store any objects that you want to make avaliable to other objects
 * callback - Has `success` and `failure` functions to be used by Intent Handlers to return Cards and continue SkillVC execution
 * filterChainCallback - Has `success` and `failure` functions to be used by Filters to continue SkillVC execution
 * session - A `map` that is created on every intent event and can be used to store any objects that you want to make
@@ -284,14 +286,14 @@ To leverage Handlebars in a card, first use the Handlebars [expressions](http://
 }
 ```
 
-To do the actual variable replacement, pass a Map when rendering a card that has the key as the placeholder 
-('subject' in the above example) and the value you want to replace it with as the value in the map.
+To do the actual variable replacement, pass a `map` when rendering a card that has the key as the placeholder 
+('subject' in the above example) and the value you want to replace it with as the value in the `map`.
 
 SkillVC also supports Handlebars [helpers](http://handlebarsjs.com/block_helpers.html) but allows for full object usage in
 place of just function support.  This allows your helpers to have more state as well as be more easily externally 
 configurable.
 
-Using the 'location' example above, you would create an object that implements Formatter (function format(value)) and register 
+Using the 'date' example above, you would create an object that implements Formatter (function format(value)) and register 
 it like so:
 ```
 var dateFormat = require('dateformat');
@@ -314,7 +316,7 @@ CalendarDateFormatter.prototype.format = function(value) {
 You would then register the formatter with the Card:
 ```
 cardManager.getCard('theCardIWant').getFormatterManager().addFormatter(
-	'location' : new CalendarDateFormat()
+	'date' : new CalendarDateFormat()
 );
 ```
 
@@ -486,7 +488,7 @@ module.exports = HelloIntentHandler;
 
 **/index.js**
 ```
-var SkillVCFactory = require('./core-lib/skillVCFactory.js');
+var SkillVCFactory = require('./lib/skillVCFactory.js');
 
 exports.handler = function(event, context) {
 	SkillVCFactory.createfromDirectory().handler(event, context);

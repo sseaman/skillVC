@@ -1,10 +1,10 @@
-var SkillVCFactory = require('./core-lib/skillVCFactory.js');
+// NPM file for bringing in the Factory from the lib directory
 
-exports.handler = function(event, context) {
-	SkillVCFactory.createfromDirectory().handler(event, context);
-	// SkillVCFactory.createFromScan([
-	// 	'../assets/filters/filter.js', 
-	// 	'../assets/cards/card.json',
-	// 	'../assets/intents/hello.js'
-	// 	]).handler(event, context);
+// make the main objects available;
+var svc = {
+	factory : require('./lib/skillVCFactory.js'),
+	tester 	: require('./lib/test/skillTester.js'),
+	core 	: require('./lib/skillVC.js')
 }
+
+module.exports = svc;

@@ -1,0 +1,6 @@
+Global ToDo:
+
+Make a plugin architecture were people can write quick intent / sample utterances / intentHandlers that can be added on too
+git:
+
+Make a providers/config

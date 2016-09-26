@@ -1,0 +1,36 @@
+{
+  "name": "skillvc",
+  "version": "0.1.0",
+  "description": "A View / Controller (no Model) framework for quickly creating custom skills",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib" : "lib",
+    "test": "test"
+  },
+  "dependencies": {
+    "handlebars": "^4.0.5",
+    "deep-extend": "^0.4.1",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "jaguarjs-jsdoc": "^1.0.1"
+  },
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://admin@192.168.1.149:5005/git-repos/skillVC.git"
+  },
+  "bugs" : {
+    "url" : "https://github.com/sseaman/skillVC/issues"
+  },
+  "keywords": [
+    "alexa",
+    "skill",
+    "mvc"
+  ],
+  "author": "Sloan Seaman",
+  "license": "Apache-2.0"
+}

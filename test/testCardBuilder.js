@@ -1,3 +1,3 @@
-var CardBuilder = require('../core-lib/cards/cardBuilder.js');
+var CardBuilder = require('../lib/cards/cardBuilder.js');
 
 console.log(new CardBuilder().withJSON({ outputSpeech: { text : "aasaasa" } }).build());

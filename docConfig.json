@@ -1,6 +1,6 @@
 {
     "_comment" : "Configuration for generating documentation for SkillVC",
-    "_comment" : "To build: jsdoc -c ./core-lib/docConfig.json ",
+    "_comment" : "To build: jsdoc -c ./docConfig.json ",
      
     "applicationName": "SkillVC",
     "disqus": "",
@@ -20,8 +20,7 @@
     "linenums": true,
     "source": {
         "include": [
-            "./test/",
-            "./core-lib/"
+            "./lib/"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
