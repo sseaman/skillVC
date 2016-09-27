@@ -6,7 +6,7 @@ https://github.com/jsdoc2md/jsdoc-to-markdown
 
 # SkillVC
 
-A View / Controller (no Model) framework for quickly creating custom skills for [Alexa](https://developer.amazon.com/alexa). 
+A View / Controller (no Model) framework for quickly creating complex custom skills for [Alexa](https://developer.amazon.com/alexa). 
 Choose either Convention-over-Configuration, Configuration, or Scan approaches to the configuration and execution of your skill.
 
 ## Table of Contents
@@ -28,7 +28,26 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 
 ## Installation
 -----
-Coming soon.
+You can install SkilLVC in your project's `node_modules` folder, or you can install it globally.
+
+To install the latest version available on NPM:
+
+    npm install skillvc
+
+To install the latest development version:
+
+    npm install git+https://github.com/sseaman/skillVC.git
+
+If you installed SkillVC locally, the SkillVC testing command-line tool is available in
+`./node_modules/.bin`. To test your skill, from the directory of your skills index.js, run the command:
+
+    ./node_modules/.bin/skillTester index.js
+
+Or if you installed SkilLVC globally, simply run the `skillTester` command:
+
+    skillTester index.js
+
+Run `skillTester --help` for a complete list of command-line options.
 
 ## Usage
 -----
@@ -60,10 +79,10 @@ Once you have the objects you want in their correct directories, all that is nee
 handle all of the requests to your skill.  For CoC, with the default directory structure listed above, create an index.js that
 has the following:
 ```
-var SkillVCFactory = require('./lib/skillVCFactory.js');
+const skillVC = require('skillvc').factory.createfromDirectory();
 
 exports.handler = function(event, context) {
-	SkillVCFactory.createfromDirectory().handler(event, context);
+    skillVC.handler(event, context);
 }
 ```
 
@@ -75,14 +94,14 @@ each object must be full loaded and introspected, it can take SkillVC longer to 
 
 For Scanning, create an index.js that has the following:
 ```
-var SkillVCFactory = require('./lib/skillVCFactory.js');
+const skillVC = require('skillvc').factory.createFromScan([
+    'locationAndNameOfFileToScan',
+    'locationAndNameOfFileToScan',
+    'and so on'
+    ]);
 
 exports.handler = function(event, context) {
-	SkillVCFactory.createFromScan([
-		'locationAndNameOfFileToScan',
-		'locationAndNameOfFileToScan',
-		'and so on'
-	 	]).handler(event, context);
+	skillVC..handler(event, context);
 }
 ```
 
@@ -112,12 +131,12 @@ The map must follow the format and each object must implement the methods requir
 
 For Configuration, create an index.js that has the following:
 ```
-var SkillVCFactory = require('./lib/skillVCFactory.js');
+const skillVC = require('skillvc').factory.createFromConfiguration({
+        the contents of the map to use for configuration
+    });
 
 exports.handler = function(event, context) {
-	SkillVCFactory.createFromConfiguration({
-		the contents of the map to use for configuration
-	}).handler(event, context);
+	skillVC.handler(event, context);
 }
 ```
 
@@ -488,10 +507,10 @@ module.exports = HelloIntentHandler;
 
 **/index.js**
 ```
-var SkillVCFactory = require('./lib/skillVCFactory.js');
+var skillVC = require('skillvc').factory.createfromDirectory();
 
 exports.handler = function(event, context) {
-	SkillVCFactory.createfromDirectory().handler(event, context);
+	SkillVC.handler(event, context);
 }
 ```
 
