@@ -8,7 +8,7 @@ HelloIntentHandler.prototype.getIntentsList = function() {
 HelloIntentHandler.prototype.handleIntent = function(svContext) {
 	console.log("In Hello:");
 
-	svContext.callback.success(svContext.appConfig.cardManager.getCard('card').render());
+	svContext.callback.success(svContext.appConfig.cardManager.getCard('card').renderTell());
 }
 
 module.exports = HelloIntentHandler;
