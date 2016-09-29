@@ -1,4 +1,5 @@
 docs/
 test/
 docConfig.json
+docLayout.tmpl
 TODO.txt

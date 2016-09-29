@@ -4,9 +4,10 @@
      
     "applicationName": "SkillVC",
     "disqus": "",
-    "googleAnalytics": "",
+    "googleAnalytics": "UA-84944684-1",
+    "title": "SkillVC",
     "openGraph": {
-        "title": "",
+        "title": "SkillVC",
         "type": "website",
         "image": "",
         "site_name": "",
@@ -33,6 +34,11 @@
         "lenient": true,
         "destination": "./docs"
       
+    },
+    "templates" : {
+        "default" : {
+            "layoutFile" : "./docLayout.tmpl"
+        }
     }
 }
 

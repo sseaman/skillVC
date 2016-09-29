@@ -5,7 +5,7 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 
 ## Table of Contents
 1. Installation
-2. Source
+2. Source / Webpage
 3. Usage
     1. Configuration Types
         1. Convention-over-Configuration
@@ -33,9 +33,11 @@ To install the latest development version:
 
     npm install git+https://github.com/sseaman/skillVC.git
 
-## Source
+## Source / Webpage
 -----
 SkillVC is maintained in GitHub.  For full source to to [https://github.com/sseaman/skillVC](GitHub SkillVC)
+
+For full API documetation, see [https://sseaman.github.io/skillVC/](SkillVC API docs)
 
 ## Usage
 -----
