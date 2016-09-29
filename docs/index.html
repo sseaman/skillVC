@@ -84,8 +84,8 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 <p>To install the latest version available on NPM:</p>
 <pre class="prettyprint source"><code>npm install skillvc</code></pre><p>To install the latest development version:</p>
 <pre class="prettyprint source"><code>npm install git+https://github.com/sseaman/skillVC.git</code></pre><h2>Source / Webpage</h2><hr>
-<p>SkillVC is maintained in GitHub.  For full source to to <a href="GitHub SkillVC">https://github.com/sseaman/skillVC</a></p>
-<p>For full API documetation, see <a href="SkillVC API docs">https://sseaman.github.io/skillVC/</a></p>
+<p>SkillVC is maintained in GitHub.  For full source to to <a href="https://github.com/sseaman/skillVC">GitHub SkillVC</a></p>
+<p>For full API documetation, see <a href="https://sseaman.github.io/skillVC/">SkillVC API docs</a></p>
 <h2>Usage</h2><hr>
 <p>SkillVC is designed to be very easy to use out of the box, but also allow for a high degree of configuration.  Please
 note that at this time SkillVC only supports <strong>custom</strong> skill types, but this will be expanded if there are enough requests.</p>
@@ -93,7 +93,7 @@ note that at this time SkillVC only supports <strong>custom</strong> skill types
 <h3>Configuration Types</h3><p>SkillVC is designed to be highly configurable and allows for multiple configuration setups as well as providing multiple
 points to override internal execution to give the most customizable framework possible.  When first starting out
 with SkillVC you will want to choose the configuration type you want.</p>
-<h4>Convention-over-Configuration</h4><p><a href="https://en.wikipedia.org/wiki/Convention_over_configuration">Convention-over-Configuration (CoC)</a>) is the simpliest and most 
+<h4>Convention-over-Configuration</h4><p><a href="https://en.wikipedia.org/wiki/Convention_over_configuration">Convention-over-Configuration (CoC)</a> is the simpliest and most 
 straightforward way to use SkillVC as objects are simply placed in specific directories and SkillVC does the rest.</p>
 <p>To leverage CoC, first create the following directories in your project:</p>
 <ul>
@@ -161,21 +161,24 @@ any object.  This object is used by every object in SkillVC so it's good to know
 <li>context - The context that was passed by lambda to your lambda function (index.js)</li>
 </ul>
 </li>
-<li>appConfig The configuration that was passed into SkillVC when created.  Specific objects are always present and listed <pre class="prettyprint source"><code>  below.  You can also use this `map` to pass your own objects into SkillVC at time of creation.</code></pre><ul>
+<li>appConfig The configuration that was passed into SkillVC when created.  Specific objects are always present and listed 
+below.  You can also use this <code>map</code> to pass your own objects into SkillVC at time of creation.<ul>
 <li>responseManager - The ResponseManager that is being used by SkillVC.  This object is used by Intent Handlers
-  (or other objects) to get configured responses</li>
+(or other objects) to get configured responses</li>
 <li>filterManager - The FilterManager being used by SkillVC to manage filters</li>
 <li>filterChainExecutor - The FilterChainExecutor that will execute the filter chain that has been registered</li>
 <li>intentHandlerManager - The IntentHandlerManager being used by SkillVC to manage Intent Handlers</li>
 <li>sessionHandlerManager - The SessionHandlerManager being used by SkillVC to manage Session Handlers</li>
 <li>logLevel - SkillVC uses <a href="https://github.com/winstonjs/winston">Winston</a> to internal logging.  See the 
-  <code>SkillVCLogger</code> object for configuration options</li>
+<code>SkillVCLogger</code> object for configuration options</li>
 </ul>
 </li>
-<li>appSession - A <code>map</code> that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to<pre class="prettyprint source"><code>  store any objects that you want to make avaliable to other objects</code></pre></li>
+<li>appSession - A <code>map</code> that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
+store any objects that you want to make avaliable to other objects</li>
 <li>callback - Has <code>success</code> and <code>failure</code> functions to be used by Intent Handlers to return Responses and continue SkillVC execution</li>
 <li>filterChainCallback - Has <code>success</code> and <code>failure</code> functions to be used by Filters to continue SkillVC execution</li>
-<li>session - A <code>map</code> that is created on every intent event and can be used to store any objects that you want to make<pre class="prettyprint source"><code>  avaliable to other objects</code></pre></li>
+<li>session - A <code>map</code> that is created on every intent event and can be used to store any objects that you want to make
+avaliable to other objects</li>
 </ul>
 <h3>Intent Handlers</h3><hr>
 <p>Intent Handlers are the main objects for your skill and handle requests sent by Alexa to your skill.  When an intent
@@ -429,7 +432,7 @@ exports.handler = function(event, context) {
     { &quot;intent&quot;: &quot;HelloIntent&quot;}
    ]
 }</code></pre><h2>License</h2><hr>
-<p>SkillVC is copyright (c) 2016-present Sloan Seaman <a href="&#109;&#x61;&#105;&#x6c;&#116;&#x6f;&#58;&#x73;&#x6c;&#111;&#x61;&#110;&#x40;&#x70;&#111;&#98;&#x6f;&#120;&#x2e;&#x63;&#x6f;&#109;">&#x73;&#x6c;&#111;&#x61;&#110;&#x40;&#x70;&#111;&#98;&#x6f;&#120;&#x2e;&#x63;&#x6f;&#109;</a>.</p>
+<p>SkillVC is copyright (c) 2016-present Sloan Seaman <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#58;&#x73;&#108;&#x6f;&#97;&#110;&#x40;&#x70;&#x6f;&#x62;&#111;&#120;&#x2e;&#x63;&#111;&#x6d;">&#x73;&#108;&#x6f;&#97;&#110;&#x40;&#x70;&#x6f;&#x62;&#111;&#120;&#x2e;&#x63;&#111;&#x6d;</a>.</p>
 <p>SkillVC is free software, licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p></article>
     </section>
 
@@ -447,7 +450,7 @@ exports.handler = function(event, context) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 29 2016 10:54:12 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 29 2016 11:01:33 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

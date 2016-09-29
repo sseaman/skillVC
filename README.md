@@ -35,9 +35,9 @@ To install the latest development version:
 
 ## Source / Webpage
 -----
-SkillVC is maintained in GitHub.  For full source to to [https://github.com/sseaman/skillVC](GitHub SkillVC)
+SkillVC is maintained in GitHub.  For full source to to [GitHub SkillVC](https://github.com/sseaman/skillVC)
 
-For full API documetation, see [https://sseaman.github.io/skillVC/](SkillVC API docs)
+For full API documetation, see [SkillVC API docs](https://sseaman.github.io/skillVC/)
 
 ## Usage
 -----
@@ -52,7 +52,7 @@ points to override internal execution to give the most customizable framework po
 with SkillVC you will want to choose the configuration type you want.
 
 #### Convention-over-Configuration
-[Convention-over-Configuration (CoC)](https://en.wikipedia.org/wiki/Convention_over_configuration)) is the simpliest and most 
+[Convention-over-Configuration (CoC)](https://en.wikipedia.org/wiki/Convention_over_configuration) is the simpliest and most 
 straightforward way to use SkillVC as objects are simply placed in specific directories and SkillVC does the rest.
 
 To leverage CoC, first create the following directories in your project:
@@ -141,21 +141,21 @@ The context object contains the following:
     * event - The event that was passed by lambda to your lambda function (index.js)
     * context - The context that was passed by lambda to your lambda function (index.js)
 * appConfig The configuration that was passed into SkillVC when created.  Specific objects are always present and listed 
-		below.  You can also use this `map` to pass your own objects into SkillVC at time of creation.
+below.  You can also use this `map` to pass your own objects into SkillVC at time of creation.
     * responseManager - The ResponseManager that is being used by SkillVC.  This object is used by Intent Handlers
-        (or other objects) to get configured responses
+(or other objects) to get configured responses
     * filterManager - The FilterManager being used by SkillVC to manage filters
     * filterChainExecutor - The FilterChainExecutor that will execute the filter chain that has been registered
     * intentHandlerManager - The IntentHandlerManager being used by SkillVC to manage Intent Handlers
     * sessionHandlerManager - The SessionHandlerManager being used by SkillVC to manage Session Handlers
     * logLevel - SkillVC uses [Winston](https://github.com/winstonjs/winston) to internal logging.  See the 
-    	`SkillVCLogger` object for configuration options
+`SkillVCLogger` object for configuration options
 * appSession - A `map` that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
-        store any objects that you want to make avaliable to other objects
+store any objects that you want to make avaliable to other objects
 * callback - Has `success` and `failure` functions to be used by Intent Handlers to return Responses and continue SkillVC execution
 * filterChainCallback - Has `success` and `failure` functions to be used by Filters to continue SkillVC execution
 * session - A `map` that is created on every intent event and can be used to store any objects that you want to make
-		avaliable to other objects
+avaliable to other objects
 
 
 ### Intent Handlers
