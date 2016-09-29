@@ -18,7 +18,7 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
         3. Congiuration
     2. SkillVC Context
     2. Intent Handlers
-    3. Cards
+    3. Responses
         1. Handlebars
     4. Session Handlers
     5. Filters
@@ -66,12 +66,12 @@ with SkillVC you will want to choose the configuration type you want.
 straightforward way to use SkillVC as objects are simply placed in specific directories and SkillVC does the rest.
 
 To leverage CoC, first create the following directories in your project:
-* /cards
+* /responses
 * /filters
 * /intents
 * /sessionHandlers
 
-In each directory you will place the corresponding objects for your skill.  That is, cards go in /cards, objects that handle
+In each directory you will place the corresponding objects for your skill.  That is, responses go in /responses, objects that handle
 intents go in /intents, and so on. See the individual sections below on how these objects are formatted and their required 
 methods.
 
@@ -87,9 +87,9 @@ exports.handler = function(event, context) {
 ```
 
 #### Scanning
-Scanning searches a defined set of files and, based on reading (introspection) each file, classifies them as cards,
+Scanning searches a defined set of files and, based on reading (introspection) each file, classifies them as responses,
 filters, intents, or sessionHanlder.  Scanning had an advantage over CoC because it allows a single javascript object
-to act as both a filter, intent, and sessionHandler (cards are still required to be separate files).  However, as
+to act as both a filter, intent, and sessionHandler (responses are still required to be separate files).  However, as
 each object must be full loaded and introspected, it can take SkillVC longer to initialize when compared to CoC.
 
 For Scanning, create an index.js that has the following:
@@ -109,7 +109,7 @@ exports.handler = function(event, context) {
 -----
 Configuration is the last built in type and is the most complicated form of initialization.  It provide
 the most out-of-the-box customization of how SkillVC works and, if done correctly, can be the fastest of the configuration
-methods. To use configuration, you define a Map ({}) that has the cards, filters, intents, and sessionHandlers and provide that
+methods. To use configuration, you define a Map ({}) that has the responses, filters, intents, and sessionHandlers and provide that
 map to SkillVC.  In this way you have complete control over how things are loaded and controlled.
  
 The map must follow the format and each object must implement the methods required for each object:
@@ -124,7 +124,7 @@ The map must follow the format and each object must implement the methods requir
 		post : []
 	},
 	intentHandlers : {},
-	cards : {}
+	responses : {}
 }
 ```
 **Note:** This is the same format that the Scanning configuration uses internally when loading objects
@@ -152,7 +152,8 @@ The context object contains the following:
     * context - The context that was passed by lambda to your lambda function (index.js)
 * appConfig The configuration that was passed into SkillVC when created.  Specific objects are always present and listed 
 		below.  You can also use this `map` to pass your own objects into SkillVC at time of creation.
-    * cardManager - The CardManager that is being used by SkillVC.  This object is used by Intent Handlers to get configured cards
+    * responseManager - The ResponseManager that is being used by SkillVC.  This object is used by Intent Handlers
+        (or other objects) to get configured responses
     * filterManager - The FilterManager being used by SkillVC to manage filters
     * filterChainExecutor - The FilterChainExecutor that will execute the filter chain that has been registered
     * intentHandlerManager - The IntentHandlerManager being used by SkillVC to manage Intent Handlers
@@ -161,7 +162,7 @@ The context object contains the following:
     	`SkillVCLogger` object for configuration options
 * appSession - A `map` that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
         store any objects that you want to make avaliable to other objects
-* callback - Has `success` and `failure` functions to be used by Intent Handlers to return Cards and continue SkillVC execution
+* callback - Has `success` and `failure` functions to be used by Intent Handlers to return Responses and continue SkillVC execution
 * filterChainCallback - Has `success` and `failure` functions to be used by Filters to continue SkillVC execution
 * session - A `map` that is created on every intent event and can be used to store any objects that you want to make
 		avaliable to other objects
@@ -202,16 +203,16 @@ Objects registered as Intent Handlers must implement the `handleIntent(svContext
 function will be called for whenever the intent the Intent Handler is registered for is invoked by Alexa.
 
 What the `handleIntent(svContext)` method does is entirely up to the developer of the skill, however it must return 
-a Card via the `callback` method provided by the svContext, even on error.  Failure to invoke the `callback` method will stop
+a Response via the `callback` method provided by the svContext, even on error.  Failure to invoke the `callback` method will stop
 SkillVC and not allow any downstream filters to execute.
 
 Within the svContext that is passed to the function are a number of object that can be used by the Intent Handler.  Of 
-most interest to the Intent Handler are the CardManager and callback.
+most interest to the Intent Handler are the ResponseManager and callback.
 
-**CardManager**
-The CardManager is SkillVC's object for managing the cards registered with the system.  It allows for retrieval of
-cards for use by Intent Handlers.  To get the CardManager, access `svContext.appConfig.cardManager'.  Once retrieved, 
-an Intent Handler can call the `getCard('someCardId')` method of the CardManager to return the instance of the Card
+**ResponseManager**
+The ResponseManager is SkillVC's object for managing the responses registered with the system.  It allows for retrieval of
+responses for use by Intent Handlers.  To get the ResponseManager, access `svContext.appConfig.responseManager'.  Once retrieved, 
+an Intent Handler can call the `getResponse('someResponseId')` method of the ResponseManager to return the instance of the Response
 that is required.  See the API documentation for more information and the example below for a common use case.
 
 **callback**
@@ -232,7 +233,7 @@ HelloIntentHandler.prototype.getIntentsList = function() {
 }
 
 HelloIntentHandler.prototype.handleIntent = function(svContext) {
-	svContext.callback.success(svContext.appConfig.cardManager.getCard('hello').render());
+	svContext.callback.success(svContext.appConfig.responseManager.getResponse('hello').renderTell());
 }
 
 module.exports = HelloIntentHandler;
@@ -248,10 +249,10 @@ to an intent type of "launch".  To register a Intent Handler to execute on Launc
 * Name your file launch.js
 
 
-### Cards
+### Responses
 -----
-Cards are defined by individual JSON files (using CoC and Scanning) tha represent the JSON information required by 
-Alexa.  To simplify the process of creating a card, SkillVC does not require all Card information, only the fields
+Responses are defined by individual JSON files (using CoC and Scanning) tha represent the JSON information required by 
+Alexa.  To simplify the process of creating a response, SkillVC does not require all Response information, only the fields
 you are concerned with (all other information will be filled in for you).
 
 To set any field (or all of them), create a JSON file (or Object if using the Configuration type) with just the fields you want. 
@@ -265,7 +266,7 @@ Example:
 }
 ```
 
-This will create a final Card in SkillVC with:
+This will create a final Response in SkillVC with:
 ```
 {
     outputSpeech: {
@@ -287,16 +288,16 @@ This will create a final Card in SkillVC with:
 };
 ```
 
-#### Card Object
-Once loaded into SkillVC, the card itself is represented as a Card object.  The Card object is a builder object that 
-allows for the continued manipulate of the card as well as the final rendering of the JSON for use by Alexa via the
-`render()` function of the card.  See the API documentation for more information.
+#### Response Object
+Once loaded into SkillVC, the response itself is represented as a Response object.  The Response object is a builder object that 
+allows for the continued manipulate of the response as well as the final rendering of the JSON for use by Alexa via the
+`renderAsk()` or 'renderTell()' functions of the response.  See the API documentation for more information.
 
 #### Handlebars
-By default, SkillVC ships with support for using [Handlebars](http://handlebarsjs.com/) in your Cards.  This is provide
-the ability to do robust variable replacement within a Card.
+By default, SkillVC ships with support for using [Handlebars](http://handlebarsjs.com/) in your Responses.  This is provide
+the ability to do robust variable replacement within a Response.
 
-To leverage Handlebars in a card, first use the Handlebars [expressions](http://handlebarsjs.com/expressions.html) in your Card:
+To leverage Handlebars in a response, first use the Handlebars [expressions](http://handlebarsjs.com/expressions.html) in your Response:
 ```
 {
  	"outputSpeech": {
@@ -305,7 +306,7 @@ To leverage Handlebars in a card, first use the Handlebars [expressions](http://
 }
 ```
 
-To do the actual variable replacement, pass a `map` when rendering a card that has the key as the placeholder 
+To do the actual variable replacement, pass a `map` when rendering a response that has the key as the placeholder 
 ('subject' in the above example) and the value you want to replace it with as the value in the `map`.
 
 SkillVC also supports Handlebars [helpers](http://handlebarsjs.com/block_helpers.html) but allows for full object usage in
@@ -332,15 +333,15 @@ CalendarDateFormatter.prototype.format = function(value) {
 };
 ```
 
-You would then register the formatter with the Card:
+You would then register the formatter with the Response:
 ```
-cardManager.getCard('theCardIWant').getFormatterManager().addFormatter(
+responseManager.getResponse('theResponseIWant').getFormatterManager().addFormatter(
 	'date' : new CalendarDateFormat()
 );
 ```
 
-Whenever you use the card it will have the formatter registered with it and will use it when doing the variable replacement
-in the card
+Whenever you use the response it will have the formatter registered with it and will use it when doing the variable replacement
+in the response
 
 ### Session Handlers
 Session Handlers are objects that can be registered for when a session is opened or closed.  These objects can do
@@ -480,7 +481,7 @@ Coming soon, if someone asks for it
 The following example (which shows that SkillVC may be overkill for simple skills) demonstrated what is required
 for a simple hello world skill in SkillVC.  The following example uses CoC to make things as simple as possible.
 
-**/cards/hello.json**
+**/responses/hello.json**
 ```
 {
  	"outputSpeech": {
@@ -496,7 +497,7 @@ function HelloIntentHandler() {
 
 HelloIntentHandler.prototype.handleIntent = function(svContext) {
 	svContext.callback.success(
-		svContext.appConfig.cardManager.getCard('hello').render(
+		svContext.appConfig.responseManager.getResponse('hello').renderTell(
 			{ 'name' : 'Sloan'}
 		)
 	);
