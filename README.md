@@ -5,7 +5,8 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 
 ## Table of Contents
 1. Installation
-2. Usage
+2. Source
+3. Usage
     1. Configuration Types
         1. Convention-over-Configuration
         2. Scanning
@@ -32,16 +33,9 @@ To install the latest development version:
 
     npm install git+https://github.com/sseaman/skillVC.git
 
-If you installed SkillVC locally, the SkillVC testing command-line tool is available in
-`./node_modules/.bin`. To test your skill, from the directory of your skills index.js, run the command:
-
-    ./node_modules/.bin/skillTester index.js
-
-Or if you installed SkilLVC globally, simply run the `skillTester` command:
-
-    skillTester index.js
-
-Run `skillTester --help` for a complete list of command-line options.
+## Source
+-----
+SkillVC is maintained in GitHub.  For full source to to [https://github.com/sseaman/skillVC](GitHub SkillVC)
 
 ## Usage
 -----
