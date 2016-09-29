@@ -170,6 +170,7 @@ SkillVC can map Alexa intent events to Intent Hanlder objects in a few ways:
 * By Filename
 
 **By list provided from getIntentsList()**
+
 If the Intent Handler you have created implements the function `getIntentsList()` and returns an array of
 intent names that match the names registered in your intent list in developer.amazon.com/edw, SkillVC will
 invoke that specific Intent Handler for each of the intents returned byt the function.
@@ -183,6 +184,7 @@ MyIntentObject.prototype.getIntentsList = function() {
 would execute MyIntentObject for HelloWorldIntent and GoodByeIntent events
 
 **By Filename**
+
 If your Intent Handler does not implement `getIntentsList()` then SkillVC will use the name of the file (case sensitive)
 as the intent name.
 
@@ -200,12 +202,14 @@ Within the svContext that is passed to the function are a number of object that 
 most interest to the Intent Handler are the ResponseManager and callback.
 
 **ResponseManager**
+
 The ResponseManager is SkillVC's object for managing the responses registered with the system.  It allows for retrieval of
 responses for use by Intent Handlers.  To get the ResponseManager, access `svContext.appConfig.responseManager'.  Once retrieved, 
 an Intent Handler can call the `getResponse('someResponseId')` method of the ResponseManager to return the instance of the Response
 that is required.  See the API documentation for more information and the example below for a common use case.
 
 **callback**
+
 As Intent Handlers could be preforming async operations, the use of a callback is required to tell SkillVC to continue
 with its execution flow.  The callback to be used can be accessed in `svContext.callback' and has two methods:
 * `success` - used if the Intent Handler was successful
@@ -234,7 +238,7 @@ Alexa supports another type of intent event, LaunchRequest, which is executed by
 without a specific intent.  An example is when someone says "Alexa, Tell MySkill", but does not give a directive.
 
 In SkillVC, Launch Requests are treated the same as any other intent and are handled by an Intent Handler that maps
-to an intent type of "launch".  To register a Intent Handler to execute on Launch Requests you can either:
+to an intent type of 'launch'.  To register a Intent Handler to execute on Launch Requests you can either:
 * Have `getIntentsList()` return an intent name of 'launch'
 * Name your file launch.js
 
@@ -279,7 +283,7 @@ This will create a final Response in SkillVC with:
 ```
 
 #### Response Object
-Once loaded into SkillVC, the response itself is represented as a Response object.  The Response object is a builder object that 
+Once loaded into SkillVC, the response itself is represented as a Response object.  The Response object 
 allows for the continued manipulate of the response as well as the final rendering of the JSON for use by Alexa via the
 `renderAsk()` or 'renderTell()' functions of the response.  See the API documentation for more information.
 
