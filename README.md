@@ -347,7 +347,7 @@ in the response
 Session Handlers are objects that can be registered for when a session is opened or closed.  These objects can do
 whatever the developer chooses and have full access to the svContext.
 
-The location of the session object provided by Alexa is `svContext.lambda.context.session'.  Also, to allow for additional
+The location of the session object provided by Alexa is `svContext.lambda.context.session`.  Also, to allow for additional
 options, SkillVC provides a new `map` for every skill request at `svContext.session` if developers want 
 another session outside of what Alexa provides.
 
