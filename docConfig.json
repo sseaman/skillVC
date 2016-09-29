@@ -20,6 +20,7 @@
     "linenums": true,
     "source": {
         "include": [
+            "./README.md",
             "./lib/"
         ],
         "includePattern": ".+\\.js(doc)?$",
