@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: provider/convention/filterProviderByDirectory.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: provider/convention/filterProviderByDirectory.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
+var AbstractProviderBySyncDirectory = require('../abstractProviderBySyncDirectory.js');
+var DefaultJSFilenameFormatter = require ('../defaultJSFilenameFormatter.js');
+var log = require('../../skillVCLogger.js').getLogger('FilterProviderByDirectory');
+var svUtil = require('../../util.js');
+const path = require('path');
+const fs = require('fs');
+var alreadyLoaded = {};
+
+/**
+ * Provides filters by loading all of the files in a directory as filters
+ * 
+ * Filters are loaded synchronously as there is no way to determine when a filter is required asynchronously
+ *
+ * @constructor
+ * @implements {Provider}
+ * @see {@link AbstractProviderBySyncDirectory}
+ * @param {String} directory The directory to read from
+ * @param {Object} [options] Options for the was the directory is process
+ * @param {String} [options.fileEncoding=utf8] The encoding of the files.
+ * @param {FileNameFormatter} [options.filenameFormatter=DefaultJSFilenameFormatter] The FilenameFormmatter to use to parse the 
+ *     filenames to determine name as well as how to format the id to become a filename. This object will only 
+ *     load files that match the formatters isValid() method
+ */
+function FilterProviderByDirectory(directory, options) {
+	if (!directory) throw Error('directory required');
+
+	this._filters = { 'pre' : [], 'post' : [] };
+	
+	if (alreadyLoaded[directory]) {
+		log.verbose('Filters already loaded. Skipping');
+		return;
+	}
+
+	this._populate = function(stage, filters, loaded) {
+		var position = filters.length; // default to no getOrder
+		if (svUtil.isFunction(loaded.getOrder)) {
+			position = loaded.getOrder();
+			filters[position] = loaded;
+		}
+		else {
+			filters.push(loaded);
+		}
+		log.verbose('Loaded filter '+loaded.constructor.name+' into stage '+ stage + ', position '+ position);
+	}
+
+	AbstractProviderBySyncDirectory.apply(this, [
+		directory, 
+		this._process]);
+
+	// function to compress array in case someone put one at 1 and the next at 99
+	for (var key in this._filters) {
+		this._filters[key] = svUtil.compressArray(this._filters[key]);
+	}
+
+	alreadyLoaded[directory] = true;
+}
+
+FilterProviderByDirectory.prototype = Object.create(AbstractProviderBySyncDirectory.prototype);
+FilterProviderByDirectory.prototype.constructor = FilterProviderByDirectory;
+
+
+FilterProviderByDirectory.prototype._process = function(loaded, options) {
+	log.verbose('Loading all filters at once...');
+	if (svUtil.isFunction(loaded.executePre) || svUtil.isFunction(loaded.executePreOnError)) {
+		this._populate('pre', this._filters.pre, loaded);
+	}
+	if (svUtil.isFunction(loaded.executePost)|| svUtil.isFunction(loaded.executePostOnError)) {
+		this._populate('post', this._filters.post, loaded);
+	}
+}
+
+/**
+ * Returns all the pre filters (filters that implement executePre())
+ * 
+ * @return {Array.Filter} Array of all the loaded pre filters
+ */
+FilterProviderByDirectory.prototype.getPreFilters = function() {
+	return this._filters.pre;
+}
+
+/**
+ * Returns all the post filters (filters that implement executePost())
+ * 
+ * @return {Array.Filter} Array of all the loaded post filters
+ */
+FilterProviderByDirectory.prototype.getPostFilters = function() {
+	return this._filters.post;
+}
+
+module.exports = FilterProviderByDirectory;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li><li><a href="SkillVCLogger.html">SkillVCLogger</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 29 2016 09:40:50 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

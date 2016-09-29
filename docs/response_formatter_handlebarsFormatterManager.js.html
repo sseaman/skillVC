@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: response/formatter/handlebarsFormatterManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: response/formatter/handlebarsFormatterManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
+var Handlebars = require('handlebars');
+var util = require('../../util.js');
+
+/**
+ * A formatter that support all the functionality of Handlebars 
+ *
+ * This supports full objects to use with handlebars and not just a function, as handlebars defaults to with helpers.
+ * This allows the passed in formatters to still work as a normal helper but keep the context of the object itself,
+ * something that is lost because handlebars justs wants a function when registering a helper
+ * 
+ * @param {Object.&lt;string,Formatter>} formatterMap Map of formatters where the key is the id of the helper (what will match in the {{ }})
+ *                           and the value is the Formatter object that implements .format(value) and returns a string
+ * @param {Handlerbars} [handlebarsInstance=Handlebars.create()] An instance (cannot be global) of handlebars to use.
+ *                           This allows for the preregistration of handlebars functionality if required.
+ *                           Defaults to Handlebars.create();
+ * @class
+ * @constructor
+ * @implements {FormatterManager}
+ */
+function HandlebarsFormatterManager(formatterMap, handlebarsInstance) {
+	this._handlebars = (handlebarsInstance)
+		? handlebarsInstance
+		: Handlebars.create();
+
+	this._formatters = {};
+	this.addFormatters(formatterMap);
+}
+
+/**
+ * Returns the formatter stored under the formatterId
+ *
+ * @function
+ * @param  {String} formatterId The Id of the formatter to return
+ * @return {Formatter} The formatter, null if not found;
+ */
+HandlebarsFormatterManager.prototype.getFormatter = function(formatterId) {
+	return this._formatters[formatterId];
+}
+
+/**
+ * Adds a formatter.  In the case of handlebars and this object, a 'Helper' object (not just the function)
+ *
+ * This supports full objects to use with handlebars and not just a function, as handlebars defaults to with helpers.
+ * This allows the passed in formatters to still work as a normal helper but keep the context of the object itself,
+ * something that is lost because handlebars justs wants a function when registering a helper
+ *
+ * @function
+ * @param {Object.&lt;string, Formatter>} formatterMap Map of formatters where the key is the id of the helper (what will match in the {{ }})
+ *                           and the value is the Formatter object that implements .format(value) and returns a string
+ */
+HandlebarsFormatterManager.prototype.addFormatters = function(formatterMap) {
+	for (var key in formatterMap) {
+		this._formatters[key] = formatterMap[key];
+	}
+
+	var hfm = this; // scope
+	// handlebars requires the helpers to be a function, but I want to deal on the object level
+	// to let people put in the object and I'll register the format method for them and still keep the object context
+	for (var key in this._formatters) {
+		if (!util.isFunction(this._formatters[key])) {
+			this._handlebars.registerHelper(key, function(string, options) {
+				// options.name has the name of the helper
+				return hfm._formatters[options.name].format.call(hfm._formatters[options.name], string);
+			}
+			);
+		}
+	}
+}
+
+/**
+ * Formats the string uses the values in the valueMap.
+ *
+ * If formatters have been registered the values will first be passed to the formatter to format the value and 
+ * the resulting string will be placed in the placeholder ({{ }}) location in the passed in string
+ *
+ * @function
+ * @param  {String} string    The string to format
+ * @param  {Object.&lt;string, Object>}    valuesMap The values map where the key is equal to some variable in the handlebars placeholder ({{}})
+ *                            and the value is the value to place in the placeholder (once passed through a formatter, if registered)
+ * @return {String}           The final formatted string
+ */
+HandlebarsFormatterManager.prototype.format = function(string, valuesMap) {
+	return this._handlebars.compile(string)(valuesMap);
+}
+
+
+module.exports = HandlebarsFormatterManager;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li><li><a href="SkillVCLogger.html">SkillVCLogger</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 29 2016 09:40:50 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
