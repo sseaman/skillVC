@@ -1,6 +1,6 @@
 {
   "name": "skillvc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A View / Controller (no Model) framework for quickly creating custom skills",
   "main": "index.js",
   "directories": {
@@ -11,14 +11,14 @@
   "dependencies": {
     "handlebars": "^4.0.5",
     "deep-extend": "^0.4.1",
-    "winston": "^2.2.0"
+    "winston-simple": "^1.0.2"
   },
   "scripts": {
     "test": "test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sseaman/skillVC/skillVC.git"
+    "url": "https://github.com/sseaman/skillVC.git"
   },
   "bugs" : {
     "url" : "https://github.com/sseaman/skillVC/issues"
