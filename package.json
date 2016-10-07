@@ -13,15 +13,12 @@
     "deep-extend": "^0.4.1",
     "winston": "^2.2.0"
   },
-  "devDependencies": {
-    "jaguarjs-jsdoc": "^1.0.1"
-  },
   "scripts": {
     "test": "test.js"
   },
   "repository": {
     "type": "git",
-    "url": "http://admin@192.168.1.149:5005/git-repos/skillVC.git"
+    "url": "https://github.com/sseaman/skillVC/skillVC.git"
   },
   "bugs" : {
     "url" : "https://github.com/sseaman/skillVC/issues"

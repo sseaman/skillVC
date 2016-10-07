@@ -23,7 +23,7 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 
 ## Installation
 -----
-You can install SkilLVC in your project's `node_modules` folder, or you can install it globally.
+You can install SkillVC in your project's `node_modules` folder, or you can install it globally.
 
 To install the latest version available on NPM:
 
@@ -44,7 +44,7 @@ For full API documetation, see [SkillVC API docs](https://sseaman.github.io/skil
 SkillVC is designed to be very easy to use out of the box, but also allow for a high degree of configuration.  Please
 note that at this time SkillVC only supports **custom** skill types, but this will be expanded if there are enough requests.
 
-For more detailed documentation, see the individual object API documentation
+For more detailed documentation, see the individual object API documentation.
 
 ### Configuration Types
 SkillVC is designed to be highly configurable and allows for multiple configuration setups as well as providing multiple
@@ -99,7 +99,7 @@ exports.handler = function(event, context) {
 -----
 Configuration is the last built in type and is the most complicated form of initialization.  It provide
 the most out-of-the-box customization of how SkillVC works and, if done correctly, can be the fastest of the configuration
-methods. To use configuration, you define a Map ({}) that has the responses, filters, intents, and sessionHandlers and provide that
+methods. To use configuration, you define a `map ({})` that has the responses, filters, intents, and sessionHandlers and provide that
 map to SkillVC.  In this way you have complete control over how things are loaded and controlled.
  
 The map must follow the format and each object must implement the methods required for each object:
@@ -148,8 +148,8 @@ below.  You can also use this `map` to pass your own objects into SkillVC at tim
     * filterChainExecutor - The FilterChainExecutor that will execute the filter chain that has been registered
     * intentHandlerManager - The IntentHandlerManager being used by SkillVC to manage Intent Handlers
     * sessionHandlerManager - The SessionHandlerManager being used by SkillVC to manage Session Handlers
-    * logLevel - SkillVC uses [Winston](https://github.com/winstonjs/winston) to internal logging.  See the 
-`SkillVCLogger` object for configuration options
+    * logLevel - SkillVC uses [Winston](https://github.com/winstonjs/winston) to internal logging.  See 
+[winston-simple](https://github.com/sseaman/winston-simple/) for configuration options
 * appSession - A `map` that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
 store any objects that you want to make avaliable to other objects
 * callback - Has `success` and `failure` functions to be used by Intent Handlers to return Responses and continue SkillVC execution
@@ -204,14 +204,14 @@ most interest to the Intent Handler are the ResponseManager and callback.
 **ResponseManager**
 
 The ResponseManager is SkillVC's object for managing the responses registered with the system.  It allows for retrieval of
-responses for use by Intent Handlers.  To get the ResponseManager, access `svContext.appConfig.responseManager'.  Once retrieved, 
+responses for use by Intent Handlers.  To get the ResponseManager, access `svContext.appConfig.responseManager`.  Once retrieved, 
 an Intent Handler can call the `getResponse('someResponseId')` method of the ResponseManager to return the instance of the Response
 that is required.  See the API documentation for more information and the example below for a common use case.
 
 **callback**
 
 As Intent Handlers could be preforming async operations, the use of a callback is required to tell SkillVC to continue
-with its execution flow.  The callback to be used can be accessed in `svContext.callback' and has two methods:
+with its execution flow.  The callback to be used can be accessed in `svContext.callback` and has two methods:
 * `success` - used if the Intent Handler was successful
 * `failure` - used if the Intent Handler had an error or wants to report some other type of issue
 
@@ -285,7 +285,7 @@ This will create a final Response in SkillVC with:
 #### Response Object
 Once loaded into SkillVC, the response itself is represented as a Response object.  The Response object 
 allows for the continued manipulate of the response as well as the final rendering of the JSON for use by Alexa via the
-`renderAsk()` or 'renderTell()' functions of the response.  See the API documentation for more information.
+`renderAsk()` or `renderTell()` functions of the response.  See the API documentation for more information.
 
 #### Handlebars
 By default, SkillVC ships with support for using [Handlebars](http://handlebarsjs.com/) in your Responses.  This is provide
@@ -330,7 +330,7 @@ CalendarDateFormatter.prototype.format = function(value) {
 You would then register the formatter with the Response:
 ```
 responseManager.getResponse('theResponseIWant').getFormatterManager().addFormatter(
-	'date' : new CalendarDateFormat()
+	'date' : new CalendarDateFormatter()
 );
 ```
 
@@ -409,7 +409,7 @@ of the following functions:
 
 **callback**
 As Filters could be preforming async operations, the use of a callback is required to tell SkillVC to continue
-with its execution flow.  The callback to be used can be accessed in `svContext.filterChainCallback' and has two methods:
+with its execution flow.  The callback to be used can be accessed in `svContext.filterChainCallback` and has two methods:
 * `success` - used if the Filter was successful
 * `failure` - used if the Filter had an error or wants to report some other type of issue
 
@@ -439,7 +439,7 @@ DBSetupFilter.prototype.executePost = function(svContext) {
 SkillVC supports the ability to have more than one Filter.  This is useful if you want to have filters to have distinct
 functionality.  
 
-To set the execution order of the Filters you may choose to add the function `getOrder()` to your SFilter.
+To set the execution order of the Filters you may choose to add the function `getOrder()` to your Filter.
 `getOrder()` should return the numerical value of the position within the exection order for the Filter that has
 implemented the function.  If `getOrder()` is not implements, the Filter will be added to the execution order
 based on the order it was loaded. This means that if you only have one Filter, implementing getOrder() is not 
