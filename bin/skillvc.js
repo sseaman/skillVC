@@ -1,14 +1,4 @@
 /*
--- init
-	-- dironly
-	-- noindex
-
-	creates the /filters /intents etc files as well as stubs for:
-		sampleUtterances.txt
-		customSlots.json
-		intents.json
-		index.js (with skillVC code in it) if there is no --noindex
-
 -- build
 	reads from the intents and creates intent handlers for each intent in /intents
 
@@ -39,18 +29,20 @@ var fs = require('fs');
 var path = require('path');
 
 var handleInit = function(dir, options) {
-	var normed = path.normalize(dir);
+	var dirPath = path.normalize(dir) + path.sep;
 	if (!options.no_dir) {
-		fs.mkdir(normed + path.sep + "filters");
-		fs.mkdir(normed + path.sep + "intents");
-		fs.mkdir(normed + path.sep + "models");
-		fs.mkdir(normed + path.sep + "responses");
-		fs.mkdir(normed + path.sep + "sessionHandlers");
+		fs.mkdir(dirPath + "filters");
+		fs.mkdir(dirPath + "intents");
+		fs.mkdir(dirPath + "models");
+		fs.mkdir(dirPath + "responses");
+		fs.mkdir(dirPath + "sessionHandlers");
+		console.log("Directories created");
 
 		if (!options.no_models) {
-			fs.writeFileSync(normed + path.sep + "models/customSlots.json", "");
-			fs.writeFileSync(normed + path.sep + "models/intents.json", "");
-			fs.writeFileSync(normed + path.sep + "models/sampleUtterances.txt", "");
+			fs.writeFileSync(dirPath + "models/customSlots.json", "");
+			fs.writeFileSync(dirPath + "models/intents.json", "");
+			fs.writeFileSync(dirPath + "models/sampleUtterances.txt", "");
+			console.log("Model files created");
 		}
 	}
 
@@ -62,30 +54,47 @@ var handleInit = function(dir, options) {
 			+ ((options.no_skillvc) ? "\n\t" : "\tskillVC.handler(event, context);\n")
 			+ "}\n";
 
-		fs.writeFileSync(normed + path.sep + "index.js", data, 'utf8');
+		fs.writeFileSync(dirPath + "index.js", data, 'utf8');
+		console.log("Index file created");
 	}
 
 	if (!options.no_skillvc) {
-		var npm = require("npm");
-		npm.load(
-			{
-			    loaded: false
-			}, 
-			function (err) {
-				if (err) {
-					console.log("Error installing SkillVC: "+err)
+		try {
+			var npm = require("npm");
+			npm.load(
+				{
+				    loaded: false
+				}, 
+				function (err) {
+					if (err) {
+						console.log("Error installing SkillVC: "+err)
+					}
+					else {
+				  		npm.commands.install(["skillvc"], 
+				  			function (err, data) {
+							    if (err) console.log("Error installing SkillVC: "+err)
+							});
+						npm.on("log", function (message) {
+							console.log(message);
+						});
+					}
+				}
+			);
+		}
+		catch (e) {
+			// not locally installed, try globally
+			var exec = require('child_process').exec;
+			var cmd = 'npm install skillvc';
+
+			exec(cmd, function(error, stdout, stderr) {
+				if (error || stderr) {
+					console.log("Error installing SkillVC: "+ ((error) ? error : stderr));
 				}
 				else {
-			  		npm.commands.install(["skillvc"], 
-			  			function (err, data) {
-						    if (err) console.log("Error installing SkillVC: "+err)
-						});
-					npm.on("log", function (message) {
-						console.log(message);
-					});
+					console.log("SkillVC installed");
 				}
-			}
-		);
+			});
+		}
 	}
 };
 
@@ -111,17 +120,17 @@ cmd
 	.on('--help', function() {
 	    console.log('  Examples:'
 	    	+ '\n'
-	    	+ '    init . --no-dir  // do not create directories\n'
-	    	+ '    init . --no-index  // do not create index.js\n'
+	    	+ '    init . --no_dir  // do not create directories\n'
+	    	+ '    init . --no_index  // do not create index.js\n'
 	    	+ '    init . --no_models  //Do not create stubs for model files in the /models directory\n'
-			+ '    init . --no-skillvc  // do not install SkillVC\n'
+			+ '    init . --no_skillvc  // do not install SkillVC\n'
 	    	+ '\n');
 	  });
 
 cmd
 	.command('build <intentFile>')
 	.alias('b')
-	.description('Builds intentHandlers based on the intents defined in the specified intents file')
+	.description('Builds intentHandlers based on the intents defined in the specified intent file')
 	.action(handleBuild);
 
 cmd
