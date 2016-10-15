@@ -59,6 +59,7 @@ var handleInit = function(dir, options) {
 	}
 
 	if (!options.no_skillvc) {
+		//FIXME: make npm install to the dirPath node_modules dir (might need to create dir if it doens't exist)
 		try {
 			var npm = require("npm");
 			npm.load(
