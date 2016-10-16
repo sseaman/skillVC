@@ -7,19 +7,21 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 1. Installation
 2. Source / Webpage
 3. Usage
-    1. Configuration Types
+    1. Project Initialization
+    2. Configuration Types
         1. Convention-over-Configuration
         2. Scanning
-        3. Congiuration
-    2. SkillVC Context
-    2. Intent Handlers
-    3. Responses
+        3. Configuration
+    3. SkillVC Context
+    4. Intent Handlers
+    5. Responses
         1. Handlebars
-    4. Session Handlers
-    5. Filters
-    6. Advanced Configuration
-4. Example
-5. License
+    6. Session Handlers
+    7. Filters
+4. Plugin Development
+5. Advanced Configuration
+6. Example
+7. License
 
 ## Installation
 -----
@@ -45,6 +47,21 @@ SkillVC is designed to be very easy to use out of the box, but also allow for a 
 note that at this time SkillVC only supports **custom** skill types, but this will be expanded if there are enough requests.
 
 For more detailed documentation, see the individual object API documentation.
+
+## Project Initialization
+-----
+SkillVC comes with command line tools to do such functions as setup a project for you, install SkillVC plugings, and build intent handlers
+from your existing intent model files (coming soon). 
+
+To have SkillVC create all the necessary folders, files, and even stub index.js for your Convention-over-Configuration project, do the following:
+
+```
+1. Create the directory for your project
+2. Install SkillVC per the installation instructions above (npm install skillvc)
+3. In the directory of your project run: node ./node_modules/skillvc/bin/skillvc init .
+```
+
+For additional installation options, run: ```node ./node_modules/skillvc/bin/skillvc init --help```
 
 ### Configuration Types
 SkillVC is designed to be highly configurable and allows for multiple configuration setups as well as providing multiple
@@ -346,7 +363,7 @@ options, SkillVC provides a new `map` for every skill request at `svContext.sess
 another session outside of what Alexa provides.
 
 To create a Session Handler an object must implement two functions:
-* `sessionStart(svContet)` - Called when a session is started
+* `sessionStart(svContext)` - Called when a session is started
 * `sessionEnd(svContext)` - Called when a session ends
 
 Example:

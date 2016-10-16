@@ -72,7 +72,7 @@ var initHandler = {
 
 		if (!options.no_skillvc) {
 			if (!fs.existsSync(dirPath + 'node_modules/skillvc')) {
-				npm.install(dirPath, 'skillvc', 'SkillVC');
+				npm.install(dirPath, 'skillvc', 'SkillVC', true);
 			}
 			else {
 				console.log('Attempting to install SkillVC...');
@@ -93,72 +93,106 @@ var initHandler = {
 
 var pluginHandler = {
 	handle : function(dir, pluginName, options) {
-		var dirPath = path.normalize(dir) + path.sep;
-		var pluginConfFile = dirPath+'node_modules/'+pluginName+'/skillvcPlugin.json';
+		console.log('Stating '+pluginName+ ' installation...');
+		var destDir = path.normalize(dir) + path.sep;
+		var pluginConfFile = path.join(destDir, 'node_modules', pluginName, 'skillvcPlugin.json');
 
-		npm.install(dirPath, pluginName, pluginName, 
+		npm.install(destDir, pluginName, pluginName, options.debug,
 			function() {
 				if (fs.existsSync(pluginConfFile)) {
-					var pluginConf = require(pluginConfFile);
+					var pluginConf = JSON.parse(fs.readFileSync(pluginConfFile, 'utf8'));
 
 					if (pluginConf.executor && svUtil.isFunction(pluginConf.executor.preInstall)) {
-						pluginConf.executor.preInstall(dirPath);
+						pluginConf.executor.preInstall(destDir);
 					}
 
+					var sourceDir = path.join(destDir, 'node_modules', pluginName);
+
 					if (pluginConf.filters && pluginConf.filters.length > 0) {
-						pluginHandler._copyPluginFile(dirPath, 'filters', 'Filters');
+						console.log('Installing filters');
+						pluginHandler._moveFiles(destDir+'filters', sourceDir, pluginConf.filters, 'Filter');
 					}
 					if (pluginConf.intents && pluginConf.intents.length > 0) {
-						pluginHandler._copyPluginFile(dirPath, 'intents', 'Intents');
+						console.log('Installing intents');
+						pluginHandler._moveFiles(destDir+'intents', sourceDir, pluginConf.intents, 'Intent Handler');
 					}
 					if (pluginConf.sessionHandlers && pluginConf.sessionHandlers.length > 0) {
-						pluginHandler._copyPluginFile(dirPath, 'sessionHandlers', 'Session Handlers');
+						console.log('Installing sessionHandlers');
+						pluginHandler._moveFiles(destDir+'sessionHandlers', sourceDir, pluginConf.sessionHandlers, 'Session Handler');
 					}
 					if (pluginConf.responses && pluginConf.responses.length > 0) {
-						pluginHandler._copyPluginFile(dirPath, 'responses', 'Responses');
+						console.log('Installing responses');
+						pluginHandler._moveFiles(destDir+'responses', sourceDir, pluginConf.responses, 'Response');
+					}
+
+					// move the plugins modules to the projects modules
+					var pluginModulesRoot = path.join(sourceDir, 'node_modules');
+					if (fs.existsSync(pluginModulesRoot)) {
+						console.log('Installing node_modules');
+						var pluginInstalledModules = fs.readdirSync(pluginModulesRoot).filter(function(file) {
+						    return fs.statSync(path.join(pluginModulesRoot, file)).isDirectory();
+						});
+						for (var i=0;i<pluginInstalledModules.length;i++) {
+							fs.renameSync(
+								path.join(sourceDir, 'node_modules', pluginInstalledModules[i]),
+								path.join(destDir, 'node_modules', pluginInstalledModules[i]));
+						}
 					}
 
 					if (pluginConf.executor && svUtil.isFunction(pluginConf.executor.postInstall)) {
-						pluginConf.executor.postInstall(dirPath);
+						pluginConf.executor.postInstall(destDir);
 					}
 
-					console.log('Plugin installation completed');
+					if (!options.no_remove) {
+						// Uninstall the plugin as it has been applied to SkillVC
+						npm.uninstall(destDir, pluginName, pluginName, options.debug, function() {
+							console.log('Plugin installation completed');
+						});
+					}
+					else {
+						console.log('Plugin not removed.  It will be in an incomplete state due to moving files for installation');
+						console.log('Plugin installation completed');
+					}
 				}
 				else {
-					console.log('NPM Module does not appear to be a SkillVC pluging (missing skillvcPlugin.json');
+					console.log('NPM Module does not appear to be a SkillVC pluging (missing skillvcPlugin.json)');
 
 					if (!options.ignore_skillvc) {
-						npm.uninstall(dirPath, pluginName, pluginName);
+						npm.uninstall(destDir, pluginName, pluginName, options.debug);
 					}
 				}
 			}
 		);
 	},
 
-	_copyPluginFile : function(dirPath, type, humanFriendlyName) {
+	_moveFiles : function(dest, source, files, humanFriendlyName) {
 		var created = 0;
 		var dirCreatedByPlugin = false;
 
-		if (!fs.existsSync(dirPath+  type)){
-			fs.mkdir(dirPath + type);
+		if (!fs.existsSync(dest)){
+			fs.mkdir(dest);
 			dirCreatedByPlugin == true;
 		}
 
-		for (var i=0;i<pluginConf[type].length;i++) {
-			if (fs.existsSync(pluginConf[type][i])) {
-				_copyFile(pluginConf[type][i], dirPath + type);
+		var file;
+		for (var i=0;i<files.length;i++) {
+			file = path.join(source, path.normalize(files[i]));
+
+			if (fs.existsSync(file)) {
+				fs.renameSync(file, path.join(dest, path.basename(file)));
 				created ++;
 			}
 			else {
-				console.log('Plugin '+humanFriendlyName + ' ' + pluginConf[type][i]+' not found');
+				console.log('Plugin '+humanFriendlyName + ' ' + file +' not found');
 			}
 		}
 
 		// nothing was actually copied
-		if (dirCreatedByPluging && created == 0) {
-			fs.rmdirSync(dirPath + type);
+		if (dirCreatedByPlugin && created == 0) {
+			fs.rmdirSync(dest);
 		}
 	}
+
 };
 
 var buildHandler = {
@@ -168,8 +202,8 @@ var buildHandler = {
 };
 
 var npm = {
-	install : function(dirPath, packageName, humanFriendlyName, callback) {
-		console.log('Attempting to install '+humanFriendlyName+' (could take a few seconds)...');
+	install : function(dirPath, packageName, humanFriendlyName, consoleOn, callback) {
+		if (consoleOn) console.log('Attempting to npm install '+humanFriendlyName+' (could take a few seconds)...');
 		// make sure there is a node_modules dir
 		if (!fs.existsSync(dirPath+'node_modules')){
 		    fs.mkdirSync(dirPath+'node_modules');
@@ -181,10 +215,10 @@ var npm = {
 
 		exec(cmd, function(error, stdout, stderr) {
 			if (error || stderr) {
-				console.log('Error installing '+humanFriendlyName+': '+ ((error) ? error : stderr));
+				if (consoleOn) console.log('Error installing '+humanFriendlyName+': '+ ((error) ? error : stderr));
 			}
 			else {
-				console.log(humanFriendlyName+' installed');
+				if (consoleOn) console.log(humanFriendlyName+' npm installed');
 			}
 
 			if (fs.existsSync(dirPath+'etc')) fs.rmdirSync(dirPath+'etc');
@@ -193,8 +227,8 @@ var npm = {
 		});
 	},
 
-	uninstall : function(dirPath, packageName, humanFriendlyName, callback) {
-		console.log('Attempting to uninstall '+humanFriendlyName+' (could take a few seconds)...');
+	uninstall : function(dirPath, packageName, humanFriendlyName, consoleOn, callback) {
+		if (consoleOn) console.log('Attempting to npm uninstall '+humanFriendlyName+' (could take a few seconds)...');
 
 		// not locally installed, try globally
 		var exec = require('child_process').exec;
@@ -202,10 +236,10 @@ var npm = {
 
 		exec(cmd, function(error, stdout, stderr) {
 			if (error || stderr) {
-				console.log('Error uninstalling '+humanFriendlyName+': '+ ((error) ? error : stderr));
+				if (consoleOn) console.log('Error uninstalling '+humanFriendlyName+': '+ ((error) ? error : stderr));
 			}
 			else {
-				console.log(humanFriendlyName+' uninstalled');
+				if (consoleOn) console.log(humanFriendlyName+' npm uninstalled');
 			}
 
 			if (fs.existsSync(dirPath+'etc')) fs.rmdirSync(dirPath+'etc');
@@ -254,11 +288,15 @@ cmd
 	.alias('p')
 	.description('Installs a SkillVC plugin')
 	.option('isv, --ignore_skillvc', 'Do not uninstall pluging if the plugin is not a SkillVC plugin')
+	.option('nr, --no_remove', 'Do not remove the plugin information after installation')
+	.option('d, --debug', 'Provide more information about the install')
 	.action(pluginHandler.handle)
 	.on('--help', function() {
 		console.log('  Examples:\n'
 			+'    install . pluginName\n'
-			+'    install . pluginName --ignore_skillvc  // Do not uninstall plugin if the plugin is not a SkillVC pluging\n'
+			+'    install . pluginName --ignore_skillvc  // do not uninstall plugin if the plugin is not a SkillVC pluging\n'
+			+'    install . pluginName --no_remove  // do not remove the plugin information after installation\n'
+			+'    install . pluginName --debug  // provide more information about the instal\n'
 			+ '\n');
 	});
 
