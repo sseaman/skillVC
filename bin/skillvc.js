@@ -129,9 +129,12 @@ var pluginHandler = {
 					var pluginModulesRoot = path.join(sourceDir, 'node_modules');
 					if (fs.existsSync(pluginModulesRoot)) {
 						console.log('Installing node_modules');
+
+						// get list of directories in the plugins node_modules dir
 						var pluginInstalledModules = fs.readdirSync(pluginModulesRoot).filter(function(file) {
 						    return fs.statSync(path.join(pluginModulesRoot, file)).isDirectory();
 						});
+						// move them
 						for (var i=0;i<pluginInstalledModules.length;i++) {
 							fs.renameSync(
 								path.join(sourceDir, 'node_modules', pluginInstalledModules[i]),
@@ -139,8 +142,19 @@ var pluginHandler = {
 						}
 					}
 
-					if (pluginConf.executor && svUtil.isFunction(pluginConf.executor.postInstall)) {
-						pluginConf.executor.postInstall(destDir);
+					// FIXME - Exceutor not executing
+					console.log("PE:"+path.join(destDir, sourceDir, pluginConf.executor));
+					console.log("PWD:"+process.cwd());
+					console.log("FOUND:"+fs.existsSync(path.join(destDir, sourceDir, pluginConf.executor)));
+					if (pluginConf.executor) {
+						if (svUtil.isFunction(pluginConf.executor.postInstall)) {
+							pluginConf.executor.postInstall(destDir);
+						}
+						else {
+							console.log("attempting to load");
+							var pExe = require('./node_modules/skillvc-voiceinsights/pluginExecutor.js');//destDir + path.join(sourceDir, pluginConf.executor));
+							pExe.postInstall(destDir);
+						}
 					}
 
 					if (!options.no_remove) {
