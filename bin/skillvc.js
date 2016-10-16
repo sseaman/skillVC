@@ -2,26 +2,6 @@
 -- build
 	reads from the intents and creates intent handlers for each intent in /intents
 
-
--- plugin
-	installs a plugin
-	a plugin is any node_modules that has node_modules/moduleName/skillvc.json
-	skillvc.json = {
-		filters : []
-
-		],
-		intentHandlers : []
-
-		]
-		// and so on 
-		// but also:
-		executor : ""
-		// which is an object that will be run when the plugin is installed to do
-		// whatever else the plugin owner wants to do
-	}
-	skillvc (bin) will read the json, run executor.preInstall, install everything where it should be 
-		filters in /filters, etc... and then run executor.postInstall
-
 */
 
 var cmd = require('commander');
@@ -29,7 +9,20 @@ var fs = require('fs');
 var path = require('path');
 var svUtil = require('../lib/util.js');
 
+/**
+ * Functions to handle the init CLI command
+ * 
+ * @type {Map}
+ */
 var initHandler = {
+
+	/**
+	 * Handles the CLI request to initialize a project
+	 * 
+	 * @function
+	 * @param  {String} dir     The directory to operate in
+	 * @param  {Object} options The options from the CLI
+	 */
 	handle : function(dir, options) {
 		var dirPath = path.normalize(dir) + path.sep;
 
@@ -72,7 +65,7 @@ var initHandler = {
 
 		if (!options.no_skillvc) {
 			if (!fs.existsSync(dirPath + 'node_modules/skillvc')) {
-				npm.install(dirPath, 'skillvc', 'SkillVC', true);
+				npm.install(dirPath, 'skillvc', 'SkillVC', options);
 			}
 			else {
 				console.log('Attempting to install SkillVC...');
@@ -81,6 +74,14 @@ var initHandler = {
 		}
 	},
 
+	/**
+	 * Creates a directory
+	 * 
+	 * @function
+	 * @private
+	 * @param  {String} dirPath The root directory to use
+	 * @param  {String} name    The name of the directory to create in the dirPath (root directory)
+	 */
 	_create : function(dirPath, name) {
 		if (!fs.existsSync(dirPath + name)) {
 			fs.mkdir(dirPath + name);
@@ -91,109 +92,202 @@ var initHandler = {
 	}
 };
 
+/**
+ * Functions to handle the install CLI command
+ * 
+ * @type {Map}
+ */
 var pluginHandler = {
+
+	/**
+	 * 
+	 * @function
+	 * @param  {String} dir        The directory to operate in
+	 * @param  {String} pluginName The name of the plugin to use (should be an NPM name)
+	 * @param  {Object} options    The options from the CLI
+	 */
 	handle : function(dir, pluginName, options) {
 		console.log('Stating '+pluginName+ ' installation...');
-		var destDir = path.normalize(dir) + path.sep;
+		var destDir = path.resolve(dir);
+		var sourceDir = path.resolve(destDir, 'node_modules', pluginName);
 		var pluginConfFile = path.join(destDir, 'node_modules', pluginName, 'skillvcPlugin.json');
 
-		npm.install(destDir, pluginName, pluginName, options.debug,
-			function() {
-				if (fs.existsSync(pluginConfFile)) {
-					var pluginConf = JSON.parse(fs.readFileSync(pluginConfFile, 'utf8'));
+		if (options.debug) {
+			console.log('Reading plugin information from: '+sourceDir);
+			console.log('Installing plugin to: '+destDir);
+		}
+		
+		var npmInstallSuccess = function () {
 
-					if (pluginConf.executor && svUtil.isFunction(pluginConf.executor.preInstall)) {
-						pluginConf.executor.preInstall(destDir);
-					}
+			if (fs.existsSync(pluginConfFile)) {
+				var pluginConf = JSON.parse(fs.readFileSync(pluginConfFile, 'utf8'));
 
-					var sourceDir = path.join(destDir, 'node_modules', pluginName);
-
+				var preInstallSuccess = function() {
 					if (pluginConf.filters && pluginConf.filters.length > 0) {
 						console.log('Installing filters');
-						pluginHandler._moveFiles(destDir+'filters', sourceDir, pluginConf.filters, 'Filter');
+						pluginHandler._moveFiles(sourceDir, destDir+'filters', pluginConf.filters, 'Filter');
 					}
 					if (pluginConf.intents && pluginConf.intents.length > 0) {
 						console.log('Installing intents');
-						pluginHandler._moveFiles(destDir+'intents', sourceDir, pluginConf.intents, 'Intent Handler');
+						pluginHandler._moveFiles(sourceDir, destDir+'intents', pluginConf.intents, 'Intent Handler');
 					}
 					if (pluginConf.sessionHandlers && pluginConf.sessionHandlers.length > 0) {
 						console.log('Installing sessionHandlers');
-						pluginHandler._moveFiles(destDir+'sessionHandlers', sourceDir, pluginConf.sessionHandlers, 'Session Handler');
+						pluginHandler._moveFiles(sourceDir, destDir+'sessionHandlers', pluginConf.sessionHandlers, 'Session Handler');
 					}
 					if (pluginConf.responses && pluginConf.responses.length > 0) {
 						console.log('Installing responses');
-						pluginHandler._moveFiles(destDir+'responses', sourceDir, pluginConf.responses, 'Response');
+						pluginHandler._moveFiles(sourceDir, destDir+'responses', pluginConf.responses, 'Response');
 					}
 
 					// move the plugins modules to the projects modules
-					var pluginModulesRoot = path.join(sourceDir, 'node_modules');
-					if (fs.existsSync(pluginModulesRoot)) {
-						console.log('Installing node_modules');
-
-						// get list of directories in the plugins node_modules dir
-						var pluginInstalledModules = fs.readdirSync(pluginModulesRoot).filter(function(file) {
-						    return fs.statSync(path.join(pluginModulesRoot, file)).isDirectory();
-						});
-						// move them
-						for (var i=0;i<pluginInstalledModules.length;i++) {
+					if (pluginConf.node_modules) {
+						for (var i=0;i<pluginConf.node_modules.length;i++) {
 							fs.renameSync(
-								path.join(sourceDir, 'node_modules', pluginInstalledModules[i]),
-								path.join(destDir, 'node_modules', pluginInstalledModules[i]));
+								path.join(sourceDir, 'node_modules', pluginConf.node_modules[i]),
+								path.join(destDir, 'node_modules', pluginConf.node_modules[i]));
 						}
 					}
 
-					// FIXME - Exceutor not executing
-					console.log("PE:"+path.join(destDir, sourceDir, pluginConf.executor));
-					console.log("PWD:"+process.cwd());
-					console.log("FOUND:"+fs.existsSync(path.join(destDir, sourceDir, pluginConf.executor)));
-					if (pluginConf.executor) {
-						if (svUtil.isFunction(pluginConf.executor.postInstall)) {
-							pluginConf.executor.postInstall(destDir);
+					var postInstallSuccess = function() {
+						if (!options.no_remove) {
+							// Uninstall the plugin as it has been applied to SkillVC
+							npm.uninstall(destDir, pluginName, pluginName, options).then(function() {
+								console.log('Plugin installation completed');
+							});
 						}
 						else {
-							console.log("attempting to load");
-							var pExe = require('./node_modules/skillvc-voiceinsights/pluginExecutor.js');//destDir + path.join(sourceDir, pluginConf.executor));
-							pExe.postInstall(destDir);
-						}
-					}
-
-					if (!options.no_remove) {
-						// Uninstall the plugin as it has been applied to SkillVC
-						npm.uninstall(destDir, pluginName, pluginName, options.debug, function() {
+							console.log('Plugin not removed.  It will be in an incomplete state due to moving files for installation');
 							console.log('Plugin installation completed');
-						});
-					}
-					else {
-						console.log('Plugin not removed.  It will be in an incomplete state due to moving files for installation');
-						console.log('Plugin installation completed');
-					}
-				}
-				else {
-					console.log('NPM Module does not appear to be a SkillVC pluging (missing skillvcPlugin.json)');
+						}
+					};
+					
+					var postExecPromise = pluginHandler._handleExe(sourceDir, destDir, pluginConf.executor, 'postInstall', options.debug);
+					postExecPromise.then(
+						function () {
+							postInstallSuccess();
+						},
+						function(reject) {
+							// try uninstall no matter what
+							postInstallSuccess();
+						}
+					);
+				};
 
-					if (!options.ignore_skillvc) {
-						npm.uninstall(destDir, pluginName, pluginName, options.debug);
+				var preExecPromise = pluginHandler._handleExe(sourceDir, destDir, pluginConf.executor, 'preInstall', options.debug);
+				preExecPromise.then(
+					function () {
+						preInstallSuccess();
+					},
+					function (reject) {
+						if (options.ignore_errors) preInstallSuccess();
 					}
+				);
+			}
+			else {
+				console.log('NPM Module does not appear to be a SkillVC pluging (missing skillvcPlugin.json)');
+
+				if (!options.ignore_skillvc && !options.no_remove) {
+					npm.uninstall(destDir, pluginName, pluginName, options);
+				}
+			}
+		};
+
+		var npmPromise = npm.install(destDir, pluginName, pluginName, options);
+		npmPromise.then(
+			function () {
+				npmInstallSuccess();
+			},
+	 		function (reject) {
+				//act like nothing happened
+				if (options.ignore_errors) {
+					npmInstallSuccess();
+				} 
+				// remove unless specified
+				else if (!options.no_remove) {
+					npm.uninstall(destDir, pluginName, pluginName, options);
 				}
 			}
 		);
 	},
 
-	_moveFiles : function(dest, source, files, humanFriendlyName) {
+	/**
+	 * Processes and executes a defined executor
+	 * 
+	 * @function
+	 * @private
+	 * @param  {String} sourceDir  Directry where the files are being read from
+	 * @param  {String} destDir    Directory where the files should be written to
+	 * @param  {Object} executor The executor to use.  This can be a map of functions in the JSON itself or
+	 *                           a reference to a file to load and use.  The file can be a map of functions
+	 *                           or an object that requires instantiation and then execution.
+	 * @param  {String} stage    The stage of execution (preInstall or postInstall)
+	 * @param  {Boolean} debug   Is debuging enabled?
+	 * @return {Promise} The promise from the executor so the code can wait until its done
+	 */
+	_handleExe : function(sourceDir, destDir, executor, stage, debug) {
+		var result = new Promise(function(resolve, rej) {resolve();}); 
+		if (executor) {
+			var toExecute;
+
+			// the executor is a map of methods
+			if (svUtil.isFunction(executor[stage])) {
+				toExecute = executor[stage];
+			}
+			else {
+				// have to use full path otherwise require uses the location of skillvc for relative paths
+				var pExe = require(path.join(sourceDir, executor));
+				// if I got an object back, construct it
+				if (svUtil.isFunction(pExe)) pExe = new pExe();
+
+				// if it has the function in question, run it
+				if (svUtil.isFunction(pExe[stage])) { 
+					toExecute = pExe[stage];
+				}
+			}
+
+			if (toExecute) {
+				if (debug) console.log('Executing '+stage+' plugin executor');
+				var tmpResult = toExecute(sourceDir, destDir);
+				if (tmpResult && tmpResult.then) result = tmpResult; // it's a promise
+			}
+			else if (debug) {
+				console.log('Plugin executor does not contain method '+stage+'. This may be by design');
+			}
+		}
+
+		return result;
+	},
+
+	/**
+	 * Moves files from one place to another using nodes rename function.
+	 *
+	 * This will create the destination directory if it doesn't exist and also subsiquently
+	 * remove it if no files were written to it (and it the destination directory was
+	 * create by this, meaning no files were already in that directory)
+	 * 
+	 * @function
+	 * @private
+	 * @param  {String} sourceDir            Directry where the files are being read from
+	 * @param  {String} destDir              Directory where the files should be written to
+	 * @param  {Array.String} files       List of files (comes from the JSON config)
+	 * @param  {String} humanFriendlyName What to use in the console log messaging
+	 */
+	_moveFiles : function(sourceDir, destDir, files, humanFriendlyName) {
 		var created = 0;
 		var dirCreatedByPlugin = false;
 
-		if (!fs.existsSync(dest)){
-			fs.mkdir(dest);
+		if (!fs.existsSync(destDir)){
+			fs.mkdir(destDir);
 			dirCreatedByPlugin == true;
 		}
 
 		var file;
 		for (var i=0;i<files.length;i++) {
-			file = path.join(source, path.normalize(files[i]));
+			file = path.join(sourceDir, path.normalize(files[i]));
 
 			if (fs.existsSync(file)) {
-				fs.renameSync(file, path.join(dest, path.basename(file)));
+				fs.renameSync(file, path.join(destDir, path.basename(file)));
 				created ++;
 			}
 			else {
@@ -203,12 +297,17 @@ var pluginHandler = {
 
 		// nothing was actually copied
 		if (dirCreatedByPlugin && created == 0) {
-			fs.rmdirSync(dest);
+			fs.rmdirSync(destDir);
 		}
 	}
 
 };
 
+/**
+ * Functions to handle the build CLI command
+ * 
+ * @type {Map}
+ */
 var buildHandler = {
 	handle : function() {
 
@@ -216,55 +315,74 @@ var buildHandler = {
 };
 
 var npm = {
-	install : function(dirPath, packageName, humanFriendlyName, consoleOn, callback) {
-		if (consoleOn) console.log('Attempting to npm install '+humanFriendlyName+' (could take a few seconds)...');
+
+	/**
+	 * Installs an NPM package
+	 *
+	 * @function
+	 * @param  {String} destDir           The directory to install to
+	 * @param  {String} packageName       The NPM name of the package
+	 * @param  {String} humanFriendlyName The display name to use
+	 * @param  {Object} options		  The options from the CLI
+	 * @param  {boolean} options.debug Debug mode?
+	 * @param  {boolean} options.ignore_errors Ignore errors?
+	 * @return {Promise} The promise to watch for completion
+	 */
+	install : function(destDir, packageName, humanFriendlyName, options) {
+		return npm._do('install', destDir, packageName, humanFriendlyName, options);
+	},
+
+	/**
+	 * Uninstalls an NPM package
+	 *
+	 * @function
+	 * @param  {String} destDir           The directory to uninstall from
+	 * @param  {String} packageName       The NPM name of the package
+	 * @param  {String} humanFriendlyName The display name to use
+	 * @param  {Object} options		  The options from the CLI
+	 * @param  {boolean} options.debug Debug mode?
+	 * @param  {boolean} options.ignore_errors Ignore errors?
+	 * @return {Promise} The promise to watch for completion
+	 */
+	uninstall : function(destDir, packageName, humanFriendlyName, options) {
+		return npm._do('uninstall', destDir, packageName, humanFriendlyName, options);
+	},
+
+	_do : function(funcType, destDir, packageName, humanFriendlyName, options) {
+		if (options.debug) console.log('Attempting to npm '+funcType+' '+humanFriendlyName+' (could take a few seconds)...');
 		// make sure there is a node_modules dir
-		if (!fs.existsSync(dirPath+'node_modules')){
-		    fs.mkdirSync(dirPath+'node_modules');
+		if (!fs.existsSync(destDir+'node_modules')){
+		    fs.mkdirSync(destDir+'node_modules');
 		}
 
 		// not locally installed, try globally
 		var exec = require('child_process').exec;
-		var cmd = 'npm install --prefix '+dirPath+' '+packageName;
+		var cmd = 'npm '+funcType+' --prefix '+destDir+' '+packageName;
 
-		exec(cmd, function(error, stdout, stderr) {
-			if (error || stderr) {
-				if (consoleOn) console.log('Error installing '+humanFriendlyName+': '+ ((error) ? error : stderr));
-			}
-			else {
-				if (consoleOn) console.log(humanFriendlyName+' npm installed');
-			}
+		return new Promise(function(resolve, reject) {
+			exec(cmd, function(error, stdout, stderr) {
+				if (options.debug) {
+					console.log( ((error || stderr) 
+						? 'Error '+funcType+' ' +humanFriendlyName+': '+ ((error) ? error : stderr)
+						: humanFriendlyName+' npm '+funcType+'ed')
+					);
+				}
 
-			if (fs.existsSync(dirPath+'etc')) fs.rmdirSync(dirPath+'etc');
+				if (fs.existsSync(destDir+'etc')) fs.rmdirSync(destDir+'etc');
 
-			if (callback) callback( (error || stderr) );
-		});
-	},
-
-	uninstall : function(dirPath, packageName, humanFriendlyName, consoleOn, callback) {
-		if (consoleOn) console.log('Attempting to npm uninstall '+humanFriendlyName+' (could take a few seconds)...');
-
-		// not locally installed, try globally
-		var exec = require('child_process').exec;
-		var cmd = 'npm uninstall --prefix '+dirPath+' '+packageName;
-
-		exec(cmd, function(error, stdout, stderr) {
-			if (error || stderr) {
-				if (consoleOn) console.log('Error uninstalling '+humanFriendlyName+': '+ ((error) ? error : stderr));
-			}
-			else {
-				if (consoleOn) console.log(humanFriendlyName+' npm uninstalled');
-			}
-
-			if (fs.existsSync(dirPath+'etc')) fs.rmdirSync(dirPath+'etc');
-
-			if (callback) callback( (error || stderr) );
+				if (error || stderr) {
+					reject((error) ? error : stderr);
+				}
+				else {
+					resolve();
+				}				
+			});
 		});
 	}
 }
 
-var _copyFile = function(src, dest) {
-	fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+var _copyFile = function(src, destDir) {
+	fs.createReadStream(src).pipe(fs.createWriteStream(destDir));
 }
 
 
@@ -304,13 +422,15 @@ cmd
 	.option('isv, --ignore_skillvc', 'Do not uninstall pluging if the plugin is not a SkillVC plugin')
 	.option('nr, --no_remove', 'Do not remove the plugin information after installation')
 	.option('d, --debug', 'Provide more information about the install')
+	.option('ie, --ignore_errors', 'Ignore errors and do all plugin steps')
 	.action(pluginHandler.handle)
 	.on('--help', function() {
 		console.log('  Examples:\n'
 			+'    install . pluginName\n'
 			+'    install . pluginName --ignore_skillvc  // do not uninstall plugin if the plugin is not a SkillVC pluging\n'
 			+'    install . pluginName --no_remove  // do not remove the plugin information after installation\n'
-			+'    install . pluginName --debug  // provide more information about the instal\n'
+			+'    install . pluginName --debug  // provide more information about the install\n'
+			+'    install . pluginName --ignore_errors // ignore errors and do all plugin steps\n'
 			+ '\n');
 	});
 
