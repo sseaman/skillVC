@@ -1,9 +1,11 @@
-/*
--- build
-	reads from the intents and creates intent handlers for each intent in /intents
+/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version 0.9.0
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
 
-*/
-
+/** @private */
 var cmd = require('commander');
 var fs = require('fs');
 var path = require('path');
@@ -94,12 +96,18 @@ var initHandler = {
 
 /**
  * Functions to handle the install CLI command
+ *
+ * The amount of path manipulation required is annoying.  This and the promises / ignore_errors support
+ * made this code take around ~8 hrs to implement.   P in the A.
  * 
  * @type {Map}
  */
 var pluginHandler = {
 
 	/**
+	 * Handles the plugin installation
+	 *
+	 * Supports ignoring errors by continueing down the path if required
 	 * 
 	 * @function
 	 * @param  {String} dir        The directory to operate in
@@ -108,7 +116,7 @@ var pluginHandler = {
 	 */
 	handle : function(dir, pluginName, options) {
 		console.log('Stating '+pluginName+ ' installation...');
-		var destDir = path.resolve(dir);
+		var destDir = path.resolve(dir) + path.sep;
 		var sourceDir = path.resolve(destDir, 'node_modules', pluginName);
 		var pluginConfFile = path.join(destDir, 'node_modules', pluginName, 'skillvcPlugin.json');
 
@@ -117,11 +125,13 @@ var pluginHandler = {
 			console.log('Installing plugin to: '+destDir);
 		}
 		
+		// to allow the promises to be able to call from resolve() or reject(), the code has to be a function
 		var npmInstallSuccess = function () {
 
 			if (fs.existsSync(pluginConfFile)) {
 				var pluginConf = JSON.parse(fs.readFileSync(pluginConfFile, 'utf8'));
 
+				// to allow the promises to be able to call from resolve() or reject(), the code has to be a function
 				var preInstallSuccess = function() {
 					if (pluginConf.filters && pluginConf.filters.length > 0) {
 						console.log('Installing filters');
@@ -143,12 +153,16 @@ var pluginHandler = {
 					// move the plugins modules to the projects modules
 					if (pluginConf.node_modules) {
 						for (var i=0;i<pluginConf.node_modules.length;i++) {
-							fs.renameSync(
-								path.join(sourceDir, 'node_modules', pluginConf.node_modules[i]),
-								path.join(destDir, 'node_modules', pluginConf.node_modules[i]));
+							// if not already installed
+							if (!fs.existsSync( path.join(destDir, 'node_modules', pluginConf.node_modules[i]) )) {
+								fs.renameSync(
+									path.join(sourceDir, 'node_modules', pluginConf.node_modules[i]),
+									path.join(destDir, 'node_modules', pluginConf.node_modules[i]));
+							}
 						}
 					}
 
+					// to allow the promises to be able to call from resolve() or reject(), the code has to be a function
 					var postInstallSuccess = function() {
 						if (!options.no_remove) {
 							// Uninstall the plugin as it has been applied to SkillVC
@@ -162,24 +176,24 @@ var pluginHandler = {
 						}
 					};
 					
-					var postExecPromise = pluginHandler._handleExe(sourceDir, destDir, pluginConf.executor, 'postInstall', options.debug);
-					postExecPromise.then(
-						function () {
-							postInstallSuccess();
+					// Run the postInstall executor - Promise step 3
+					pluginHandler._handleExe(sourceDir, destDir, pluginConf.executor, 'postInstall', options.debug).then(
+						function() {
+							postInstallSuccess(); // check for no_remove is in here
 						},
 						function(reject) {
-							// try uninstall no matter what
-							postInstallSuccess();
+							// try uninstall no matter what as this is the last step
+							postInstallSuccess(); // check for no_remove is in here
 						}
 					);
 				};
 
-				var preExecPromise = pluginHandler._handleExe(sourceDir, destDir, pluginConf.executor, 'preInstall', options.debug);
-				preExecPromise.then(
-					function () {
+				// Run the preInstall executor - Promise step 2
+				pluginHandler._handleExe(sourceDir, destDir, pluginConf.executor, 'preInstall', options.debug).then(
+					function() {
 						preInstallSuccess();
 					},
-					function (reject) {
+					function(reject) {
 						if (options.ignore_errors) preInstallSuccess();
 					}
 				);
@@ -187,18 +201,19 @@ var pluginHandler = {
 			else {
 				console.log('NPM Module does not appear to be a SkillVC pluging (missing skillvcPlugin.json)');
 
+				// either ignore the fact that it's not for SkillVC or don't remove it.. so leave its
 				if (!options.ignore_skillvc && !options.no_remove) {
 					npm.uninstall(destDir, pluginName, pluginName, options);
 				}
 			}
 		};
 
-		var npmPromise = npm.install(destDir, pluginName, pluginName, options);
-		npmPromise.then(
-			function () {
+		// install the NPM - Promise step 1
+		npm.install(destDir, pluginName, pluginName, options).then(
+			function() {
 				npmInstallSuccess();
 			},
-	 		function (reject) {
+	 		function(reject) {
 				//act like nothing happened
 				if (options.ignore_errors) {
 					npmInstallSuccess();
@@ -291,7 +306,7 @@ var pluginHandler = {
 				created ++;
 			}
 			else {
-				console.log('Plugin '+humanFriendlyName + ' ' + file +' not found');
+				console.log('Plugin ' + humanFriendlyName + ' ' + file +' not found');
 			}
 		}
 
@@ -310,7 +325,11 @@ var pluginHandler = {
  */
 var buildHandler = {
 	handle : function() {
+/*
+-- build
+	reads from the intents and creates intent handlers for each intent in /intents
 
+*/
 	}
 };
 
@@ -325,7 +344,6 @@ var npm = {
 	 * @param  {String} humanFriendlyName The display name to use
 	 * @param  {Object} options		  The options from the CLI
 	 * @param  {boolean} options.debug Debug mode?
-	 * @param  {boolean} options.ignore_errors Ignore errors?
 	 * @return {Promise} The promise to watch for completion
 	 */
 	install : function(destDir, packageName, humanFriendlyName, options) {
@@ -341,7 +359,6 @@ var npm = {
 	 * @param  {String} humanFriendlyName The display name to use
 	 * @param  {Object} options		  The options from the CLI
 	 * @param  {boolean} options.debug Debug mode?
-	 * @param  {boolean} options.ignore_errors Ignore errors?
 	 * @return {Promise} The promise to watch for completion
 	 */
 	uninstall : function(destDir, packageName, humanFriendlyName, options) {
@@ -350,12 +367,13 @@ var npm = {
 
 	_do : function(funcType, destDir, packageName, humanFriendlyName, options) {
 		if (options.debug) console.log('Attempting to npm '+funcType+' '+humanFriendlyName+' (could take a few seconds)...');
+		
 		// make sure there is a node_modules dir
-		if (!fs.existsSync(destDir+'node_modules')){
-		    fs.mkdirSync(destDir+'node_modules');
+		var nodeModulesDir = path.join(destDir, 'node_modules');
+		if (!fs.existsSync(nodeModulesDir)){
+		    fs.mkdirSync(nodeModulesDir);
 		}
 
-		// not locally installed, try globally
 		var exec = require('child_process').exec;
 		var cmd = 'npm '+funcType+' --prefix '+destDir+' '+packageName;
 
@@ -381,13 +399,10 @@ var npm = {
 	}
 }
 
-var _copyFile = function(src, destDir) {
-	fs.createReadStream(src).pipe(fs.createWriteStream(destDir));
-}
 
-
-// execution code
-
+/***************************
+* Cmd / main code
+****************************/
 cmd.version('0.2.0');
 
 cmd

@@ -481,7 +481,10 @@ MyOtherFilter.prototype.getOrder = function() {
 }
 ```
 
-### Advanced Configuration
+## Plugin Development
+Coming soon (already implemented, just needs documentation. See bin/skillvc if you want to figure it out in the meantime)
+
+## Advanced Configuration
 -----
 Coming soon, if someone asks for it
 
