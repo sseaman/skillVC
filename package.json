@@ -1,19 +1,16 @@
 {
   "name": "skillvc",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A View / Controller (no Model) framework for quickly creating custom skills",
   "main": "index.js",
-  "directories": {
-    "lib" : "lib",
-    "test": "test"
-  },
   "dependencies": {
     "handlebars": "^4.0.5",
     "deep-extend": "^0.4.1",
-    "winston-simple": "^1.0.2"
+    "winston-simple": "^1.0.2",
+    "commander":"^2.9.0"
   },
-  "scripts": {
-    "test": "test.js"
+  "bin" : {
+    "skillvc" : "./bin/skillvc"
   },
   "repository": {
     "type": "git",

@@ -58,10 +58,10 @@ To have SkillVC create all the necessary folders, files, and even stub index.js 
 ```
 1. Create the directory for your project
 2. Install SkillVC per the installation instructions above (npm install skillvc)
-3. In the directory of your project run: node ./node_modules/skillvc/bin/skillvc init .
+3. In the directory of your project run: node ./node_modules/.bin/skillvc init .
 ```
 
-For additional installation options, run: ```node ./node_modules/skillvc/bin/skillvc init --help```
+For additional installation options, run: ```node ./node_modules/.bin/skillvc init --help```
 
 ### Configuration Types
 SkillVC is designed to be highly configurable and allows for multiple configuration setups as well as providing multiple
