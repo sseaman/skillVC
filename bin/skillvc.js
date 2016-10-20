@@ -30,18 +30,18 @@ var initHandler = {
 
 		if (!options.no_dir) {
 			console.log('Attempting to create directories...');
-			initHandler._create(dirPath, 'filters');
-			initHandler._create(dirPath, 'intents');
-			initHandler._create(dirPath, 'models');
-			initHandler._create(dirPath, 'responses');
-			initHandler._create(dirPath, 'sessionHandlers');
+			initHandler._createDir(dirPath, 'filters');
+			initHandler._createDir(dirPath, 'intents');
+			initHandler._createDir(dirPath, 'models');
+			initHandler._createDir(dirPath, 'responses');
+			initHandler._createDir(dirPath, 'sessionHandlers');
 			console.log('Directories creation completed');
 
 			if (!options.no_models) {
 				console.log('Attempting to create model files...');
-				initHandler._create(dirPath, 'models/customSlots.json');
-				initHandler._create(dirPath, 'models/intents.json');
-				initHandler._create(dirPath, 'models/sampleUtterances.json');
+				initHandler._createFile(dirPath, 'models/customSlots.json');
+				initHandler._createFile(dirPath, 'models/intents.json');
+				initHandler._createFile(dirPath, 'models/sampleUtterances.json');
 				console.log('Model files creation completed');
 			}
 		}
@@ -81,17 +81,35 @@ var initHandler = {
 	 * 
 	 * @function
 	 * @private
-	 * @param  {String} dirPath The root directory to use
-	 * @param  {String} name    The name of the directory to create in the dirPath (root directory)
+	 * @param  {String} destDir The root directory to use
+	 * @param  {String} name    The name of the directory to create in the destDir (root directory)
 	 */
-	_create : function(dirPath, name) {
-		if (!fs.existsSync(dirPath + name)) {
-			fs.mkdir(dirPath + name);
+	_createDir : function(destDir, name) {
+		if (!fs.existsSync(destDir + name)) {
+			fs.mkdir(destDir + name);
+		}
+		else {
+			console.log('\t'+name+' already exists. Skipping');
+		}
+	},
+
+	/**
+	 * Creates an empty file
+	 * 
+	 * @function
+	 * @private
+	 * @param  {String} destDir The root directory to use
+	 * @param  {String} name    The name of the file to create in the destDir (root directory)
+	 */
+	_createFile : function(destDir, name) {
+		if (!fs.existsSync(destDir + name)) {
+			fs.closeSync(fs.openSync((destDir + name), 'w'));
 		}
 		else {
 			console.log('\t'+name+' already exists. Skipping');
 		}
 	}
+
 };
 
 /**
@@ -195,6 +213,9 @@ var pluginHandler = {
 					},
 					function(reject) {
 						if (options.ignore_errors) preInstallSuccess();
+						else if (!options.no_remove) {
+							npm.uninstall(destDir, pluginName, pluginName, options);
+						}
 					}
 				);
 			}

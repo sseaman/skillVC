@@ -39,7 +39,7 @@ To install the latest development version:
 -----
 SkillVC is maintained in GitHub.  For full source to to [GitHub SkillVC](https://github.com/sseaman/skillVC)
 
-For full API documetation, see [SkillVC API docs](https://sseaman.github.io/skillVC/)
+For full API documentation, see [SkillVC API docs](https://sseaman.github.io/skillVC/)
 
 ## Usage
 -----
@@ -69,7 +69,7 @@ points to override internal execution to give the most customizable framework po
 with SkillVC you will want to choose the configuration type you want.
 
 #### Convention-over-Configuration
-[Convention-over-Configuration (CoC)](https://en.wikipedia.org/wiki/Convention_over_configuration) is the simpliest and most 
+[Convention-over-Configuration (CoC)](https://en.wikipedia.org/wiki/Convention_over_configuration) is the simplest and most 
 straightforward way to use SkillVC as objects are simply placed in specific directories and SkillVC does the rest.
 
 To leverage CoC, first create the following directories in your project:
@@ -149,7 +149,7 @@ exports.handler = function(event, context) {
 
 ### SkillVC Context
 -----
-SkillVC uses a contex object (`map`) to store all objects related to execution as well as callbacks for use by the
+SkillVC uses a context object (`map`) to store all objects related to execution as well as callbacks for use by the
 various objects described below.  The context object, `skillVC` is passed to every object and can be manipulated by
 any object.  This object is used by every object in SkillVC so it's good to know what all is available.
 
@@ -168,21 +168,21 @@ below.  You can also use this `map` to pass your own objects into SkillVC at tim
     * logLevel - SkillVC uses [Winston](https://github.com/winstonjs/winston) to internal logging.  See 
 [winston-simple](https://github.com/sseaman/winston-simple/) for configuration options
 * appSession - A `map` that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
-store any objects that you want to make avaliable to other objects
+store any objects that you want to make available to other objects
 * callback - Has `success` and `failure` functions to be used by Intent Handlers to return Responses and continue SkillVC execution
 * filterChainCallback - Has `success` and `failure` functions to be used by Filters to continue SkillVC execution
 * session - A `map` that is created on every intent event and can be used to store any objects that you want to make
-avaliable to other objects
+available to other objects
 
 
 ### Intent Handlers
 -----
 Intent Handlers are the main objects for your skill and handle requests sent by Alexa to your skill.  When an intent
 is mapped to an utterance by Alexa and then sent to your Lambda function configured with SkillVC, SkillVC will
-execute the Intent Handler registerd for the executed intent.
+execute the Intent Handler registered for the executed intent.
 
 #### Mapping to an Intent
-SkillVC can map Alexa intent events to Intent Hanlder objects in a few ways:
+SkillVC can map Alexa intent events to Intent Handler objects in a few ways:
 * By list provided from getIntentsList()
 * By Filename
 
@@ -190,7 +190,7 @@ SkillVC can map Alexa intent events to Intent Hanlder objects in a few ways:
 
 If the Intent Handler you have created implements the function `getIntentsList()` and returns an array of
 intent names that match the names registered in your intent list in developer.amazon.com/edw, SkillVC will
-invoke that specific Intent Handler for each of the intents returned byt the function.
+invoke that specific Intent Handler for each of the intents returned by the function.
 
 Example:
 ```
@@ -262,7 +262,7 @@ to an intent type of 'launch'.  To register a Intent Handler to execute on Launc
 
 ### Responses
 -----
-Responses are defined by individual JSON files (using CoC and Scanning) tha represent the JSON information required by 
+Responses are defined by individual JSON files (using CoC and Scanning) that represent the JSON information required by 
 Alexa.  To simplify the process of creating a response, SkillVC does not require all Response information, only the fields
 you are concerned with (all other information will be filled in for you).
 
@@ -346,8 +346,8 @@ CalendarDateFormatter.prototype.format = function(value) {
 
 You would then register the formatter with the Response:
 ```
-responseManager.getResponse('theResponseIWant').getFormatterManager().addFormatter(
-	'date' : new CalendarDateFormatter()
+svContext.appConfig.responseManager.getResponse('theResponseIWant').getFormatterManager().addFormatters(
+	{ 'date' : new CalendarDateFormatter() }
 );
 ```
 
@@ -383,7 +383,7 @@ SkillVC supports the ability to have more than one Session Handler.  This is use
 has multiple steps that you want to keep in separate objects.
 
 To set the execution order of the Session Handlers you may choose to add the function `getOrder()` to your Session Handler.
-`getOrder()` should return the numerical value of the position within the exection order for the Session Handler that has
+`getOrder()` should return the numerical value of the position within the execution order for the Session Handler that has
 implemented the function.  If `getOrder()` is not implements, the Session Handler will be added to the execution order
 based on the order it was loaded. This means that if you only have one Session Handler, implementing getOrder() is not 
 required.
@@ -457,7 +457,7 @@ SkillVC supports the ability to have more than one Filter.  This is useful if yo
 functionality.  
 
 To set the execution order of the Filters you may choose to add the function `getOrder()` to your Filter.
-`getOrder()` should return the numerical value of the position within the exection order for the Filter that has
+`getOrder()` should return the numerical value of the position within the execution order for the Filter that has
 implemented the function.  If `getOrder()` is not implements, the Filter will be added to the execution order
 based on the order it was loaded. This means that if you only have one Filter, implementing getOrder() is not 
 required.

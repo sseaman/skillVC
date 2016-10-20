@@ -1,6 +1,4 @@
 Global ToDo:
 
-Make a plugin architecture were people can write quick intent / sample utterances / intentHandlers that can be added on too
-git:
-
-Make a providers/config
+FIXME: Change IntentHandlerProviderByDirectory to handle not only objects that are brought in by require, 
+	but also module.exports = {} with the function in the module.exports

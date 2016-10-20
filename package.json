@@ -4,7 +4,6 @@
   "description": "A View / Controller (no Model) framework for quickly creating custom skills",
   "main": "index.js",
   "directories": {
-    "doc": "docs",
     "lib" : "lib",
     "test": "test"
   },
