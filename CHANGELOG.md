@@ -4,7 +4,7 @@
 * ```skillvc``` CLI created for project initialization and plugin installation  
     New CLI that will create directories and stub files for new SkillVC projects.    
     Use ```node ./node_modules/.bin/skillvc init .``` in the directory you have installed SkillVC and would like to make a SkillVC project  
-    Use ```node ./node_modules/.bin/skillvc install <pluginName> .``` in your SkillVC directory to install the
+    Use ```node ./node_modules/.bin/skillvc install . <pluginName>``` in your SkillVC directory to install the
         SkillVC plugin of your choice
 
 
