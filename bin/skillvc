@@ -389,7 +389,7 @@ var npm = {
 	},
 
 	_do : function(funcType, destDir, packageName, humanFriendlyName, options) {
-		if (options.debug) console.log('Attempting to npm '+funcType+' '+humanFriendlyName+' (could take a few seconds)...');
+		console.log('Attempting to npm '+funcType+' '+humanFriendlyName+' (could take a few seconds)...');
 		
 		// make sure there is a node_modules dir
 		var nodeModulesDir = path.join(destDir, 'node_modules');
@@ -402,12 +402,10 @@ var npm = {
 
 		return new Promise(function(resolve, reject) {
 			exec(cmd, function(error, stdout, stderr) {
-				if (options.debug) {
-					console.log( ((error || stderr) 
-						? 'Error '+funcType+' ' +humanFriendlyName+': '+ ((error) ? error : stderr)
-						: humanFriendlyName+' npm '+funcType+'ed')
-					);
-				}
+				console.log( ((error || stderr) 
+					? 'Error '+funcType+' ' +humanFriendlyName+': '+ ((error) ? error : stderr)
+					: humanFriendlyName+' npm '+funcType+'ed')
+				);
 
 				if (fs.existsSync(destDir+'etc')) fs.rmdirSync(destDir+'etc');
 

@@ -56,6 +56,7 @@ var log = require('winston-simple').getLogger('IntentHandlerProviderByFile');
  *
  * @constructor
  * @implements {Provider}
+ * @implements {ItemProvider}
  * @see {@link AbstractProviderByFile}
  * @see {@link DefaultJSFilenameFormatter}
  * @param {String} file The file that represnts an intent
@@ -67,6 +68,7 @@ var log = require('winston-simple').getLogger('IntentHandlerProviderByFile');
  */
 function IntentHandlerProviderByFile(file, options) {
 	this._file = file;
+	this._loaded = null;
 
 	this._filenameFormatter = (options &amp;&amp; options.filenameFormatter) 
 		? options.filenameFormatter
@@ -74,7 +76,6 @@ function IntentHandlerProviderByFile(file, options) {
 
 	AbstractProviderByFile.apply(this, [
 		file, 
-		this._processFile,
 		options]);
 }
 
@@ -85,28 +86,64 @@ IntentHandlerProviderByFile.prototype.constructor = IntentHandlerProviderByFile;
  * Load the file and registers it based on the list of intents specified by {@link IntentHandler.getIntentsList}. If 
  * {@link IntentHandler.getIntentsList} does not exist the intent will be registered under the name of the file as
  * parsed by the defined {@link FilenameFormatter}.
- * 
- * @protected
- * @param  {String} file  The file to process
- * @return {Provider~processorResult} The loaded item 
+ *
+ * @function
+ * @param {String} itemId The Id of the item to process
+ * @param {String} fileName The name of the file being processed
+ * @param {Object} options Any options that are being passed to the ItemProcessor (can be null)
+ * @return {ItemProcessor~processItemResult} The result of processing the item
  */
-IntentHandlerProviderByFile.prototype._processFile = function(file) {
+IntentHandlerProviderByFile.prototype.processItem = function(itemId, fileName, options) {
 	try {
-		var loaded = require(file);
-		if (svUtil.isFunction(loaded.getIntentsList)) {
-			var handledIntents = loaded.getIntentsList();
+		if (!this._loaded) this._loaded = new (require(path.join(process.cwd(), fileName)));
+		if (svUtil.isFunction(this._loaded.getIntentsList)) {
+			var handledIntents = this._loaded.getIntentsList();
 			var processed = [];
 			for (var i=0;i&lt;handledIntents.length;i++) {
-				processed.push({'itemId' : handledIntents[i], 'item': loaded});
+				if (handledIntents[i] == itemId) {
+					return {'itemId' : handledIntents[i], 'item': this._loaded};
+				}
+			}
+			return null;
+		}
+		else {
+			return {'itemId' : this._filenameFormatter.parse(fileName)[0], 'item': this._loaded};
+		}
+	}
+	catch (err) {
+		log.error("Error loading intent handler "+path.parse(fileName).base+". Error:"+err);
+		return null;
+	}
+}
+
+/**
+ * Load the file and registers it based on the list of intents specified by {@link IntentHandler.getIntentsList}. If 
+ * {@link IntentHandler.getIntentsList} does not exist the intent will be registered under the name of the file as
+ * parsed by the defined {@link FilenameFormatter}.
+ *
+ * @function
+ * @param {Array.String} items Array of the item to process
+ * @param {String} fileName The name of the file being processed
+ * @param {Object} options Any options that are being passed to the ItemProcessor (can be null)
+ * @return {Array.ItemProcessor~processorResult} The result of processing the items
+ */
+IntentHandlerProviderByFile.prototype.processItems = function(items, fileName, options) {
+	try {
+		if (!this._loaded) this._loaded = new (require(path.join(process.cwd(), fileName)));
+		if (svUtil.isFunction(this._loaded.getIntentsList)) {
+			var handledIntents = this._loaded.getIntentsList();
+			var processed = [];
+			for (var i=0;i&lt;handledIntents.length;i++) {
+				processed.push({'itemId' : handledIntents[i], 'item': this._loaded});
 			}
 			return (processed.length > 0) ? processed : null;
 		}
 		else {
-			return [{'itemId' : this._filenameFormatter.parse(file)[0], 'item': loaded}];
+			return [{'itemId' : this._filenameFormatter.parse(fileName)[0], 'item': this._loaded}];
 		}
 	}
 	catch (err) {
-		log.error("Error loading intent "+intentId+". Error:"+err);
+		log.error("Error loading intent handler "+path.parse(fileName).base+". Error:"+err);
 		return null;
 	}
 }
@@ -121,13 +158,13 @@ module.exports = IntentHandlerProviderByFile;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Mon Oct 17 2016 22:06:57 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Oct 21 2016 15:45:03 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

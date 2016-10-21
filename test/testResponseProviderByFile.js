@@ -1,8 +1,6 @@
-var ResponseProvider = require ('../lib/responses/responseProviderByFile.js');
+var ResponseProvider = require ('../lib/provider/convention/responseProviderByDirectory.js');
 
-var cp = new ResponseProvider('../assets/response.json');
-var response = cp.getResponse('response');
-cp.getResponse('billy');
-cp.getResponse('xxx');
-cp.getResponse('response');
+var cp = new ResponseProvider('./testProject/responses');
+var response = cp.getItem('card');
+cp.getItem('card copy');
 console.log("GC:"+JSON.stringify(response));

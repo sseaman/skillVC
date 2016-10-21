@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SkillVC: Source: intentHandler/intentHandlerManagerFactory.js</title>
+    <title>SkillVC: Source: provider/itemProcessor.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -27,7 +27,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: intentHandler/intentHandlerManagerFactory.js</h1>
+    <h1 class="page-title">Source: provider/itemProcessor.js</h1>
 
     
 
@@ -43,68 +43,40 @@
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-/** @private */
-var DefaultIntentHandlerManager = require('./defaultIntentHandlerManager.js');
-var IntentHandlerProviderByDirectory = require('../provider/convention/intentHandlerProviderByDirectory.js');
-var IntentHandlerProviderByFile = require('../provider/convention/intentHandlerProviderByFile.js');
-var IntentHandlerProviderByMap = require('../provider/convention/intentHandlerProviderByMap.js');
-
 /**
- * Static factor for creating IntentHandlerManagers. This should never need to be called and is here as a placeholder.
+ * Interface for Item Processor used by providers
  *
- * @constructor
- * @see  {@link IntentHandlerManager}
+ * @interface ItemProcessor
  */
-function IntentHandlerManagerFactory() {
-	
-}
 
 /**
- * Creates a IntentHandlerManager that loads intents from a directory and 
- * uses the DefaultIntentHandlerManager and the IntentHandlerProviderByDirectory provider
- *
+ * Processes the specific item and returns the result
+ * 
  * @function
- * @static
- * @see  {@link DefaultIntentHandlerManager}
- * @see  {@link IntentHandlerProviderByDirectory}
- * @param  {String} directory The directory to load intents from
- * @return {IntentHandlerManager} The IntentHanderManager that will manage the intents
+ * @name ItemProcessor#processItem
+ * @param {String} itemId The Id of the item to process
+ * @param {String|Object} source The source being processed (can be a map or file depending on implementation)
+ * @param {Object} options Any options that are being passed to the ItemProcessor (can be null)
+ * @return {ItemProcessor~processItemResult} The result of processing the item
  */
-IntentHandlerManagerFactory.createByDirectory = function(directory) {
-	return new DefaultIntentHandlerManager([new IntentHandlerProviderByDirectory(directory)]);
-}
 
 /**
- * Creates a IntentHandlerManager that loads an intent from a file and 
- * uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provider
- *
+ * Processes multiple items at once
+ * 
  * @function
- * @static
- * @see  {@link DefaultIntentHandlerManager}
- * @see  {@link IntentHandlerProviderByFile}
- * @param  {String} file The file to load an intent from
- * @return {IntentHandlerManager} The IntentHanderManager that will manage the intents
+ * @name ItemProcessor#processItems
+ * @param {Array.String} items Array of the item to process
+ * @param {String|Object} source The source being processed (can be a map or file depending on implementation)
+ * @param {Object} options Any options that are being passed to the ItemProcessor (can be null)
+ * @return {Array.ItemProcessor~processorResult} The result of processing the items
  */
-IntentHandlerManagerFactory.createByFile = function(file) {
-	return new DefaultIntentHandlerManager([new IntentHandlerProviderByFile(file)]);
-}
 
 /**
- * Creates a IntentHandlerManager that loads intents from a map and 
- * uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
+ * @typedef {Object} ItemProcessor~processorResult
  *
- * @function
- * @static
- * @see  {@link DefaultIntentHandlerManager}
- * @see  {@link IntentHandlerProviderByMap}
- * @param  {Map} map The map to load intents from
- * @return {IntentHandlerManager} The IntentHanderManager that will manage the intents
- */
-IntentHandlerManagerFactory.createByMap = function(map) {
-	return new DefaultIntentHandlerManager([new IntentHandlerProviderByMap(map)]);
-}
-
-module.exports = IntentHandlerManagerFactory;</code></pre>
+ * @property {Object.&lt;string, string>} itemId : item 
+ * @property {Object.&lt;string, Object>} item : The item that was loaded
+ */</code></pre>
         </article>
     </section>
 

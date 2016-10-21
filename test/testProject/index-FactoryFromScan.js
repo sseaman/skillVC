@@ -1,4 +1,4 @@
-var SkillVCFactory = require('../lib/skillVCFactory.js');
+var SkillVCFactory = require('../../lib/skillVCFactory.js');
 
 exports.handler = function(event, context) {
 	SkillVCFactory.createFromScan([

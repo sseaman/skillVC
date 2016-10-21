@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SkillVC: Class: IntentHandlerManagerFactory</title>
+    <title>SkillVC: Interface: ItemProcessor</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -27,7 +27,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: IntentHandlerManagerFactory</h1>
+    <h1 class="page-title">Interface: ItemProcessor</h1>
 
     
 
@@ -38,7 +38,7 @@
 
 <header>
     
-        <h2>IntentHandlerManagerFactory</h2>
+        <h2>ItemProcessor</h2>
         
     
 </header>
@@ -47,29 +47,10 @@
     <div class="container-overview">
     
         
+            <div class="description">Interface for Item Processor used by providers</div>
+        
 
-    
-
-    <h4 class="name" id="IntentHandlerManagerFactory"><span class="type-signature"></span>new IntentHandlerManagerFactory<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Static factor for creating IntentHandlerManagers. This should never need to be called and is here as a placeholder.
-</div>
-
-
-
-
-
-
-
-
-
-
-
+        
 
 
 <dl class="details">
@@ -101,39 +82,19 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="intentHandler_intentHandlerManagerFactory.js.html">intentHandler/intentHandlerManagerFactory.js</a>, <a href="intentHandler_intentHandlerManagerFactory.js.html#line20">line 20</a>
+        <a href="provider_itemProcessor.js.html">provider/itemProcessor.js</a>, <a href="provider_itemProcessor.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
     
 
     
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li>
-        </ul>
-    </dd>
-    
 
     
 </dl>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
     
     </div>
 
@@ -157,15 +118,14 @@
 
     
 
-    <h4 class="name" id=".createByDirectory"><span class="type-signature">(static) </span>createByDirectory<span class="signature">(directory)</span><span class="type-signature"> &rarr; {<a href="IntentHandlerManager.html">IntentHandlerManager</a>}</span></h4>
+    <h4 class="name" id="processItem"><span class="type-signature"></span>processItem<span class="signature">(itemId, source, options)</span><span class="type-signature"> &rarr; {ItemProcessor~processItemResult}</span></h4>
 
     
 
 
 
 <div class="description">
-    Creates a IntentHandlerManager that loads intents from a directory and 
-uses the DefaultIntentHandlerManager and the IntentHandlerProviderByDirectory provider
+    Processes the specific item and returns the result
 </div>
 
 
@@ -201,7 +161,7 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByDirectory pr
 
         <tr>
             
-                <td class="name"><code>directory</code></td>
+                <td class="name"><code>itemId</code></td>
             
 
             <td class="type">
@@ -217,160 +177,23 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByDirectory pr
 
             
 
-            <td class="description last">The directory to load intents from</td>
+            <td class="description last">The Id of the item to process</td>
         </tr>
 
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="intentHandler_intentHandlerManagerFactory.js.html">intentHandler/intentHandlerManagerFactory.js</a>, <a href="intentHandler_intentHandlerManagerFactory.js.html#line35">line 35</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li>
-        
-            <li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The IntentHanderManager that will manage the intents
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="IntentHandlerManager.html">IntentHandlerManager</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".createByFile"><span class="type-signature">(static) </span>createByFile<span class="signature">(file)</span><span class="type-signature"> &rarr; {<a href="IntentHandlerManager.html">IntentHandlerManager</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates a IntentHandlerManager that loads an intent from a file and 
-uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provider
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>file</code></td>
+                <td class="name"><code>source</code></td>
             
 
             <td class="type">
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
 
 
             
@@ -380,7 +203,30 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provide
 
             
 
-            <td class="description last">The file to load an intent from</td>
+            <td class="description last">The source being processed (can be a map or file depending on implementation)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Any options that are being passed to the ItemProcessor (can be null)</td>
         </tr>
 
     
@@ -421,21 +267,12 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provide
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="intentHandler_intentHandlerManagerFactory.js.html">intentHandler/intentHandlerManagerFactory.js</a>, <a href="intentHandler_intentHandlerManagerFactory.js.html#line50">line 50</a>
+        <a href="provider_itemProcessor.js.html">provider/itemProcessor.js</a>, <a href="provider_itemProcessor.js.html#line14">line 14</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li>
-        
-            <li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li>
-        </ul>
-    </dd>
     
 
     
@@ -457,7 +294,7 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provide
 
         
 <div class="param-desc">
-    The IntentHanderManager that will manage the intents
+    The result of processing the item
 </div>
 
 
@@ -468,7 +305,7 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provide
     </dt>
     <dd>
         
-<span class="param-type"><a href="IntentHandlerManager.html">IntentHandlerManager</a></span>
+<span class="param-type">ItemProcessor~processItemResult</span>
 
 
     </dd>
@@ -483,15 +320,14 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByFile provide
 
     
 
-    <h4 class="name" id=".createByMap"><span class="type-signature">(static) </span>createByMap<span class="signature">(map)</span><span class="type-signature"> &rarr; {<a href="IntentHandlerManager.html">IntentHandlerManager</a>}</span></h4>
+    <h4 class="name" id="processItems"><span class="type-signature"></span>processItems<span class="signature">(items, source, options)</span><span class="type-signature"> &rarr; {Array.ItemProcessor~processorResult}</span></h4>
 
     
 
 
 
 <div class="description">
-    Creates a IntentHandlerManager that loads intents from a map and 
-uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
+    Processes multiple items at once
 </div>
 
 
@@ -527,13 +363,13 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
 
         <tr>
             
-                <td class="name"><code>map</code></td>
+                <td class="name"><code>items</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Map</span>
+<span class="param-type">Array.String</span>
 
 
             
@@ -543,7 +379,56 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
 
             
 
-            <td class="description last">The map to load intents from</td>
+            <td class="description last">Array of the item to process</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The source being processed (can be a map or file depending on implementation)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Any options that are being passed to the ItemProcessor (can be null)</td>
         </tr>
 
     
@@ -584,21 +469,12 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="intentHandler_intentHandlerManagerFactory.js.html">intentHandler/intentHandlerManagerFactory.js</a>, <a href="intentHandler_intentHandlerManagerFactory.js.html#line65">line 65</a>
+        <a href="provider_itemProcessor.js.html">provider/itemProcessor.js</a>, <a href="provider_itemProcessor.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li>
-        
-            <li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li>
-        </ul>
-    </dd>
     
 
     
@@ -620,7 +496,7 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
 
         
 <div class="param-desc">
-    The IntentHanderManager that will manage the intents
+    The result of processing the items
 </div>
 
 
@@ -631,7 +507,7 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
     </dt>
     <dd>
         
-<span class="param-type"><a href="IntentHandlerManager.html">IntentHandlerManager</a></span>
+<span class="param-type">Array.ItemProcessor~processorResult</span>
 
 
     </dd>
@@ -644,6 +520,153 @@ uses the DefaultIntentHandlerManager and the IntentHandlerProviderByMap provider
         
     
 
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="~processorResult">processorResult</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>itemId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;string, string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">: item</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;string, Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">: The item that was loaded</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="provider_itemProcessor.js.html">provider/itemProcessor.js</a>, <a href="provider_itemProcessor.js.html#line36">line 36</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
     
 
     
