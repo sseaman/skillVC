@@ -15,6 +15,7 @@ function helloWorldIntents() {}
 
 /**
  * @function
+ * @param {SVContext} svContext The context of the execution of the intent handler
  */
 helloWorldIntents.prototype.handleIntent = function(svContext) {
 	/*

@@ -3,21 +3,29 @@
   "version": "0.3.0",
   "description": "A View / Controller (no Model) framework for quickly creating custom skills",
   "main": "index.js",
+  "devDependencies": {
+    "eslint": "3.8.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-eslint": "^19.0.0"
+  },
   "dependencies": {
     "handlebars": "^4.0.5",
     "deep-extend": "^0.4.1",
     "winston-simple": "^1.0.2",
-    "commander":"^2.9.0"
+    "commander": "^2.9.0"
   },
-  "bin" : {
-    "skillvc" : "./bin/skillvc"
+  "bin": {
+    "skillvc": "./bin/skillvc"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/sseaman/skillVC.git"
   },
-  "bugs" : {
-    "url" : "https://github.com/sseaman/skillVC/issues"
+  "bugs": {
+    "url": "https://github.com/sseaman/skillVC/issues"
   },
   "keywords": [
     "alexa",

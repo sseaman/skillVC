@@ -23,6 +23,10 @@
 	Abstract providers and their concrete implementations had almost random method signatures for their processItem methods.  
 	This has been standardized and better documentation and cleaner code implemented  
 	This should make extending these objects much easier to follow
+* Logging levels for SkillVC are no longer on by default.  They will need to be set in your index.js
+* Created requireTest.js which will recursively look in directories for the specified file types and try a 	```require()``` on them
+to ensure they will work correctly when executed later.  Think of it as a simple compile tester
+* Now using Grunt to do builds and run ESLint and RequireTest
 
 #### Cleanup
 * Use of path creation via string concatenation replaced with path.join for cleaner code and safer OS independence

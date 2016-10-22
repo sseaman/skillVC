@@ -1,6 +1,7 @@
 docs/
-test/
 docConfig.json
 docLayout.tmpl
+.eslintignore
+.eslintrc.js
 TODO.txt
-.jshintrc
+test/

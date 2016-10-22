@@ -1,4 +1,7 @@
-Global ToDo:
+Global To-Do List:
 
 FIXME: Change IntentHandlerProviderByDirectory to handle not only objects that are brought in by require, 
 	but also module.exports = {} with the function in the module.exports
+
+TODO: Move eslint to global
+TODO: Bring in mocha for testing

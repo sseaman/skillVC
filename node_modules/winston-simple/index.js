@@ -82,11 +82,13 @@ module.exports = {
 			else {
 				// individual log levels were set
 				var level = this._logLevels[key];
-				if (level != 'none') {
-					logger.transports.console.level = level;
-				}
-				else { // level = none, so turn it off
-					logger.remove(winston.transports.Console)
+				if (logger.transports.console) { // if there isn't even a console, nothing to do
+					if (level != 'none') {
+						logger.transports.console.level = level;
+					}
+					else { // level = none, so turn it off
+						logger.remove(winston.transports.Console)
+					}
 				}
 			}
 		}
@@ -115,7 +117,7 @@ module.exports = {
 	getLogger : function(className) {
 		// figure out the level to use
 		var level;
-		if (winston.loggers.loggers[className]) {
+		if (winston.loggers.loggers[className] && winston.loggers.loggers[className].transports.console) {
 			level = winston.loggers.loggers[className].transports.console.level;
 		}
 		if (this._logLevels) {

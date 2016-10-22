@@ -11,7 +11,13 @@ module.exports = {
         "node": true
     },
     "rules":{
+        "eqeqeq" : 2,
         "no-console" : 0,
-        "semi" : 2
-    }
+        "no-alert" : 2,
+        "no-eq-null" : 2,
+        "no-implied-eval" : 2,
+        "semi" : 2, 
+        "valid-jsdoc" : [ 2, { "requireReturn": false } ]
+    },
+    "ignorePath" : "./.eslintignore"
 };
