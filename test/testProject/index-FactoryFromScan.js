@@ -6,4 +6,4 @@ exports.handler = function(event, context) {
 		'./assets/responses/card.json',
 		'./assets/intents/hello.js'
 		]).handler(event, context);
-}
+};

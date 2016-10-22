@@ -5,6 +5,6 @@ var svc = {
 	factory : require('./lib/skillVCFactory.js'),
 	tester 	: require('./lib/test/skillTester.js'),
 	core 	: require('./lib/skillVC.js')
-}
+};
 
 module.exports = svc;

@@ -27,7 +27,7 @@ CompileTest.prototype = {
 				require (files[i]);
 
 				if (options.no_console) console.log = log;
-				process.stdout.write(' SUCCESS\n')
+				process.stdout.write(' SUCCESS\n');
 			}
 			catch (e) {
 				process.stdout.write(' ERROR \n\t'+e.stack+'\n');
@@ -57,7 +57,7 @@ CompileTest.prototype = {
 		})(dir, null);
 	}
 
-}
+};
 
 /***************************
 * Cmd / main code

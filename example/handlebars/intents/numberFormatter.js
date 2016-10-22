@@ -4,7 +4,7 @@
  * @implements {Formatter}
  * @constructor 
  */
-function NumberFormatter() { };
+function NumberFormatter() { }
 
 /**
  * Required method that formats the passed in number

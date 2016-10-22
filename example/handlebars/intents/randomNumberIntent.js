@@ -25,7 +25,7 @@ RandomNumberIntent.prototype = {
 	 * @return {[String]} The intents that this object can handle
 	 */
 	getIntentsList : function() {
-	    return ['RandomNumberIntent'];
+		return ['RandomNumberIntent'];
 	},
 
 	/**
@@ -50,7 +50,7 @@ RandomNumberIntent.prototype = {
 		// to make it simple, we'll check things here to ensure we don't register it twice
 		if (!this.initialized) {
 			svContext.appConfig.responseManager.getResponse('randomNumber').getFormatterManager().addFormatters(
-			    {'numberFormat' : new NumberFormatter()}
+				{'numberFormat' : new NumberFormatter()}
 			);
 			this.initialized = true;
 		}

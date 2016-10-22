@@ -25,6 +25,6 @@ helloWorldIntents.prototype.handleIntent = function(svContext) {
 	A tell() is a response to Alexa that does not have a followup question.
 	 */
 	svContext.callback.success(svContext.appConfig.responseManager.getResponse('helloWorld').renderTell());
-}
+};
 
 module.exports = helloWorldIntents;

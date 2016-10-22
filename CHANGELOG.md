@@ -1,7 +1,7 @@
 ### v0.3.1 - (2016-10-21)
 
 #### New Features
-*  Supports module.exports = {} for all objects  
+<!-- *  Supports module.exports = {} for all objects  
 	Previous versions of SkillVC required all intent handlers, filters, etc. to be coded like strict javascript objects  
 		Example:  
 	```
@@ -18,7 +18,7 @@
 			handleIntents : function(svContext) {
 			}
 		}
-	```
+	``` -->
 * Providers now use ItemProcessor interface for all item loading processing   
 	Abstract providers and their concrete implementations had almost random method signatures for their processItem methods.  
 	This has been standardized and better documentation and cleaner code implemented  
@@ -28,11 +28,12 @@
 * Use of path creation via string concatenation replaced with path.join for cleaner code and safer OS independence
 * Created compileTest.js to quickly ensure that all javascript in SkillVC can be ```require```d without errors
 * Moved test project directories to /testProject
+* Ran ESHint on all code.  Lots of cleanup (> 300 issues)
 
-#### Bug Fixes
+<!-- #### Bug Fixes
 * Objects that used module.exports = {} could not be loaded.  Fixed
 * Objects that used module.exports = {} were logged with name "Object".  Code modified to show file name in logs
-
+ -->
 	
 ### v0.3.0 - (2016-10-19)
 
