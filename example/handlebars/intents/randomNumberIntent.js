@@ -56,7 +56,6 @@ RandomNumberIntent.prototype.handleIntent = function(svContext) {
 
 	// pass the randomNum into the response which will use Handlebars and the formatter specified to render the response
 	svContext.callback.success(svContext.appConfig.responseManager.getResponse('randomNumber').renderTell(
-		//FIXME: This is causing a circular reference in the HandlebarsFormatterManager somehow...
 		{
 			'randomNum' : (Math.random() * (10 - 1) + 1)
 		}
