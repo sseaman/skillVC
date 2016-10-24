@@ -33,6 +33,8 @@ RequireTest.prototype = {
 
 				require (files[i]);
 
+				//delete require.cache[require.resolve(files[i])];
+
 				if (options.no_console) console.log = log;
 				process.stdout.write(' SUCCESS\n');
 			}
@@ -48,7 +50,7 @@ RequireTest.prototype = {
 			fileList = fileList || [];
 			files.forEach(function(file) {
 				if (fs.statSync(path.join(dir, file)).isDirectory()) {
-					if (!(options.skip_dirs.indexOf(path.basename(file)) >= 0)) {
+					if (!(options.skip_dirs && options.skip_dirs.indexOf(path.basename(file)) >= 0)) {
 						fileList = walkSync(path.join(dir, file), fileList);
 					}
 				}

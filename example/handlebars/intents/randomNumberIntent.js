@@ -6,7 +6,6 @@
 
 /** @private */
 var NumberFormatter = require('./numberFormatter.js');
-var log = require('winston-simple').getLogger('RandomNumberIntent');
 
 /**
  * @constructor
@@ -23,7 +22,7 @@ function RandomNumberIntent() {
  * @function
  * @return {[String]} The intents that this object can handle
  */
-RandomNumberIntent.prototype.getIntentsList : function() {
+RandomNumberIntent.prototype.getIntentsList = function() {
 	return ['RandomNumberIntent'];
 };
 
@@ -46,7 +45,7 @@ RandomNumberIntent.prototype.getIntentsList : function() {
  * @function
  * @param {SVContext} svContext The context of the execution of the intent handler
  */
-RandomNumberIntent.prototype.handleIntent : function(svContext) {
+RandomNumberIntent.prototype.handleIntent = function(svContext) {
 	// to make it simple, we'll check things here to ensure we don't register it twice
 	if (!this.initialized) {
 		svContext.appConfig.responseManager.getResponse('randomNumber').getFormatterManager().addFormatters(
@@ -57,6 +56,7 @@ RandomNumberIntent.prototype.handleIntent : function(svContext) {
 
 	// pass the randomNum into the response which will use Handlebars and the formatter specified to render the response
 	svContext.callback.success(svContext.appConfig.responseManager.getResponse('randomNumber').renderTell(
+		//FIXME: This is causing a circular reference in the HandlebarsFormatterManager somehow...
 		{
 			'randomNum' : (Math.random() * (10 - 1) + 1)
 		}

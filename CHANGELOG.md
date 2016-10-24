@@ -30,7 +30,7 @@ to ensure they will work correctly when executed later.  Think of it as a simple
 
 #### Cleanup
 * Use of path creation via string concatenation replaced with path.join for cleaner code and safer OS independence
-* Created compileTest.js to quickly ensure that all javascript in SkillVC can be ```require```d without errors
+* Created requireTest.js to quickly ensure that all javascript in SkillVC can be ```require```d without errors
 * Moved test project directories to /testProject
 * Ran ESHint on all code.  Lots of cleanup (> 300 issues)
 

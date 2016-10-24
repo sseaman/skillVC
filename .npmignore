@@ -3,5 +3,6 @@ docConfig.json
 docLayout.tmpl
 .eslintignore
 .eslintrc.js
+Gruntfile.js
 TODO.txt
 test/

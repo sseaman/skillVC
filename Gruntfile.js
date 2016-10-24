@@ -8,8 +8,6 @@ module.exports = function(grunt) {
 		eslint: {
 			options: {
 				config: 'eslintrc.js'
-				// ignorePath : './.eslintignore',
-				// ignore : true
 			},
 			target: ['.']
 		}
