@@ -3,6 +3,13 @@
 A View / Controller (no Model) framework for quickly creating complex custom skills for [Alexa](https://developer.amazon.com/alexa). 
 Choose either Convention-over-Configuration, Configuration, or Scan approaches to the configuration and execution of your skill.
 
+## NOTE ON STABILITY OF PROJECT
+SkillVC is still under heavy development and should be considered BETA at this point (as of Oct 2016).
+
+If you find ANY issues, please take the time to report them at [Github Issues](https://github.com/sseaman/skillVC/issues)
+
+Please monitor this section, and the [ChangeLog](https://github.com/sseaman/skillVC/blob/master/CHANGELOG.md) for stability updates
+
 ## Table of Contents
 1. Installation
 2. Source / Webpage

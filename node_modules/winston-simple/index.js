@@ -7,7 +7,7 @@
 
 /** @private */
 var winston = require('winston');
-var _logLevels = {};
+var logLevels = {};
 
 /**
  * Providers a centralized logger mechanism with per object definable logging levels using 
@@ -59,21 +59,21 @@ module.exports = {
 	 * This will set every object to "debug" except SomeOtherObject, which will be set to "info".  
 	 * 
 	 * @function
-	 * @param {Map} logLevels The logging levels for any object
+	 * @param {Map} definedLogLevels The logging levels for any object
 	 */
-	setLevels : function(logLevels) {
-		this._logLevels = this._merge(logLevels);
+	setLevels : function(definedLogLevels) {
+		logLevels = this._merge(definedLogLevels);
 
 		// go through all the loggers
 		for (var key in winston.loggers.loggers)  {
 			var logger = winston.loggers.loggers[key];
 
-			if (this._logLevels['all']) { 
-				if (this._logLevels['all'] != 'none') { // turning on everything
+			if (logLevels['all']) { 
+				if (logLevels['all'] != 'none') { // turning on everything
 					if (!logger.transports.console) {
 						logger.transports.console = new winston.transports.Console();
 					}
-					logger.transports.console.level = this._logLevels['all'];
+					logger.transports.console.level = logLevels['all'];
 				}
 				else { // all = none so remove everything
 					logger.remove(winston.transports.Console)
@@ -81,7 +81,7 @@ module.exports = {
 			}
 			else {
 				// individual log levels were set
-				var level = this._logLevels[key];
+				var level = logLevels[key];
 				if (logger.transports.console) { // if there isn't even a console, nothing to do
 					if (level != 'none') {
 						logger.transports.console.level = level;
@@ -120,15 +120,14 @@ module.exports = {
 		if (winston.loggers.loggers[className] && winston.loggers.loggers[className].transports.console) {
 			level = winston.loggers.loggers[className].transports.console.level;
 		}
-		if (this._logLevels) {
-			if (this._logLevels[className]) {
-				level = this._logLevels[className];
+		if (logLevels) {
+			if (logLevels[className]) {
+				level = logLevels[className];
 			}
-			else if (this._logLevels['all']) {
-				level = this._logLevels['all'];
+			else if (logLevels['all']) {
+				level = logLevels['all'];
 			}
 		}
-
 		// we figured it out
 		if (level && level != 'none') {
 			winston.loggers.add(className, {

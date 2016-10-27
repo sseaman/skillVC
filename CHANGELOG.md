@@ -1,3 +1,17 @@
+### v0.3.2 - (2016-10-27)
+
+#### Note
+Officially declaring SkillVC as BETA as there are still multiple small issues that could impact skill development
+
+#### Bug Fixes
+* AbstractProviderbyAynsDirectory and AbstractProviderByFile were both incorrectly handling ItemProcesser 
+    They were both expecting results to be returned (which is no longer correct).  Not sure how this ever passed testing
+* ResponseRendererFilter was not using callback to continue filter chain
+* SessionHandlerProviderByX were incorrectly logging as FilterProviderByX
+* SkillVC.registerSessionHandlerManager had a type and was not returning the session handler
+* SkillVC was incorrectly using SessionHandlerManager and not SessionHandlerExecutor
+* A SkillVC that was already initialized was initializing again due to a missing return statement
+
 ### v0.3.1 - (2016-10-24)
 
 #### New Features

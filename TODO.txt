@@ -1,3 +1,9 @@
 Global To-Do List:
 
 TODO: Bring in mocha for testing
+TODO: Filters, Intents, and other still using constructor.name.  Need to show filename. 
+	Easiest way may be to add a getName() function to all objects during loading (if not already set)
+	Note to self: Search all code for constructor.name
+TODO: Allow the intent handlers to call the standard callback to lambda with the actual result
+	I'll have to intercept it to allow the filters to complete and then let it fire correctly
+TODO: Change FilterExecutor and SessionHandlerExecutor to use Promise()

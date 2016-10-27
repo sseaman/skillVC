@@ -135,10 +135,10 @@ var pluginHandler = {
 	 * @param  {Object} options    The options from the CLI
 	 */
 	handle : function(dir, pluginName, options) {
-		console.log('Stating '+pluginName+ ' installation...');
+		console.log('Starting '+pluginName+ ' installation...');
 		var destDir = path.resolve(dir) + path.sep;
 		var sourceDir = path.resolve(destDir, 'node_modules', pluginName);
-		var pluginConfFile = path.join(destDir, 'node_modules', pluginName, 'skillvcPlugin.json');
+		var pluginConfFile = path.resolve(destDir, 'node_modules', pluginName, 'skillvcPlugin.json');
 
 		if (options.debug) {
 			console.log('Reading plugin information from: '+sourceDir);
@@ -174,10 +174,10 @@ var pluginHandler = {
 					if (pluginConf.node_modules) {
 						for (var i=0;i<pluginConf.node_modules.length;i++) {
 							// if not already installed
-							if (!fs.existsSync( path.join(destDir, 'node_modules', pluginConf.node_modules[i]) )) {
+							if (!fs.existsSync( path.resolve(destDir, 'node_modules', pluginConf.node_modules[i]) )) {
 								fs.renameSync(
-									path.join(sourceDir, 'node_modules', pluginConf.node_modules[i]),
-									path.join(destDir, 'node_modules', pluginConf.node_modules[i]));
+									path.resolve(sourceDir, 'node_modules', pluginConf.node_modules[i]),
+									path.resolve(destDir, 'node_modules', pluginConf.node_modules[i]));
 							}
 						}
 					}
@@ -274,7 +274,7 @@ var pluginHandler = {
 			}
 			else {
 				// have to use full path otherwise require uses the location of skillvc for relative paths
-				var pExe = require(path.join(sourceDir, executor));
+				var pExe = require(path.resolve(sourceDir, executor));
 				// if I got an object back, construct it
 				if (svUtil.isFunction(pExe)) pExe = new pExe();
 
@@ -322,10 +322,10 @@ var pluginHandler = {
 
 		var file;
 		for (var i=0;i<files.length;i++) {
-			file = path.join(sourceDir, path.normalize(files[i]));
+			file = path.resolve(sourceDir, path.normalize(files[i]));
 
 			if (fs.existsSync(file)) {
-				fs.renameSync(file, path.join(destDir, path.basename(file)));
+				fs.renameSync(file, path.resolve(destDir, path.basename(file)));
 				created ++;
 			}
 			else {
@@ -392,7 +392,7 @@ var npm = {
 		console.log('Attempting to npm '+funcType+' '+humanFriendlyName+' (could take a few seconds)...');
 		
 		// make sure there is a node_modules dir
-		var nodeModulesDir = path.join(destDir, 'node_modules');
+		var nodeModulesDir = path.resolve(destDir, 'node_modules');
 		if (!fs.existsSync(nodeModulesDir)){
 		    fs.mkdirSync(nodeModulesDir);
 		}

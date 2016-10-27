@@ -1,5 +1,3 @@
-var RequireTest = require('./test/requireTest.js');
-
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-eslint');
 	grunt.option('force', true); // for es-lint
@@ -17,6 +15,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('requireTest', 'Checks to ensure code works when "require()d"', function() {
 		this.async();
+		var RequireTest = require('./test/requireTest.js');
 		var rt = new RequireTest();
 		rt.compile('.', ['.js'], {
 			"no_console" : true,
@@ -26,4 +25,26 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('build', ['eslint', 'requireTest']);
+
+	grunt.registerTask('buildLocal', function(source, dest) {
+		this.async();
+		var exec = require('child_process').exec;
+		var fs = require('fs');
+		var path = require('path');
+
+		source = (source) ? source : '.';
+		dest = (dest) ? dest : '.';
+		exec('npm pack '+source, function(error, stdout, stderr) {
+			if (error || stderr) {
+				console.log('Error packing : '+ ((error) ? error : stderr));
+			}
+			else {
+				var fileName = stdout.slice(0, stdout.length - 1); // remove newline
+				fs.renameSync(path.resolve(source, fileName), path.resolve(dest, fileName));
+				console.log("Packed and moved to "+dest);
+			}
+		});
+	});
+
+
 };
