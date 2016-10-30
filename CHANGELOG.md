@@ -1,7 +1,7 @@
-### v0.3.3 - (2016-10-XX)
+### v0.3.3 - (2016-10-XX) - BREAKING CHANGES --Still in development
 
 #### New Features
-* Intent Handlers not longer have to call svContext.callback to send a response back from the skill.  They can now
+* Intent Handlers not longer call svContext.callback to send a response back from the skill.  They can now
 call the svContext.lambda.context functions as they normally would in a skill outside of SkillVC.
 * Intent Handlers no longer have to dig through the SVContext object to get the lambda event and context.  They
 are now passed in as arguments.  This and the removal of svContext.callback allows existing skills written 
