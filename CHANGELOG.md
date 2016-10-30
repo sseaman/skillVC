@@ -8,6 +8,8 @@ are now passed in as arguments.  This and the removal of svContext.callback allo
 outside of SkillVC to be easily integrated into SkillVC with minimal code changes.
 * Session Handlers no longer have to dig through the SVContext object to get the lambda event and context.  They
 are now passed in as arguments.  
+* All Filters, IntentHandlers, and SessionHandlers now have getName() added to them if it does not already exists. This
+is primarily for logging and debugging.
 
 ### v0.3.2 - (2016-10-27)
 

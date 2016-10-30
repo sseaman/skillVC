@@ -1,8 +1,5 @@
 Global To-Do List:
 
 TODO: Bring in mocha for testing
-TODO: Filters, Intents, and other still using constructor.name.  Need to show filename. 
-	Easiest way may be to add a getName() function to all objects during loading (if not already set)
-	Note to self: Search all code for constructor.name
 TODO: Update all docs to new IntentHandler call signature as well as no longer having to be an object
 TODO: Change FilterExecutor and SessionHandlerExecutor to use Promise()
