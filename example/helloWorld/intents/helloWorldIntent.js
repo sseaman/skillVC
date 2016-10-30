@@ -15,17 +15,16 @@ function helloWorldIntents() {}
 
 /**
  * @function
- * @param {SVContext} svContext The context of the execution of the intent handler
+ * @param {Object} event The event for the skill (from lambda)
+ * @param {OBject} context The context for the skill (from lambda)
+ * @param {SVContext} svContext The context of the execution
  */
-helloWorldIntents.prototype.handleIntent = function(svContext) {
+helloWorldIntents.prototype.handleIntent = function(event, context, svContext) {
 	/*
-	All intents must use the svContext.callback to return their response.  Either a success() or failure() 
-	is required.
-
 	This intent gets the helloWorld response (defined in helloWorld.js) and renders a tell() with it.  
 	A tell() is a response to Alexa that does not have a followup question.
 	 */
-	svContext.callback.success(svContext.appConfig.responseManager.getResponse('helloWorld').renderTell());
+	context.succeed(svContext.appConfig.responseManager.getResponse('helloWorld').renderTell());
 };
 
 module.exports = helloWorldIntents;

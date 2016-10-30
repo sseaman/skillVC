@@ -201,7 +201,7 @@ invoke that specific Intent Handler for each of the intents returned by the func
 
 Example:
 ```
-MyIntentObject.prototype.getIntentsList = function() {
+getIntentsList() {
 	return ['HelloWorldIntent', 'GoodByeIntent'];
 }
 ```
@@ -215,15 +215,16 @@ as the intent name.
 So, if you name your file HelloWorldIntent.js, SkillVC will use that object when the HelloWorldIntent event occurs.
 
 #### Executing
-Objects registered as Intent Handlers must implement the `handleIntent(svContext)` function.  The `handleIntent(svContext)`
-function will be called for whenever the intent the Intent Handler is registered for is invoked by Alexa.
+Objects registered as Intent Handlers must implement the `handleIntent(event, context, svContext)` function.  
+The `handleIntent(event, context, svContext)` function will be called for whenever the intent the Intent 
+Handler is registered for is invoked by Alexa.
 
-What the `handleIntent(svContext)` method does is entirely up to the developer of the skill, however it must return 
-a Response via the `callback` method provided by the svContext, even on error.  Failure to invoke the `callback` method will stop
+What the `handleIntent(event, context, svContext)` method does is entirely up to the developer of the skill, however it must call
+`context.succeed()` or `context.fail()` like any other skill, even on error.  Failure to do so will stop
 SkillVC and not allow any downstream filters to execute.
 
 Within the svContext that is passed to the function are a number of object that can be used by the Intent Handler.  Of 
-most interest to the Intent Handler are the ResponseManager and callback.
+most interest to the Intent Handler are the ResponseManager
 
 **ResponseManager**
 
@@ -232,29 +233,17 @@ responses for use by Intent Handlers.  To get the ResponseManager, access `svCon
 an Intent Handler can call the `getResponse('someResponseId')` method of the ResponseManager to return the instance of the Response
 that is required.  See the API documentation for more information and the example below for a common use case.
 
-**callback**
-
-As Intent Handlers could be preforming async operations, the use of a callback is required to tell SkillVC to continue
-with its execution flow.  The callback to be used can be accessed in `svContext.callback` and has two methods:
-* `success` - used if the Intent Handler was successful
-* `failure` - used if the Intent Handler had an error or wants to report some other type of issue
-
-The function used by the skill determines which path down the post intent execution filter chain is used, 
-`executePost` or `executePostOnError`.  See the Filter section below for more details
-
 An example of a simple Intent Handler that uses the above:
 ```
-function HelloWorldIntentHandler() { }
+module.exports = {
+    getIntentsList : function() {
+	   return ['HelloWorldIntent'];
+    },
 
-HelloIntentHandler.prototype.getIntentsList = function() {
-	return ['HelloWorldIntent'];
-}
-
-HelloIntentHandler.prototype.handleIntent = function(svContext) {
-	svContext.callback.success(svContext.appConfig.responseManager.getResponse('hello').renderTell());
-}
-
-module.exports = HelloIntentHandler;
+    handleIntent : function(event, context, svContext) {
+	   context.succeed(svContext.appConfig.responseManager.getResponse('hello').renderTell());
+    }
+};
 ```
 
 #### Launch Request
@@ -375,14 +364,12 @@ To create a Session Handler an object must implement two functions:
 
 Example:
 ```
-function MySessionHandler() {}
-
-MySessionHandler.prototype.sessionStart = function(svContext) {
+sessionStart(svContext) {
 	svContext.lambda.context.session = {};  // create a new session
 }
 
 // I don't want to do anything..
-MySessionHandler.prototype.sessionEnd = function(svContext) {}
+sessionEnd(svContext) {}
 ```
 
 #### Ordering of execution

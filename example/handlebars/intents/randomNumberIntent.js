@@ -43,9 +43,11 @@ RandomNumberIntent.prototype.getIntentsList = function() {
  * The randomNum is the variable placeholder that will be replaced but the number we pass in
  *
  * @function
- * @param {SVContext} svContext The context of the execution of the intent handler
+ * @param {Object} event The event for the skill (from lambda)
+ * @param {OBject} context The context for the skill (from lambda)
+ * @param {SVContext} svContext The context of the execution
  */
-RandomNumberIntent.prototype.handleIntent = function(svContext) {
+RandomNumberIntent.prototype.handleIntent = function(event, context, svContext) {
 	// to make it simple, we'll check things here to ensure we don't register it twice
 	if (!this.initialized) {
 		svContext.appConfig.responseManager.getResponse('randomNumber').getFormatterManager().addFormatters(
@@ -55,7 +57,7 @@ RandomNumberIntent.prototype.handleIntent = function(svContext) {
 	}
 
 	// pass the randomNum into the response which will use Handlebars and the formatter specified to render the response
-	svContext.callback.success(svContext.appConfig.responseManager.getResponse('randomNumber').renderTell(
+	context.succeed(svContext.appConfig.responseManager.getResponse('randomNumber').renderTell(
 		{
 			'randomNum' : (Math.random() * (10 - 1) + 1)
 		}

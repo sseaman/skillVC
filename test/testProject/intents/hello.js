@@ -5,10 +5,10 @@ HelloIntentHandler.prototype.getIntentsList = function() {
 	return ['hello'];
 };
 
-HelloIntentHandler.prototype.handleIntent = function(svContext) {
+HelloIntentHandler.prototype.handleIntent = function(event, context, svContext) {
 	console.log("In Hello:");
 
-	svContext.callback.success(svContext.appConfig.responseManager.getResponse('card').renderTell());
+	context.succeed(svContext.appConfig.responseManager.getResponse('card').renderTell());
 };
 
 module.exports = HelloIntentHandler;

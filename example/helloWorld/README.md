@@ -30,8 +30,8 @@ Next you need to make a response.  A response goes in the ```/responses``` direc
 ```
 
 ### Step 4 - Code your Intent Handler
-Next you need to make a basic intent handler.  Every intent handler must use the svContext callback of ```success()```
-or ```failure()``` to return a response to SkillVC.
+Next you need to make a basic intent handler.  Every intent handler should call ```context.succeed()``` or ```context.fail()```
+just like an other skill would
 
 To get a response in helloWorld.json, use the SkillVC responseManager found at ```svContxt.appConfig.responseManager```
 to get the response you want (the file name extension is not required)
@@ -40,17 +40,13 @@ to get the response you want (the file name extension is not required)
 /intents/helloWorldIntent.js
 ```
 /** 
- * The current version of SkillVC requires all javascript (filters, intents, and sessionHandlers)
- * to be Objects that can be instantiated.
- * This restriction will be removed in later versions
+ * This is the minimal code version of an intent.  A more object oriented version in presented in the actual example file
  */
-function helloWorldIntents() {}
-
-helloWorldIntents.prototype.handleIntent = function(svContext) {
-	svContext.callback.success(svContext.appConfig.responseManager.getResponse('helloWorld').renderTell());
+module.exports = {
+	handleIntent : function(event, context, svContext) {
+		context.succeed(svContext.appConfig.responseManager.getResponse('helloWorld').renderTell());
+	}
 }
-
-module.exports = helloWorldIntents;
 ```
 ### Step 5 - Model
 The last step is to enter the model information into the Alexa Skill Kit website (developer.amazon.com/edw).  SkillVC's initializer
