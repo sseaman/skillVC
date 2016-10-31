@@ -1,4 +1,4 @@
-### v0.3.3 - (2016-10-30) - BREAKING CHANGES -- Still in development
+### v0.3.3 - (2016-10-30) - BREAKING CHANGES
 
 #### New Features
 * Intent Handlers not longer call svContext.callback to send a response back from the skill.  They can now
