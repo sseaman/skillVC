@@ -18,6 +18,7 @@ is primarily for logging and debugging.
 * AbstractProviderByAFile was not passing the itemId to the processItem
 * ContextWrapperFilter was logging as ResponseRenderrFilter
 * ResponseProviderByDirectory and ResponseProviderByFile loading is not confirming that it loaded the card
+* DefaultProviderByScanning was not logging what it was loading correctly
 
 ### v0.3.2 - (2016-10-27)
 

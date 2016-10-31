@@ -9,13 +9,13 @@ module.exports = {
 	executePreOnError : function(event, context, svContext) {
 		/*eslint no-unused-vars: ["error", { "args": "none" }]*/
 		console.log("PreOnError");
-		svContext.filterChainCallback.success();
+		svContext.filterChainCallback.failure();
 	},
 
 	executePost : function(event, context, svContext) {
 		/*eslint no-unused-vars: ["error", { "args": "none" }]*/
 		console.log("Post");
-		svContext.filterChainCallback.failure();
+		svContext.filterChainCallback.success();
 	},
 
 	executePostOnError : function(event, context, svContext) {
