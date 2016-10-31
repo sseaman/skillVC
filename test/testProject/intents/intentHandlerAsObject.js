@@ -2,7 +2,7 @@ function HelloIntentHandler() {
 }
 
 HelloIntentHandler.prototype.getIntentsList = function() {
-	return ['hello'];
+	return ['hello3'];
 };
 
 HelloIntentHandler.prototype.handleIntent = function(event, context, svContext) {

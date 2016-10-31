@@ -1,5 +1,7 @@
 Global To-Do List:
 
+FIXME: If IntentHandlerLoaderByDirectory needs to load an intent, it should stop loading once it find it.  Currently it loads everything
+
 TODO: Bring in mocha for testing
 TODO: Update all docs to new IntentHandler call signature as well as no longer having to be an object
 TODO: Change FilterExecutor and SessionHandlerExecutor to use Promise()

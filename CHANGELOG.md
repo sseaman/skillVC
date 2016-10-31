@@ -2,11 +2,11 @@
 
 #### New Features
 * Intent Handlers not longer call svContext.callback to send a response back from the skill.  They can now
-call the svContext.lambda.context functions as they normally would in a skill outside of SkillVC.
+call the lambda context.succeed and context.fail functions as they normally would in a skill outside of SkillVC.
 * Intent Handlers no longer have to dig through the SVContext object to get the lambda event and context.  They
 are now passed in as arguments.  This and the removal of svContext.callback allows existing skills written 
 outside of SkillVC to be easily integrated into SkillVC with minimal code changes.
-* Session Handlers no longer have to dig through the SVContext object to get the lambda event and context.  They
+* Session Handlers and Filters no longer have to dig through the SVContext object to get the lambda event and context.  They
 are now passed in as arguments.  
 * All Filters, IntentHandlers, and SessionHandlers now have getName() added to them if it does not already exists. This
 is primarily for logging and debugging.
