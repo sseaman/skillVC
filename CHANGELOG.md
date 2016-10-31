@@ -1,4 +1,4 @@
-### v0.3.3 - (2016-10-XX) - BREAKING CHANGES --Still in development
+### v0.3.3 - (2016-10-XX) - BREAKING CHANGES -- Still in development
 
 #### New Features
 * Intent Handlers not longer call svContext.callback to send a response back from the skill.  They can now
@@ -10,6 +10,14 @@ outside of SkillVC to be easily integrated into SkillVC with minimal code change
 are now passed in as arguments.  
 * All Filters, IntentHandlers, and SessionHandlers now have getName() added to them if it does not already exists. This
 is primarily for logging and debugging.
+
+#### Bug Fixes
+* FilterProviderByDirectory and SessionHandlerByDirectory we not processing additional objects after loading the first one
+* IntentHandlerProviderByDirectory was not stopping when it found what it was looking for
+* AbstractProviderByAsycnDirectyro was not passing the itemId to the processItem
+* AbstractProviderByAFile was not passing the itemId to the processItem
+* ContextWrapperFilter was logging as ResponseRenderrFilter
+* ResponseProviderByDirectory and ResponseProviderByFile loading is not confirming that it loaded the card
 
 ### v0.3.2 - (2016-10-27)
 

@@ -1,5 +1,9 @@
 Global To-Do List:
 
+FIXME: TestProject has ResponseRenderFilter showing as returning a failure.
+FIXME: Test scanning
+
+TODO: Reevaluate all logging levels.  Most should prob. be debug
 TODO: Bring in mocha for testing
 TODO: Update all docs to new IntentHandler call signature as well as no longer having to be an object
 TODO: Change FilterExecutor and SessionHandlerExecutor to use Promise()
