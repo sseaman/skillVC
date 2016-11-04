@@ -3,7 +3,13 @@ module.exports = {
 	executePre : function(event, context, svContext) {
 		/*eslint no-unused-vars: ["error", { "args": "none" }]*/
 		console.log("Pre");
-		svContext.filterChainCallback.success();
+		return new Promise(function(resolve, reject) {
+			console.log("In Promise");
+			setTimeout(function(){
+				console.log('TImer out');
+				resolve();
+			}, 2000);      
+		});
 	},
 
 	executePreOnError : function(event, context, svContext) {

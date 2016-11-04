@@ -5,4 +5,10 @@ TODO: Is IntentFileNameFormatter (or anyone for that means) necessary now that t
 TODO: Reevaluate all logging levels.  Most should prob. be debug
 TODO: Bring in mocha for testing
 TODO: Update all docs to new IntentHandler call signature as well as no longer having to be an object
-TODO: Change FilterExecutor and SessionHandlerExecutor to use Promise()
+
+Winston-Simple:
+TODO: Add function on log for getLevel(). See if Winston exposes this first
+TODO: Add static map for log levels so I don't have to code 'debug' everywhere, I can just do something
+		like log.LEVELS.DEBUG.  THis would allow log.getLevel() === log.LEVELS.DEBUG
+		Actually, it would be better to do log.isDebug() , log.isInfo(), etc.. as that would be easier but
+		would not scale for custom levels...

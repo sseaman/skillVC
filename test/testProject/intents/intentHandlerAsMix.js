@@ -6,10 +6,15 @@ IntentHandlerMixed.prototype = {
 		return ['hello'];
 	},
 
+	// does an async function to test handling of async processing in an intent
 	handleIntent : function(event, context, svContext) {
 		console.log("In Hello:");
 
-		context.succeed(svContext.appConfig.responseManager.getResponse('card').renderTell());
+		setTimeout(function(){
+			console.log('TImer out');
+			context.succeed(svContext.appConfig.responseManager.getResponse('card').renderTell());
+		}, 2000);      
+
 	}
 };
 
