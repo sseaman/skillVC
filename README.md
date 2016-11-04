@@ -4,7 +4,8 @@ A View / Controller (no Model) framework for quickly creating complex custom ski
 Choose either Convention-over-Configuration, Configuration, or Scan approaches to the configuration and execution of your skill.
 
 ## NOTE ON STABILITY OF PROJECT
-SkillVC is still under heavy development and should be considered BETA at this point (as of Oct 2016).
+SkillVC is still under heavy development and should be considered BETA at this point (as of Oct 2016).  Documentation does
+not currently reflect code in GitHub but is sync'ed with the latest NPM release
 
 If you find ANY issues, please take the time to report them at [Github Issues](https://github.com/sseaman/skillVC/issues)
 
@@ -65,10 +66,10 @@ To have SkillVC create all the necessary folders, files, and even stub index.js 
 ```
 1. Create the directory for your project
 2. Install SkillVC per the installation instructions above (npm install skillvc)
-3. In the directory of your project run: node ./node_modules/.bin/skillvc init .
+3. In the directory of your project run: ./node_modules/.bin/skillvc init .
 ```
 
-For additional installation options, run: ```node ./node_modules/.bin/skillvc init --help```
+For additional installation options, run: ```./node_modules/.bin/skillvc init --help```
 
 ### Configuration Types
 SkillVC is designed to be highly configurable and allows for multiple configuration setups as well as providing multiple
