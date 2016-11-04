@@ -6,6 +6,7 @@ Filter or Session Handler return a ```Promise``` from the method and SkillVC wil
 is completed.  For Intent Handlers, no ```Promise``` is require as it just needs to call ```context.succeed()```
 or ```context.fail()``` like any other skill.  SkillVC uses the calls to ```context``` to control an internal ```Promise```
 for the Intent Handler.
+* Logging levels adjusted to never use verbose and favor info and debug more
 
 ### Deprecated
 * svContext.filterChainCallback deprecated in favor of a ```Promise```
