@@ -19,5 +19,8 @@ module.exports = {
         "semi" : 2, 
         "valid-jsdoc" : [ 2, { "requireReturn": false } ]
     },
+    "globals" : {
+        "Promise" : true
+    },
     "ignorePath" : "./.eslintignore"
 };

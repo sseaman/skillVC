@@ -1,14 +1,17 @@
-### v0.4.0 - (2016-11-XX)
+### v0.4.0 - (2016-11-XX) - BREAKING CHANGES
 
 ### New Features
 * Filters, Intent Handlers, and Session Handlers now support async processing within them.  To do async operations in a
 Filter or Session Handler return a ```Promise``` from the method and SkillVC will honor the ```Promise``` until it
 is completed.  For Intent Handlers, no ```Promise``` is require as it just needs to call ```context.succeed()```
 or ```context.fail()``` like any other skill.  SkillVC uses the calls to ```context``` to control an internal ```Promise```
-for the skill.
+for the Intent Handler.
 
 ### Deprecated
 * svContext.filterChainCallback deprecated in favor of a ```Promise```
+* Filters no longer support ```executePreOnError()``` and ```executePostOnError()```.  This was a confusing feature that
+permitted multiple paths down the execution chain.  Developers should favor try/catch in their code to continue execution
+and if the error is needed in another object, use the ```svcontext.session``` to make the error available to other objects
 
 ### v0.3.3 - (2016-10-30) - BREAKING CHANGES
 
