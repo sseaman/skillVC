@@ -392,12 +392,24 @@ var zip = {
 			fs.renameSync(finalName, finalName+'.'+i);
 		}
 
-		var zipFolder = require('zip-folder');
-		zipFolder(dir, finalName, function(err) {
+		console.log('Zipping '+dir+' into '+finalName);
+
+		var archiver = require('archiver');
+		var output = fs.createWriteStream(finalName);
+		var zipArchive = archiver('zip');
+		output.on('close', function() {
+			console.log('Project zipped');
+		});
+
+		zipArchive.pipe(output);
+		zipArchive.glob('**/*', {
+			cwd: dir,
+			ignore: [projectName]
+		}, {})
+
+		zipArchive.finalize(function(err, bytes) {
 			if(err) {
 				console.log('Error zipping project:', err);
-			} else {
-				console.log('Project zipped as '+finalName);
 			}
 		});
 	}
@@ -559,7 +571,7 @@ cmd
 	.on('--help', function() {
 		console.log('  Examples:\n'
 			+'    zip \n'
-			+'    zip ./tmp // zip the ./tmp directory\n'
+			+'    zip --dir ./tmp // zip the ./tmp directory\n'
 			+'    zip --project_name mySkill.zip // names the zip mySkill.zip'
 			+'    zip --target_dir ./out // creates the zip in the ./out directory'
 	+ '\n');

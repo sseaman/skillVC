@@ -1,6 +1,6 @@
 {
   "name": "skillvc",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "A View / Controller (no Model) framework for quickly creating custom skills",
   "main": "index.js",
   "devDependencies": {
@@ -16,7 +16,7 @@
     "deep-extend": "^0.4.1",
     "winston-simple": "^1.0.7",
     "commander": "^2.9.0",
-    "zip-directory" : "^1.0.0"
+    "archiver" : "^1.2.0"
   },
   "bin": {
     "skillvc": "./bin/skillvc"

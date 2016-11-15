@@ -11,6 +11,7 @@ for the Intent Handler.
 in SkillVC as well as use the winston-simple logger in their code
 * Modified error logging to also display stack trace
 * skillvc CLI will now build intent handler skeleton code for you via ```create``` option
+* skillvc CLI now comes with a zip ability that will zip your project for us so you can upload it to Lambda
 
 ### Deprecated
 * svContext.filterChainCallback deprecated in favor of a ```Promise```

@@ -66,8 +66,9 @@ This uses SkillVC's response manager to render a valid message to Alexa
 SkillVC also ships with a zip bundler to make uploading the project to Lambda easy.  Run the following command from your projects
 root directory to bundle your project:
 ```
-./node_modules/.bin/skillvc bundle .
+./node_modules/.bin/skillvc zip
 ```
+This will create a project.zip file that can be uploaded to Lambda
 
 ### Finishing up
 Assuming you have already setup Lambda and your skill in the Alexa Skill Kit website, you can now upload your zip file to your
