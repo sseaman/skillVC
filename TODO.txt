@@ -1,7 +1,5 @@
 Global To-Do List:
 
-TODO: Is IntentFileNameFormatter (or anyone for that means) necessary now that there is getName()?
-		Check DefaultPorviderByScanning around line 114 to see if still needed
 TODO: Bring in mocha for testing
 TODO: Update all docs to new IntentHandler call signature as well as no longer having to be an object
 

@@ -70,10 +70,13 @@ module.exports = {
 
 			if (logLevels['all']) { 
 				if (logLevels['all'] != 'none') { // turning on everything
-					if (!logger.transports.console) {
-						logger.transports.console = new winston.transports.Console();
-					}
-					logger.transports.console.level = logLevels['all'];
+					logger.add(winston.transports.Console, {
+						level		: logLevels['all'],
+						json 		: false,
+				    	timestamp 	: true,
+				    	label		: key,
+				    	align		: true
+					}, false);
 				}
 				else { // all = none so remove everything
 					logger.remove(winston.transports.Console)
@@ -132,9 +135,10 @@ module.exports = {
 		if (level && level != 'none') {
 			winston.loggers.add(className, {
 				console : {
-				    json : false,
-				    timestamp : true,
-				    label: className,
+				    json 		: false,
+				    timestamp 	: true,
+				    label		: className,
+				    align		: true,
 				    level : (winston.loggers.loggers[className]) //already set
 						? winston.loggers.loggers[className].transports.console.level 
 						: level 

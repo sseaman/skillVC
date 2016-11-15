@@ -1,3 +1,8 @@
+### v1.0.7 - (2016-11-06)
+
+#### Bug Fixes
+* In Lambda or multi-object, complex systems, the global setting of levels wasn't properly applied if it had never been set before.
+
 ### v1.0.6 - (2016-10-26)
 
 #### Bug Fixes

@@ -14,8 +14,9 @@
   "dependencies": {
     "handlebars": "^4.0.5",
     "deep-extend": "^0.4.1",
-    "winston-simple": "^1.0.2",
-    "commander": "^2.9.0"
+    "winston-simple": "^1.0.7",
+    "commander": "^2.9.0",
+    "zip-directory" : "^1.0.0"
   },
   "bin": {
     "skillvc": "./bin/skillvc"

@@ -53,10 +53,13 @@ var initHandler = {
 
 			if (!fs.existsSync(dirPath+'index.js')) {
 				var data =
-					((options.no_skillvc) ? '' : "var skillVC = require('skillvc').factory.createfromDirectory();\n")
+					((options.no_skillvc) ? '' 
+						: 	 "var skillVC = require('skillvc');\n"
+							+"skillVC.logger.setLevels({'all':'debug'});\n"
+							+"var skillVCMain = skillVC.factory.createfromDirectory();\n")
 					+ '\n'
 					+ 'exports.handler = function(event, context) {\n'
-					+ ((options.no_skillvc) ? '\n\t' : '\tskillVC.handler(event, context);\n')
+					+ ((options.no_skillvc) ? '\n\t' : '\skillVCMain.handler(event, context);\n')
 					+ '}\n';
 
 				fs.writeFileSync(dirPath + 'index.js', data, 'utf8');
@@ -341,6 +344,65 @@ var pluginHandler = {
 
 };
 
+var create = {
+	handle : function(intent, options) {
+		if (!fs.existsSync(intent)) {
+			var logLevel = options.log_level ? options.log_level : 'debug';
+			var intentName = path.parse(intent).name;
+			var data =
+					 "var log = require('skillvc')"
+					 	+".logger.setLevels({'"+intentName+"':'"+logLevel+"'})"
+					 	+".getLogger('"+intentName+"');\n"
+					+ '\n'
+					+ 'module.exports = {\n'
+					+ '\thandleIntent : function(event, context, svContext) {\n'
+					+ "\t\tlet response = '';\n"
+					+ '\t\t//your code goes here\n'
+					+ '\t\tcontext.succeed(response);\n'
+					+ '\t}'
+					+ ((options.intent_name) 
+						?   ',\n\n'
+							+ '\tgetIntentsList : function() {\n'
+							+"\t\treturn ['"+options.intent_name+"'];\n"
+							+'\t}\n'
+						: '\n\n')
+					+ '};\n';
+
+				fs.writeFileSync(intent, data, 'utf8');
+		}
+		else {
+			console.log('Intent '+intent+ ' already exists');
+		}
+	}
+};
+
+var zip = {
+	handle : function(options) {
+		var dir = options.dir ? options.dir : '.';
+		var projectName = options.project_name ? options.project_name : 'project.zip';
+		var targetDir = options.target_dir ? options.target_dir : '.';
+		var finalName = path.join(targetDir, projectName);
+
+		// backup the existing one
+		if (fs.existsSync(finalName)) {
+			var i = 1;
+			while (fs.existsSync(finalName+'.'+i)) {
+				i++;
+			}
+			fs.renameSync(finalName, finalName+'.'+i);
+		}
+
+		var zipFolder = require('zip-folder');
+		zipFolder(dir, finalName, function(err) {
+			if(err) {
+				console.log('Error zipping project:', err);
+			} else {
+				console.log('Project zipped as '+finalName);
+			}
+		});
+	}
+};
+
 /**
  * Functions to handle the build CLI command
  * 
@@ -451,6 +513,22 @@ cmd
 	.description('NOT IMPLEMENTED YET - Builds intentHandlers based on the intents defined in the specified intent file')
 	.action(buildHandler.handle);
 
+
+cmd
+	.command('create')
+	.alias('c')
+	.description('Creates a skeleton intent file')
+	.option('-in, --intent_name [value]', 'The name of the intent (SkillVC will use this over the filename)')
+	.option('-ll, --log_level [value]', 'The logging level of the intent. Defaults to debug')
+	.action(create.handle)
+	.on('--help', function() {
+	    console.log('  Examples:\n'
+	    	+ '    create ./intents/helloWorldIntent.js\n'
+	    	+ '    create ./intents/helloWorldIntent.js --intent_name HelloIntent // use HelloIntent as the intent name\n'
+	    	+ '    create ./intents/helloWorldIntent.js --log_level verbose // set the logging level to verbose\n'
+	    	+ '\n');
+	 });
+
 cmd
 	.command('install <dir> <pluginName>')
 	.alias('p')
@@ -468,6 +546,23 @@ cmd
 			+'    install . pluginName --debug  // provide more information about the install\n'
 			+'    install . pluginName --ignore_errors // ignore errors and do all plugin steps\n'
 			+ '\n');
+	});
+
+cmd
+	.command('zip')
+	.alias('z')
+	.description('Zips a project for upload to Lambda')
+	.option('-d, --dir [value]', 'The directory to zip.  Defaults to .')
+	.option('-p, --project_name [value]', 'The name of the zip file. Defaults to project.zip')
+	.option('-t, --target_dir [value]', 'The directory to write the zip to.  Defaults to .')
+	.action(zip.handle)
+	.on('--help', function() {
+		console.log('  Examples:\n'
+			+'    zip \n'
+			+'    zip ./tmp // zip the ./tmp directory\n'
+			+'    zip --project_name mySkill.zip // names the zip mySkill.zip'
+			+'    zip --target_dir ./out // creates the zip in the ./out directory'
+	+ '\n');
 	});
 
 cmd.parse(process.argv);

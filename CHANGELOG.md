@@ -7,6 +7,10 @@ is completed.  For Intent Handlers, no ```Promise``` is require as it just needs
 or ```context.fail()``` like any other skill.  SkillVC uses the calls to ```context``` to control an internal ```Promise```
 for the Intent Handler.
 * Logging levels adjusted to never use verbose and favor info and debug more
+* Logger is now available from the SkillVC require.  This allows skill developers to more easily set the logging levels
+in SkillVC as well as use the winston-simple logger in their code
+* Modified error logging to also display stack trace
+* skillvc CLI will now build intent handler skeleton code for you via ```create``` option
 
 ### Deprecated
 * svContext.filterChainCallback deprecated in favor of a ```Promise```

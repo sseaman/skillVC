@@ -4,7 +4,8 @@
 var svc = {
 	factory : require('./lib/skillVCFactory.js'),
 	tester 	: require('./lib/test/skillTester.js'),
-	core 	: require('./lib/skillVC.js')
+	core 	: require('./lib/skillVC.js'),
+	logger	: require('winston-simple')
 };
 
 module.exports = svc;
