@@ -76,19 +76,19 @@ lambda function and test your skill!
 
 
 ## Documentation
-1. Project Initialization
-2. Configuration Options
-    1. Convention-over-Configuration
-    2. Scanning
-    3. Configuration
-3. Intent Handlers
-4. Responses
-    1. Handlebars
-5. Session Handlers
-6. Filters
-7. SkillVC Context
-8. Plugins
-    1. Developing a Plugin
-9. Example
-10. FAQ
-11. License
+1. [Project Initialization](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#projectInitialization)
+2. [Configuration Options](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#configurationOptions)
+    1. [Convention-over-Configuration](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#configurationConvention)
+    2. [Scanning](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#configurationScanning)
+    3. [Configuration](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#configurationConfiguration)
+3. [Intent Handlers](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#intentHandlers)
+4. [Responses](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#responses)
+    1. [Handlebars](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#responsesHandlebars)
+5. [Session Handlers](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#sessionHandlers)
+6. [Filters](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#filters)
+7. [SkillVC Context](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#skillVCContext)
+8. [Plugins](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#plugins)
+    1. [Developing a Plugin](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#pluginsDevelopment)
+9. [Example](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#example)
+10. [FAQ](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#faq)
+11. [License](https://github.com/sseaman/skillVC/tree/master/docs/README-OLD.md#license)

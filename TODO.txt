@@ -1,7 +1,7 @@
 Global To-Do List:
 
 TODO: Bring in mocha for testing
-TODO: Update all docs to new IntentHandler call signature as well as no longer having to be an object
+TODO: Implement responseManager.tell / ask
 
 Winston-Simple:
 TODO: Add function on log for getLevel(). See if Winston exposes this first
