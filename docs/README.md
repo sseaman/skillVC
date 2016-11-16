@@ -5,7 +5,7 @@ Choose either Convention-over-Configuration, Configuration, or Scan approaches t
 
 SkillVC is maintained in GitHub.  For full source to to [GitHub SkillVC](https://github.com/sseaman/skillVC)
 
-For full API documentation, see [SkillVC API docs](https://sseaman.github.io/skillVC/)
+For full API documentation, see [SkillVC API docs](https://sseaman.github.io/skillVC/api/)
 
 If you find ANY issues, please take the time to report them at [Github Issues](https://github.com/sseaman/skillVC/issues)
 

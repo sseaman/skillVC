@@ -55,6 +55,10 @@
     <section>
         <article><h1>SkillVC</h1><p>A View / Controller (no Model) framework for quickly creating complex custom skills for <a href="https://developer.amazon.com/alexa">Alexa</a>. 
 Choose either Convention-over-Configuration, Configuration, or Scan approaches to the configuration and execution of your skill.</p>
+<h2>NOTE ON STABILITY OF PROJECT</h2><p>SkillVC is still under heavy development and should be considered BETA at this point (as of Oct 2016).  Documentation does
+not currently reflect code in GitHub but is sync'ed with the latest NPM release</p>
+<p>If you find ANY issues, please take the time to report them at <a href="https://github.com/sseaman/skillVC/issues">Github Issues</a></p>
+<p>Please monitor this section, and the <a href="https://github.com/sseaman/skillVC/blob/master/CHANGELOG.md">ChangeLog</a> for stability updates</p>
 <h2>Table of Contents</h2><ol>
 <li>Installation</li>
 <li>Source / Webpage</li>
@@ -98,7 +102,7 @@ from your existing intent model files (coming soon). </p>
 <p>To have SkillVC create all the necessary folders, files, and even stub index.js for your Convention-over-Configuration project, do the following:</p>
 <pre class="prettyprint source"><code>1. Create the directory for your project
 2. Install SkillVC per the installation instructions above (npm install skillvc)
-3. In the directory of your project run: node ./node_modules/.bin/skillvc init .</code></pre><p>For additional installation options, run: <code>node ./node_modules/.bin/skillvc init --help</code></p>
+3. In the directory of your project run: ./node_modules/.bin/skillvc init .</code></pre><p>For additional installation options, run: <code>./node_modules/.bin/skillvc init --help</code></p>
 <h3>Configuration Types</h3><p>SkillVC is designed to be highly configurable and allows for multiple configuration setups as well as providing multiple
 points to override internal execution to give the most customizable framework possible.  When first starting out
 with SkillVC you will want to choose the configuration type you want.</p>
@@ -203,46 +207,35 @@ execute the Intent Handler registered for the executed intent.</p>
 intent names that match the names registered in your intent list in developer.amazon.com/edw, SkillVC will
 invoke that specific Intent Handler for each of the intents returned by the function.</p>
 <p>Example:</p>
-<pre class="prettyprint source"><code>MyIntentObject.prototype.getIntentsList = function() {
+<pre class="prettyprint source"><code>getIntentsList() {
     return ['HelloWorldIntent', 'GoodByeIntent'];
 }</code></pre><p>would execute MyIntentObject for HelloWorldIntent and GoodByeIntent events</p>
 <p><strong>By Filename</strong></p>
 <p>If your Intent Handler does not implement <code>getIntentsList()</code> then SkillVC will use the name of the file (case sensitive)
 as the intent name.</p>
 <p>So, if you name your file HelloWorldIntent.js, SkillVC will use that object when the HelloWorldIntent event occurs.</p>
-<h4>Executing</h4><p>Objects registered as Intent Handlers must implement the <code>handleIntent(svContext)</code> function.  The <code>handleIntent(svContext)</code>
-function will be called for whenever the intent the Intent Handler is registered for is invoked by Alexa.</p>
-<p>What the <code>handleIntent(svContext)</code> method does is entirely up to the developer of the skill, however it must return 
-a Response via the <code>callback</code> method provided by the svContext, even on error.  Failure to invoke the <code>callback</code> method will stop
+<h4>Executing</h4><p>Objects registered as Intent Handlers must implement the <code>handleIntent(event, context, svContext)</code> function.<br>The <code>handleIntent(event, context, svContext)</code> function will be called for whenever the intent the Intent 
+Handler is registered for is invoked by Alexa.</p>
+<p>What the <code>handleIntent(event, context, svContext)</code> method does is entirely up to the developer of the skill, however it must call
+<code>context.succeed()</code> or <code>context.fail()</code> like any other skill, even on error.  Failure to do so will stop
 SkillVC and not allow any downstream filters to execute.</p>
 <p>Within the svContext that is passed to the function are a number of object that can be used by the Intent Handler.  Of 
-most interest to the Intent Handler are the ResponseManager and callback.</p>
+most interest to the Intent Handler are the ResponseManager</p>
 <p><strong>ResponseManager</strong></p>
 <p>The ResponseManager is SkillVC's object for managing the responses registered with the system.  It allows for retrieval of
 responses for use by Intent Handlers.  To get the ResponseManager, access <code>svContext.appConfig.responseManager</code>.  Once retrieved, 
 an Intent Handler can call the <code>getResponse('someResponseId')</code> method of the ResponseManager to return the instance of the Response
 that is required.  See the API documentation for more information and the example below for a common use case.</p>
-<p><strong>callback</strong></p>
-<p>As Intent Handlers could be preforming async operations, the use of a callback is required to tell SkillVC to continue
-with its execution flow.  The callback to be used can be accessed in <code>svContext.callback</code> and has two methods:</p>
-<ul>
-<li><code>success</code> - used if the Intent Handler was successful</li>
-<li><code>failure</code> - used if the Intent Handler had an error or wants to report some other type of issue</li>
-</ul>
-<p>The function used by the skill determines which path down the post intent execution filter chain is used, 
-<code>executePost</code> or <code>executePostOnError</code>.  See the Filter section below for more details</p>
 <p>An example of a simple Intent Handler that uses the above:</p>
-<pre class="prettyprint source"><code>function HelloWorldIntentHandler() { }
+<pre class="prettyprint source"><code>module.exports = {
+    getIntentsList : function() {
+       return ['HelloWorldIntent'];
+    },
 
-HelloIntentHandler.prototype.getIntentsList = function() {
-    return ['HelloWorldIntent'];
-}
-
-HelloIntentHandler.prototype.handleIntent = function(svContext) {
-    svContext.callback.success(svContext.appConfig.responseManager.getResponse('hello').renderTell());
-}
-
-module.exports = HelloIntentHandler;</code></pre><h4>Launch Request</h4><p>Alexa supports another type of intent event, LaunchRequest, which is executed by Alexa when your skill is invoked
+    handleIntent : function(event, context, svContext) {
+       context.succeed(svContext.appConfig.responseManager.getResponse('hello').renderTell());
+    }
+};</code></pre><h4>Launch Request</h4><p>Alexa supports another type of intent event, LaunchRequest, which is executed by Alexa when your skill is invoked
 without a specific intent.  An example is when someone says &quot;Alexa, Tell MySkill&quot;, but does not give a directive.</p>
 <p>In SkillVC, Launch Requests are treated the same as any other intent and are handled by an Intent Handler that maps
 to an intent type of 'launch'.  To register a Intent Handler to execute on Launch Requests you can either:</p>
@@ -325,14 +318,12 @@ another session outside of what Alexa provides.</p>
 <li><code>sessionEnd(svContext)</code> - Called when a session ends</li>
 </ul>
 <p>Example:</p>
-<pre class="prettyprint source"><code>function MySessionHandler() {}
-
-MySessionHandler.prototype.sessionStart = function(svContext) {
+<pre class="prettyprint source"><code>sessionStart(svContext) {
     svContext.lambda.context.session = {};  // create a new session
 }
 
 // I don't want to do anything..
-MySessionHandler.prototype.sessionEnd = function(svContext) {}</code></pre><h4>Ordering of execution</h4><p>SkillVC supports the ability to have more than one Session Handler.  This is useful if you session creation and teardown
+sessionEnd(svContext) {}</code></pre><h4>Ordering of execution</h4><p>SkillVC supports the ability to have more than one Session Handler.  This is useful if you session creation and teardown
 has multiple steps that you want to keep in separate objects.</p>
 <p>To set the execution order of the Session Handlers you may choose to add the function <code>getOrder()</code> to your Session Handler.
 <code>getOrder()</code> should return the numerical value of the position within the execution order for the Session Handler that has
@@ -442,7 +433,7 @@ exports.handler = function(event, context) {
     { &quot;intent&quot;: &quot;HelloIntent&quot;}
    ]
 }</code></pre><h2>License</h2><hr>
-<p>SkillVC is copyright (c) 2016-present Sloan Seaman <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#x3a;&#x73;&#108;&#111;&#97;&#110;&#64;&#x70;&#111;&#x62;&#x6f;&#120;&#46;&#x63;&#111;&#x6d;">&#x73;&#108;&#111;&#97;&#110;&#64;&#x70;&#111;&#x62;&#x6f;&#120;&#46;&#x63;&#111;&#x6d;</a>.</p>
+<p>SkillVC is copyright (c) 2016-present Sloan Seaman <a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#111;&#58;&#x73;&#x6c;&#x6f;&#x61;&#110;&#64;&#x70;&#x6f;&#x62;&#x6f;&#x78;&#46;&#x63;&#111;&#109;">&#x73;&#x6c;&#x6f;&#x61;&#110;&#64;&#x70;&#x6f;&#x62;&#x6f;&#x78;&#46;&#x63;&#111;&#109;</a>.</p>
 <p>SkillVC is free software, licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p></article>
     </section>
 
@@ -454,13 +445,13 @@ exports.handler = function(event, context) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractPromiseExecutor.html">AbstractPromiseExecutor</a></li><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="ContextWrapper.html">ContextWrapper</a></li><li><a href="ContextWrapperFilter.html">ContextWrapperFilter</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainPromiseExecutor.html">FilterChainPromiseExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByDirectory2.html">IntentHandlerProviderByDirectory2</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Oct 21 2016 15:45:03 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 15 2016 21:53:42 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

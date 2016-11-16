@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-eslint');
+	grunt.loadNpmTasks('grunt-jsdoc');
 	grunt.option('force', true); // for es-lint
  
 	grunt.initConfig({
@@ -8,10 +9,19 @@ module.exports = function(grunt) {
 				config: 'eslintrc.js'
 			},
 			target: ['.']
+		},
+		jsdoc : {
+			dist : {
+				options: {
+					configure: './docs/docConfig.json'
+				}
+			}
 		}
 	});
 
 	grunt.registerTask('default', ['eslint']);
+
+	grunt.registerTask('docs', ['jsdoc']);
 
 	grunt.registerTask('requireTest', 'Checks to ensure code works when "require()d"', function() {
 		this.async();

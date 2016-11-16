@@ -1,6 +1,6 @@
 {
     "_comment" : "Configuration for generating documentation for SkillVC",
-    "_comment" : "To build: jsdoc -c ./docConfig.json ",
+    "_comment" : "To build: jsdoc -c ./docs/docConfig.json ",
      
     "applicationName": "SkillVC",
     "disqus": "",
@@ -32,12 +32,12 @@
         "recurse": true,
         "private": false,
         "lenient": true,
-        "destination": "./docs"
+        "destination": "./docs/api"
       
     },
     "templates" : {
         "default" : {
-            "layoutFile" : "./docLayout.tmpl"
+            "layoutFile" : "./docs/docLayout.tmpl"
         }
     }
 }

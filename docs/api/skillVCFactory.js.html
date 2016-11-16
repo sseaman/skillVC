@@ -44,12 +44,11 @@
  */
 
 /** @private */
-var log = require("winston-simple").setLevels({'all' : 'debug'}).getLogger('SkillVCFactory');
+var log = require("winston-simple").getLogger('SkillVCFactory');
 
 var SkillVC = require('./skillVC.js');
 var ResponseManagerFactory = require('./response/responseManagerFactory.js');
 var FilterManagerFactory = require('./filter/filterManagerFactory.js');
-var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
 var IntentHandlerManagerFactory = require('./intentHandler/intentHandlerManagerFactory.js');
 var SessionHandlerManagerFactory = require('./sessionHandler/sessionHandlerManagerFactory.js');
 var DefaultProviderByScanning = require('./provider/scan/DefaultProviderByScanning.js');
@@ -96,19 +95,18 @@ function SkillVCFactory() {}
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
 SkillVCFactory.createfromDirectory = function(dir) {
-	log.verbose('Initializing using Convention-over-Configuration');
+	log.info('Initializing using Convention-over-Configuration');
 
-	var rootDir = (dir) ? dir : '.'
-	log.debug('Using root directory: '+rootDir);
+	var rootDir = (dir) ? dir : '.';
+	log.info('Using root directory: '+rootDir);
 
 	return new SkillVC({
-		'responseManager' 	: ResponseManagerFactory.createHandlebarEnabledByDirectory(path.join(rootDir,'/responses')),
-		'filterManager'	: FilterManagerFactory.createByDirectory(path.join(rootDir,'/filters')),
-		'intentHandlerManager' : IntentHandlerManagerFactory.createByDirectory(path.join(rootDir,'/intents')),
-		'sessionHandlerManager': SessionHandlerManagerFactory.createByDirectory(path.join(rootDir,'/sessionHandlers')),
-		'logLevels' 	: {'all' : 'debug'}
+		'responseManager' 	: ResponseManagerFactory.createHandlebarEnabledByDirectory(path.resolve(rootDir,'responses')),
+		'filterManager'	: FilterManagerFactory.createByDirectory(path.resolve(rootDir,'filters')),
+		'intentHandlerManager' : IntentHandlerManagerFactory.createByDirectory(path.resolve(rootDir,'intents')),
+		'sessionHandlerManager': SessionHandlerManagerFactory.createByDirectory(path.resolve(rootDir,'sessionHandlers'))
 	});
-}
+};
 
 /**
  * Creates an instance of SkillVC by scanning the passed in files.  This is the slowest method of starting
@@ -124,7 +122,7 @@ SkillVCFactory.createfromDirectory = function(dir) {
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
 SkillVCFactory.createFromScan = function(files) {
-	log.verbose('Initializing using Scanning');
+	log.info('Initializing using Scanning');
 	
 	var scanner = new DefaultProviderByScanning(files);
 
@@ -132,11 +130,9 @@ SkillVCFactory.createFromScan = function(files) {
 		'responseManager' 	: ResponseManagerFactory.createHandlebarEnabledByMap(scanner.getItem('responses')),
 		'filterManager' : FilterManagerFactory.createByMap(scanner.getItem('filters')),
 		'intentHandlerManager' : IntentHandlerManagerFactory.createByMap(scanner.getItem('intentHandlers')),
-		'sessionHandlerManager': SessionHandlerManagerFactory.createByMap(scanner.getItem('sessionHandlers')),
-		'logLevels'		: {'all' : 'debug'}
+		'sessionHandlerManager': SessionHandlerManagerFactory.createByMap(scanner.getItem('sessionHandlers'))
 	});
-	
-}
+};
 
 /**
  * Creates an instance of SkillVC that uses a JSON configuration to determine where the various objects are
@@ -151,8 +147,10 @@ SkillVCFactory.createFromScan = function(files) {
  * @return {SkillVC} An instance of SkillVC configured based on the passed in configuration
  */
 SkillVCFactory.createFromConfig = function(config) {
-	log.verbose('Not implemented yet');
-}
+	/*eslint no-unused-vars: ["error", { "args": "none" }]*/
+	log.error('Not implemented yet');
+	return this;
+};
 
 module.exports = SkillVCFactory;</code></pre>
         </article>
@@ -164,13 +162,13 @@ module.exports = SkillVCFactory;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractPromiseExecutor.html">AbstractPromiseExecutor</a></li><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="ContextWrapper.html">ContextWrapper</a></li><li><a href="ContextWrapperFilter.html">ContextWrapperFilter</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainPromiseExecutor.html">FilterChainPromiseExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByDirectory2.html">IntentHandlerProviderByDirectory2</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Oct 21 2016 15:45:03 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 15 2016 21:53:42 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SkillVC: Source: intentHandler/intentHandlerFilter.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-84944684-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: intentHandler/intentHandlerFilter.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Sloan Seaman 
+ * @copyright 2016 and on
+ * @version .1
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ */
+
+/** @private */
+var ContextWrapper = require('../context/contextWrapper.js');
+var log = require('winston-simple').getLogger('IntentHandlerFilter');
+
+/**
+ * Wrapper for IntentHandlerManager that works as a Filter and Provider as everything in SkillVC is 
+ * treated as a filter in terms of registered execution (at a high level).
+ *
+ * The use of a wrapper (and existence of a separate IntentHandlerManager) allows for
+ * the use of SkillVC as a piecemail system where on parts of the overall architecture could
+ * be used by a skill
+ *
+ * @constructor
+ * @implements {Filter}
+ * @see  {@link IntentHanderManager}
+ * @param {IntentHandlerManager} intentHandlerManager The IntentHandlerManager to wrap
+ */
+function IntentHandlerFilter(intentHandlerManager) {
+	this._intentHandlerManager = intentHandlerManager;
+}
+
+/**
+ * Executes the intentHandlerManager with the passed in svContext, wraps the lambda context with a 
+ * ```ContextWrapper``` so that it can intercept the ```succeed()``` and ```fail()``` calls and then
+ * proceed with the filter chain via {@link FilterChainExecutor~filterChainCallback}
+ *
+ * @function
+ * @param {Object} event The event for the skill (from lambda)
+ * @param {OBject} context The context for the skill (from lambda)
+ * @param {SVContext} svContext The context of the execution
+ * @returns {Promise} The ```Promise``` that can be used to wait until this completes
+ */
+IntentHandlerFilter.prototype.executePre = function(event, context, svContext) {
+	log.debug("Passing off to IntentHandlerManager "+this._intentHandlerManager.constructor.name);
+
+	var ihf = this;
+	return new Promise(function(resolve, reject) {
+		var contextWrapper = new ContextWrapper(context, resolve, reject);
+		// var contextWrapper = new ContextWrapper(context, {
+		// 	success : function(response) {
+		// 		resolve(response);
+		// 	},
+		// 	failure : function(error) {
+		// 		reject(error);
+		// 	}
+		// });
+
+		// I want everything to apply globally, so I can't use context (which is passed by value at this point)
+		// However, svContext is an object, so it's pass by reference so I can store it in it's context and any changes
+		// made to it will be global
+		// For more info: http://www.htmlgoodies.com/html5/javascript/passing-javascript-function-arguments-by-reference.html#fbid=GyDmE-L2e0t
+		svContext.lambda.context = contextWrapper;
+
+		ihf._intentHandlerManager.handleIntent(event, contextWrapper, svContext);
+	});
+};
+
+/**
+ * Returns the name of the filter.  If not set, SkillVC will attempt to determine one for you and add the function
+ * to your object
+ *
+ * @function
+ * @return {String} The name of the filter
+ */
+IntentHandlerFilter.prototype.getName = function() {
+	return 'IntentHandlerFilter';
+};
+
+module.exports = IntentHandlerFilter;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractPromiseExecutor.html">AbstractPromiseExecutor</a></li><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="ContextWrapper.html">ContextWrapper</a></li><li><a href="ContextWrapperFilter.html">ContextWrapperFilter</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainPromiseExecutor.html">FilterChainPromiseExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByDirectory2.html">IntentHandlerProviderByDirectory2</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 15 2016 21:53:42 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

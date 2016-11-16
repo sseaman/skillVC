@@ -44,16 +44,11 @@
  */
 
 /** @private */
-var ResponseManagerFactory = require('./response/responseManagerFactory.js');
-var FilterChainExecutor = require('./filter/filterChainExecutor.js');
-var FilterManagerFactory = require('./filter/filterManagerFactory.js');
-var IntentHandlerFilter = require('./filter/intentHandlerFilter.js');
-var ResponseRendererFilter = require('./filter/responseRendererFilter.js');
-var IntentHandlerManagerFactory = require('./intentHandler/intentHandlerManagerFactory.js');
-var Logger = require('winston-simple');
-var log = Logger.getLogger('SkillVC');
-var svUtil = require('./util.js');
-var fs = require('fs');
+var FilterChainExecutor = require('./filter/filterChainPromiseExecutor.js');
+var SessionHandlerExecutor = require('./sessionHandler/sessionHandlerExecutor.js');
+var IntentHandlerFilter = require('./intentHandler/intentHandlerFilter.js');
+var ContextWrapperFilter = require('./context/contextWrapperFilter.js');
+var log = require('winston-simple').getLogger('SkillVC');
 
 /**
  * Creates an instance of SkillVC.
@@ -74,7 +69,6 @@ function SkillVC(config) {
 	// main context object for the whole system
 	this._skillVCContext = {};
 	this._skillVCContext.appConfig = config;
-	Logger.setLevels(this._skillVCContext.appConfig.logLevels);
 
 	this._initialized = false;
 }
@@ -97,11 +91,15 @@ function SkillVC(config) {
  * @param  {Object} event        The Lambda event
  * @param  {Object} context      The Lambda context
  * @param  {SkillVC~callback} initCallback The callback used when initialization completes
+ * @return {SkillVC} This instance of SkillVC for use in builder style calling
  */
 SkillVC.prototype.init = function(event, context, initCallback) {
-	if (this._initialized) initCallback.success();  // nothing to do, pop out
+	if (this._initialized) {
+		initCallback.success();  // nothing to do, pop out
+		return;
+	}
 
-	log.verbose("Initializing...");
+	log.info("Initializing...");
 
 	// reset the context session
 	this._skillVCContext.appSession = {};
@@ -112,20 +110,21 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 		'event' : event
 	};
 	this._skillVCContext.appConfig.filterChainExecutor = null;
+	this._skillVCContext.appConfig.sessionHandlerExecutor = null;
 
-	log.verbose("Registering ResponseManager");
+	log.info("Registering ResponseManager");
 	this._skillVCContext.appConfig.responseManager = this.registerResponseManager(this._skillVCContext);
 
-	log.verbose("Registering SessionHandlerManager");
+	log.info("Registering SessionHandlerManager");
 	this._skillVCContext.appConfig.sessionHandlerManager = this.registerSessionHandlerManager(this._skillVCContext);
 
 	var sv = this;
 	// might be a way to do this with promises, but I'm not going to put the time into it yet
-	log.verbose("Registering Filters");
+	log.info("Registering Filters");
 	sv.registerFilterManager(sv._skillVCContext, {
 		success : function(filterManager) {
 
-			log.verbose("Registering Intent Handlers");
+			log.info("Registering Intent Handlers");
 			sv.registerIntentHandlerManager(sv._skillVCContext, {
 				success : function(iHandlerManager) {
 					
@@ -135,16 +134,22 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 					preFilters.push(new IntentHandlerFilter(iHandlerManager));
 
 					// need to do this to convert the intent results to something lambda understands
-					log.debug("Adding SkillReponseFilter as last post filter");
+					log.debug("Adding ContextWrapperFilter as last post filter");
 					var postFilters = filterManager.getPostFilters();
-					postFilters.push(new ResponseRendererFilter());
+					postFilters.push(new ContextWrapperFilter());
 
 					sv._skillVCContext.appConfig.filterChainExecutor = new FilterChainExecutor(
 						preFilters, 
 						postFilters
 						);
+
+					sv._skillVCContext.appConfig.sessionHandlerExecutor = new SessionHandlerExecutor(
+						sv._skillVCContext.appConfig.sessionHandlerManager.getStartSessionHandlers(),
+						sv._skillVCContext.appConfig.sessionHandlerManager.getEndSessionHandlers()
+						);
+
 					sv._initialized = true;
-					log.verbose("Initialization complete");
+					log.info("Initialization complete");
 					initCallback.success(); // registration completed
 				},
 				failure : function(err) {
@@ -158,7 +163,7 @@ SkillVC.prototype.init = function(event, context, initCallback) {
 	});
 
 	return this;
-}
+};
 
 /**
  * The handler() function should be invoked by the index.js of the skill to transfer control of the
@@ -172,48 +177,58 @@ SkillVC.prototype.init = function(event, context, initCallback) {
  * @param  {Object} context      The Lambda context
  */
 SkillVC.prototype.handler = function (event, context)  {
-	log.verbose("Handler invoked");
+	log.info("Handler invoked");
 
     try {
-    	if (this._skillVCContext.appId &amp;&amp; (event.session.application.applicationId != this._skillVCContext.appId)) {
-        	throw new Error("Invalid Application ID");
-        }
+		if (this._skillVCContext.appId &amp;&amp; (event.session.application.applicationId !== this._skillVCContext.appId)) {
+			throw new Error("Invalid Application ID");
+		}
 
         var sv = this;
-    	sv.init(event, context, {
-    		success : function() {
-    			// re-setting just in case
-    			sv._skillVCContext.lambda.context = context;
-    			sv._skillVCContext.lambda.event = event;
+		sv.init(event, context, {
+			success : function() {
+				// re-setting just in case
+				sv._skillVCContext.lambda.context = context;
+				sv._skillVCContext.lambda.event = event;
 
-    			// all intents should use this to call back to 
-    			sv._skillVCContext.callback = null;
+				// give a session for people to use
+				sv._skillVCContext.session = {};
 
-    			// give a session for people to use
-    			sv._skillVCContext.session = {};
+				var handleRequest = function(eventType, svContext) {
+					if (eventType === "IntentRequest" || eventType === "LaunchRequest") {
+						svContext.appConfig.filterChainExecutor.execute(svContext);
+					} 
+					else if (eventType === "SessionEndedRequest" 
+						&amp;&amp; svContext.appConfig.sessionHandlerExecutor) 
+					{
+						svContext.appConfig.sessionHandlerExecutor.executeEnd(svContext);
+					}
+					else {
+						context.fail("Nothing to do");
+					}
+				};
 
-				if (event.session.new &amp;&amp; sv._skillVCContext.appConfig.sessionHandlerManager) {
-					sv._skillVCContext.appConfig.sessionHandlerManager.executeStart(sv._skillVCContext);
-		    	}
-
-		        if (event.request.type === "IntentRequest" || event.request.type === "LaunchRequest") {
-		        	sv._skillVCContext.appConfig.filterChainExecutor.execute(sv._skillVCContext);
-		        } 
-		        else if (event.request.type === "SessionEndedRequest" &amp;&amp;
-		        	sv._skillVCContext.appConfig.sessionHandlerManager) 
-		        {
-		       		sv._skillVCContext.appConfig.sessionHandlerManager.executeEnd(sv._skillVCContext);
-		        }
-    		},
-    		failure : function(err) {
-    			throw new Error("Error initializing "+err);
-    		}
-    	})
+				if (event.session &amp;&amp; event.session.new &amp;&amp; sv._skillVCContext.appConfig.sessionHandlerExecutor) {
+					// since session starts can be async, we have to handle the promise
+					// have to use bind because you don't want to call the function now, you want the call to `then` to do it
+					sv._skillVCContext.appConfig.sessionHandlerExecutor.executeStart(sv._skillVCContext)
+						.then(handleRequest.bind(this, event.request.type, sv._skillVCContext));
+				}
+				else {
+					// if we don't have to wait for session start, just run like normal
+					handleRequest(event.request.type, sv._skillVCContext);
+				}
+			},
+			failure : function(err) {
+				log.error("Error Initializing. "+err);
+				throw new Error("Error initializing. "+err);
+			}
+		});
     } catch (e) {
-    	log.error("Exception handling skill request:"+e+"\n"+e.stack);
-        context.fail("Exception handling skill request: " + e);
-    }
-}
+		log.error("Exception handling skill request:"+e.stack);
+		context.fail("Exception handling skill request: " + e);
+	}
+};
 
 /**
  * Called when SkillVC is looking to register/load the ResponseManager.  By default this method uses the
@@ -228,7 +243,7 @@ SkillVC.prototype.handler = function (event, context)  {
  */
 SkillVC.prototype.registerResponseManager = function(svContext) {
 	return svContext.appConfig.responseManager;
-}
+};
 
 /**
  * Called when SkillVC is looking to register/load the SessionHandlerManager.  By default this method uses the
@@ -242,8 +257,8 @@ SkillVC.prototype.registerResponseManager = function(svContext) {
  * @return {SessionHandlerManager}  The SessionHandlerManager to use
  */
 SkillVC.prototype.registerSessionHandlerManager = function(svContext) {
-	return svContext.appConfig.sessionHanlerManager;
-}
+	return svContext.appConfig.sessionHandlerManager;
+};
 
 /**
  * Called when SkillVC is looking to register/load the IntentHandlerManager. By default this method uses
@@ -264,7 +279,7 @@ SkillVC.prototype.registerSessionHandlerManager = function(svContext) {
  */
 SkillVC.prototype.registerIntentHandlerManager = function(svContext, callback) {
 	callback.success(svContext.appConfig.intentHandlerManager);
-}
+};
 
 /**
  * Called when SkillVC is looking to register/load the FilterManager.  By default this method uses the
@@ -279,7 +294,7 @@ SkillVC.prototype.registerIntentHandlerManager = function(svContext, callback) {
  */
 SkillVC.prototype.registerFilterManager = function(svContext, callback) {
 	callback.success(svContext.appConfig.filterManager);
-}
+};
 
 /**
  * Returns the current SkillVC context instance
@@ -289,7 +304,7 @@ SkillVC.prototype.registerFilterManager = function(svContext, callback) {
  */
 SkillVC.prototype.getContext = function() {
 	return this._skillVCContext;
-}
+};
 
 /**
  * @typedef {Object&lt;string,function>} SkillVC~callback
@@ -310,13 +325,13 @@ module.exports = SkillVC;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainExecutor.html">FilterChainExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="ResponseRendererFilter.html">ResponseRendererFilter</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AbstractPromiseExecutor.html">AbstractPromiseExecutor</a></li><li><a href="AbstractProviderByAsyncDirectory.html">AbstractProviderByAsyncDirectory</a></li><li><a href="AbstractProviderByFile.html">AbstractProviderByFile</a></li><li><a href="AbstractProviderByMap.html">AbstractProviderByMap</a></li><li><a href="AbstractProviderBySyncDirectory.html">AbstractProviderBySyncDirectory</a></li><li><a href="AbstractProviderManager.html">AbstractProviderManager</a></li><li><a href="BasicFormatterManager.html">BasicFormatterManager</a></li><li><a href="ContextWrapper.html">ContextWrapper</a></li><li><a href="ContextWrapperFilter.html">ContextWrapperFilter</a></li><li><a href="DefaultFilenameFormatter.html">DefaultFilenameFormatter</a></li><li><a href="DefaultFilterManager.html">DefaultFilterManager</a></li><li><a href="DefaultFormatter.html">DefaultFormatter</a></li><li><a href="DefaultIntentHandlerManager.html">DefaultIntentHandlerManager</a></li><li><a href="DefaultJSFilenameFormatter.html">DefaultJSFilenameFormatter</a></li><li><a href="DefaultJSONFilenameFormatter.html">DefaultJSONFilenameFormatter</a></li><li><a href="DefaultProviderByScanning.html">DefaultProviderByScanning</a></li><li><a href="DefaultResponseBuilder.html">DefaultResponseBuilder</a></li><li><a href="DefaultResponseManager.html">DefaultResponseManager</a></li><li><a href="DefaultSessionHandlerManager.html">DefaultSessionHandlerManager</a></li><li><a href="FilterChainPromiseExecutor.html">FilterChainPromiseExecutor</a></li><li><a href="FilterManagerFactory.html">FilterManagerFactory</a></li><li><a href="FilterProviderByDirectory.html">FilterProviderByDirectory</a></li><li><a href="FilterProviderByFile.html">FilterProviderByFile</a></li><li><a href="FilterProviderByMap.html">FilterProviderByMap</a></li><li><a href="HandlebarsFormatterManager.html">HandlebarsFormatterManager</a></li><li><a href="IntentHandlerFilter.html">IntentHandlerFilter</a></li><li><a href="IntentHandlerManagerFactory.html">IntentHandlerManagerFactory</a></li><li><a href="IntentHandlerProviderByDirectory.html">IntentHandlerProviderByDirectory</a></li><li><a href="IntentHandlerProviderByDirectory2.html">IntentHandlerProviderByDirectory2</a></li><li><a href="IntentHandlerProviderByFile.html">IntentHandlerProviderByFile</a></li><li><a href="IntentHandlerProviderByMap.html">IntentHandlerProviderByMap</a></li><li><a href="Response.html">Response</a></li><li><a href="ResponseManagerFactory.html">ResponseManagerFactory</a></li><li><a href="ResponseProviderByDirectory.html">ResponseProviderByDirectory</a></li><li><a href="ResponseProviderByFile.html">ResponseProviderByFile</a></li><li><a href="ResponseProviderByMap.html">ResponseProviderByMap</a></li><li><a href="SessionHandlerExecutor.html">SessionHandlerExecutor</a></li><li><a href="SessionHandlerManagerFactory.html">SessionHandlerManagerFactory</a></li><li><a href="SessionHandlerProviderByDirectory.html">SessionHandlerProviderByDirectory</a></li><li><a href="SessionHandlerProviderByFile.html">SessionHandlerProviderByFile</a></li><li><a href="SessionHandlerProviderByMap.html">SessionHandlerProviderByMap</a></li><li><a href="SkillTester.html">SkillTester</a></li><li><a href="SkillVC.html">SkillVC</a></li><li><a href="SkillVCFactory.html">SkillVCFactory</a></li></ul><h3>Interfaces</h3><ul><li><a href="FilenameFormatter.html">FilenameFormatter</a></li><li><a href="Filter.html">Filter</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Formatter.html">Formatter</a></li><li><a href="FormatterManager.html">FormatterManager</a></li><li><a href="IntentHandler.html">IntentHandler</a></li><li><a href="IntentHandlerManager.html">IntentHandlerManager</a></li><li><a href="ItemProcessor.html">ItemProcessor</a></li><li><a href="Provider.html">Provider</a></li><li><a href="ResponseBuilder.html">ResponseBuilder</a></li><li><a href="ResponseManager.html">ResponseManager</a></li><li><a href="SessionHandler.html">SessionHandler</a></li><li><a href="SessionHandlerManager.html">SessionHandlerManager</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Oct 21 2016 15:45:03 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 15 2016 21:53:42 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
