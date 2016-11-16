@@ -30,10 +30,10 @@ Next you need to make a response.  A response goes in the ```/responses``` direc
 ```
 
 ### Step 4 - Code your Intent Handler
-Next you need to make a basic intent handler.  Every intent handler should call ```context.succeed()``` or ```context.fail()```
+Next you need to make a basic intent handler.  Every intent handler should call `context.succeed()` or `context.fail()`
 just like an other skill would
 
-To get a response in helloWorld.json, use the SkillVC responseManager found at ```svContxt.appConfig.responseManager```
+To get a response in helloWorld.json, use the SkillVC responseManager found at `svContxt.appConfig.responseManager`
 to get the response you want (the file name extension is not required)
 
 
@@ -70,6 +70,6 @@ helloWorldIntent say hello
 ### Step 6 - AWS / Alexa Skill Kit
 The last step is to zip up everything and upload it to your lambda function, complete the data entry in the
 Alexa Skill Kit website, and go!
-You can test this skill on the Alexa Skill Kit Service Simulator on the ```Test``` tab by typing:
+You can test this skill on the Alexa Skill Kit Service Simulator on the `Test` tab by typing:
 ```say hello```
 and clicking the Ask button
