@@ -70,6 +70,10 @@ var initHandler = {
 			}
 		}
 
+		if (options.hello_world) {
+			this.create.handle(path.join(dirPath, '/intents/helloWorldIntent.js'), {});
+		}
+
 		if (!options.no_skillvc) {
 			if (!fs.existsSync(dirPath + 'node_modules/skillvc')) {
 				npm.install(dirPath, 'skillvc', 'SkillVC', options);
@@ -369,6 +373,7 @@ var create = {
 					+ '};\n';
 
 				fs.writeFileSync(intent, data, 'utf8');
+				console.log('Intent file '+intentName+' created');
 		}
 		else {
 			console.log('Intent '+intent+ ' already exists');
@@ -508,6 +513,7 @@ cmd
 	.option('-ni, --no_index', 'Do not create an index.js')
 	.option('-nm, --no_models', 'Do not create stubs for model files in the /models directory')
 	.option('-nsvc, --no_skillvc', 'Do not install SkillVC')
+	.option('-hw, --hello_world', 'Creates a Hello World intent handler')
 	.action(initHandler.handle)
 	.on('--help', function() {
 	    console.log('  Examples:\n'
@@ -516,6 +522,7 @@ cmd
 	    	+ '    init . --no_index  // do not create index.js\n'
 	    	+ '    init . --no_models  // do not create stubs for model files in the /models directory\n'
 			+ '    init . --no_skillvc  // do not install SkillVC\n'
+			+ '    init . --hello_world  // create a HelloWolrdIntent intent handler file\n'
 	    	+ '\n');
 	  });
 
@@ -572,7 +579,7 @@ cmd
 		console.log('  Examples:\n'
 			+'    zip \n'
 			+'    zip --dir ./tmp // zip the ./tmp directory\n'
-			+'    zip --project_name mySkill.zip // names the zip mySkill.zip'
+			+'    zip --project_name mySkill.zip // names the zip mySkill.zip\n'
 			+'    zip --target_dir ./out // creates the zip in the ./out directory'
 	+ '\n');
 	});

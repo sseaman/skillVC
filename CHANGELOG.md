@@ -2,22 +2,22 @@
 
 ### New Features
 * Filters, Intent Handlers, and Session Handlers now support async processing within them.  To do async operations in a
-Filter or Session Handler return a ```Promise``` from the method and SkillVC will honor the ```Promise``` until it
-is completed.  For Intent Handlers, no ```Promise``` is require as it just needs to call ```context.succeed()```
-or ```context.fail()``` like any other skill.  SkillVC uses the calls to ```context``` to control an internal ```Promise```
+Filter or Session Handler return a `Promise` from the method and SkillVC will honor the `Promise` until it
+is completed.  For Intent Handlers, no `Promise` is require as it just needs to call `context.succeed()`
+or `context.fail()` like any other skill.  SkillVC uses the calls to `context` to control an internal `Promise`
 for the Intent Handler.
 * Logging levels adjusted to never use verbose and favor info and debug more
 * Logger is now available from the SkillVC require.  This allows skill developers to more easily set the logging levels
 in SkillVC as well as use the winston-simple logger in their code
 * Modified error logging to also display stack trace
-* skillvc CLI will now build intent handler skeleton code for you via ```create``` option
+* skillvc CLI will now build intent handler skeleton code for you via `create` option
 * skillvc CLI now comes with a zip ability that will zip your project for us so you can upload it to Lambda
 
 ### Deprecated
-* svContext.filterChainCallback deprecated in favor of a ```Promise```
-* Filters no longer support ```executePreOnError()``` and ```executePostOnError()```.  This was a confusing feature that
+* svContext.filterChainCallback deprecated in favor of a `Promise`
+* Filters no longer support `executePreOnError()` and `executePostOnError()`.  This was a confusing feature that
 permitted multiple paths down the execution chain.  Developers should favor try/catch in their code to continue execution
-and if the error is needed in another object, use the ```svcontext.session``` to make the error available to other objects
+and if the error is needed in another object, use the `svcontext.session` to make the error available to other objects
 
 ### v0.3.3 - (2016-10-30) - BREAKING CHANGES
 
