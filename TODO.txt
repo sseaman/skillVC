@@ -2,6 +2,8 @@ Global To-Do List:
 
 TODO: Bring in mocha for testing
 TODO: Implement responseManager.tell / ask
+TODO: Move Intents to emit / event model.  filename will default to register for intent, otherwise getList is replaced with 
+		a passed in eventEmitter and it can register for the intent there
 
 Winston-Simple:
 TODO: Add function on log for getLevel(). See if Winston exposes this first

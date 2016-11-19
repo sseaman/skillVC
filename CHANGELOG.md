@@ -1,4 +1,4 @@
-### v0.4.0 - (2016-11-XX) - BREAKING CHANGES
+### v0.4.0 - (2016-11-19) - BREAKING CHANGES
 
 ### New Features
 * Filters, Intent Handlers, and Session Handlers now support async processing within them.  To do async operations in a
@@ -17,7 +17,7 @@ in SkillVC as well as use the winston-simple logger in their code
 * svContext.filterChainCallback deprecated in favor of a `Promise`
 * Filters no longer support `executePreOnError()` and `executePostOnError()`.  This was a confusing feature that
 permitted multiple paths down the execution chain.  Developers should favor try/catch in their code to continue execution
-and if the error is needed in another object, use the `svcontext.session` to make the error available to other objects
+and if the error is needed in another object, use the `svContext.session` to make the error available to other objects
 
 ### v0.3.3 - (2016-10-30) - BREAKING CHANGES
 
