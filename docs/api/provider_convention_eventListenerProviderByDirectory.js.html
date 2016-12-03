@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SkillVC: Source: response/responseManager.js</title>
+    <title>SkillVC: Source: provider/convention/eventListenerProviderByDirectory.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -27,7 +27,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: response/responseManager.js</h1>
+    <h1 class="page-title">Source: provider/convention/eventListenerProviderByDirectory.js</h1>
 
     
 
@@ -39,70 +39,99 @@
             <pre class="prettyprint source linenums"><code>/**
  * @author Sloan Seaman 
  * @copyright 2016 and on
- * @version .1
+ * 
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-/**
- * Interface for classes that can manage responses
- *
- * @interface ResponseManager
- */
+/** @private */
+var AbstractProviderByAsyncDirectory = require('../abstractProviderByAsyncDirectory.js');
+var svUtil = require('../../util.js');
+var providerUtil = require('../providerUtil.js');
+var fs = require('fs');
+var path = require('path');
+var events = require('events');
+var log = require('winston-simple').getLogger('EventListenerProviderByDirectory');
 
 /**
- * Returns the specified response by looking through the defined providers.
+ * Considering moving IntentHandlers to be based on events
  *
- * Optimized to only look once and if not found, will never look through the provider again.  This prevents
- * adding responses to the provider at a later time, but improves repeated lookup performance
- *
- * @function
- * @name  ResponseManager#get
- * @param  {String} responseId The id of the response
- * @return {Response} The response.  If not found, returns null
+ * @param {String} directory The directory to read
+ * @param {Map} [options] The options to use
  */
+function EventListenerProviderByDirectory(directory, options) {
+	if (!directory) throw Error('directory required');
+
+	AbstractProviderByAsyncDirectory.apply(this, [
+		directory, 
+		options]);
+}
+
+EventListenerProviderByDirectory.prototype = Object.create(AbstractProviderByAsyncDirectory.prototype);
+EventListenerProviderByDirectory.prototype.constructor = EventListenerProviderByDirectory;
 
 /**
- * Helper method that retrieves and renders a response all in one call
  * 
- * @param  {String} responseId The id of the response
- * @param  {Object.&lt;String,Object>} valuesMap The values to use when formatting the response
- * @return {String} The rendered string to send back to Alexa
+ * @param {Map} items Map of the items being processed
+ * @param {String} itemId The Id of the item to process
+ * @param {String} fileName The name of the file being processed
+ * @param {Object} options Any options that are being passed to the ItemProcessor (can be null)
  */
+EventListenerProviderByDirectory.prototype.processItem = function(items, itemId, fileName, options) {
+	/*eslint no-unused-vars: ["error", { "args": "none" }]*/
+
+	// This gets called if there is a request for a intentHandler before they are all loaded
+	// Since intents can declare what they do inside of them, I can't load by the filename and
+	// assume that it represents what it can handle.  I need to scan everything.
+	var files = fs.readdirSync(this._directory);
+	for (var i=0;i&lt;files.length;i++) {
+		this.processItems(items, path.resolve(this._directory, files[i]), options);
+		if (items[itemId]) break; // found the one we want, stop loading
+	}
+};
 
 /**
- * Helper method to do an ask similar to the alexa api
+ * Uses node require to load the file.  If the intent is not found this method
+ * will favor performance and never look for the file again.
  *
  * @function
- * @name  ResponseManager#ask
- * @param  {String} msg      The message to ask to the user
- * @param  {String} reprompt THe reprompt message
- * @return {String} The rendered string to send back to Alexa
+ * @param {Map} items Map of the items being processed
+ * @param {String} fileName The name of the file being processed
+ * @param {Object} options Any options that are being passed to the ItemProcessor (can be null)
  */
+EventListenerProviderByDirectory.prototype.processItems = function(items, fileName, options) {
+	/*eslint no-unused-vars: ["error", { "args": "none" }]*/
 
-/**
- * Helper method to do an ask similar to the alexa api
- *
- * @function
- * @name  ResponseManager#tell
- * @param  {String} msg      The message to tell to the user
- * @return {String} The rendered string to send back to Alexa
- */
+	try {
+		var loaded = svUtil.instantiate(path.resolve(process.cwd(), fileName));
 
-/**
- * Returns the list of registers  providers
- * 
- * @function
- * @name  ResponseManager#getRegisteredProviders
- * @return {Array.Provider} All of the registered providers
- */
+		providerUtil.addFunctions(loaded, { 'name' : path.parse(fileName).name });
 
-/**
- * Adds providers
- *
- * @function
- * @name  ResponseManager#registerProvider
- * @param {Array.Provider} provider  Providers to use.  Can be an individual provider or an array
- */</code></pre>
+		var eventEmitter = new events.EventEmitter();
+		if (svUtil.isFunction(loaded.registerListener)) {
+			loaded.registerListener(eventEmitter);
+
+			var itemNames = eventEmitter.eventNames();
+			for (var i=0;i&lt;itemNames.length;i++) {
+				//FIXME:  won't handle more than one eventlistener per event
+				items[itemNames[i]] = loaded;
+				log.info('Loaded event listener '+loaded.getName()+ ' for event '+itemNames[i]);
+			}
+		}
+		else { // it didn't specify an intent list, so make it what the name of the file is
+			log.info('Loaded event listener '+loaded.getName()+ ' for event '+path.parse(fileName).name);
+		}
+
+		// also store it under the filename just for reference and to ensure Async doesn't attempt to load it again
+		items[path.parse(fileName).name] = loaded;
+
+	}
+	catch (err) {
+		log.error("Error event listener "+path.parse(fileName).base+". Error:"+err.stack);
+	}
+};
+
+module.exports = EventListenerProviderByDirectory;
+</code></pre>
         </article>
     </section>
 
