@@ -1,14 +1,15 @@
 ### v0.5.0 - (2016-12-01) - BREAKING CHANGES
 
 #### New Features
-* render() added to ResponseManager to shorten call length required to send a response back from an intentHandler
+* `render()` added to ResponseManager to shorten call length required to send a response back from an intentHandler
+* `task()` and `tell()` added to ResponseManager to make this easier
 * Now supports SmartHome skills
 * Response types json my specify the response type (custom, smarthome, other..)
 
 
 #### Deprecated
 * ResponseManager `getResponse()` deprecated in favor of shorter `get()`
-* Response `ask()` and `tell()` deprecated in favor of more generic `render()` to support SmartHome and future skill types
+* Response `ask()` and `tell()` deprecated in favor of more generic `render()` to support SmartHome and future skill types. Moved to ResponseManager
 
 ### v0.4.0 - (2016-11-19) - BREAKING CHANGES
 

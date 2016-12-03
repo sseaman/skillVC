@@ -158,6 +158,8 @@ module.exports = {
 
     handleIntent : function(event, context, svContext) {
 	   context.succeed(svContext.appConfig.responseManager.render('hello'));
+	   // or if not using a response template
+	   // context.succeed(svContext.appConfig.responseManager.tell('Hi everyone!'));
     }
 };
 ```
@@ -270,6 +272,18 @@ svContext.appConfig.responseManager.get('theResponseIWant').getFormatterManager(
 
 Whenever you use the response it will have the formatter registered with it and will use it when doing the variable replacement
 in the response
+
+#### <a name="quickResponses"/>Quick Responses
+You can also bypass the response template system and either send your own JSON string directly to `context.succeed()` / `context.fail()`. 
+There are also `ask()` and `tell()` functions on `ResponseManager` to assist in more simple responses.  Example:
+
+```
+svContext.appConfig.responseManager.tell('This is my tell');
+```
+or
+```
+svContext.appConfig.responseManager.ask('Want to continue?', 'I didn't hear you. Do you want to continue?');
+```
 
 ### <a name="sessionHandlers"/>Session Handlers
 Session Handlers are objects that can be registered for when a session is opened or closed.  These objects can do
