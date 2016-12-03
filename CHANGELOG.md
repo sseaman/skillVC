@@ -1,6 +1,18 @@
+### v0.5.0 - (2016-12-01) - BREAKING CHANGES
+
+#### New Features
+* render() added to ResponseManager to shorten call length required to send a response back from an intentHandler
+* Now supports SmartHome skills
+* Response types json my specify the response type (custom, smarthome, other..)
+
+
+#### Deprecated
+* ResponseManager `getResponse()` deprecated in favor of shorter `get()`
+* Response `ask()` and `tell()` deprecated in favor of more generic `render()` to support SmartHome and future skill types
+
 ### v0.4.0 - (2016-11-19) - BREAKING CHANGES
 
-### New Features
+#### New Features
 * Filters, Intent Handlers, and Session Handlers now support async processing within them.  To do async operations in a
 Filter or Session Handler return a `Promise` from the method and SkillVC will honor the `Promise` until it
 is completed.  For Intent Handlers, no `Promise` is require as it just needs to call `context.succeed()`
@@ -13,7 +25,7 @@ in SkillVC as well as use the winston-simple logger in their code
 * skillvc CLI will now build intent handler skeleton code for you via `create` option
 * skillvc CLI now comes with a zip ability that will zip your project for us so you can upload it to Lambda
 
-### Deprecated
+#### Deprecated
 * svContext.filterChainCallback deprecated in favor of a `Promise`
 * Filters no longer support `executePreOnError()` and `executePostOnError()`.  This was a confusing feature that
 permitted multiple paths down the execution chain.  Developers should favor try/catch in their code to continue execution

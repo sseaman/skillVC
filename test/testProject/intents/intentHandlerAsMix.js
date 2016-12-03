@@ -12,7 +12,7 @@ IntentHandlerMixed.prototype = {
 
 		setTimeout(function(){
 			console.log('TImer out');
-			context.succeed(svContext.appConfig.responseManager.getResponse('card').renderTell());
+			context.succeed(svContext.appConfig.responseManager.render('card'));
 		}, 2000);      
 
 	}

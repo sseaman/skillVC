@@ -1,3 +1,8 @@
+### v1.0.8 - (2016-11-19)
+
+#### Bug Fixes
+* Was attempting to add console when it may already exists, which threw a Winston error 
+
 ### v1.0.7 - (2016-11-06)
 
 #### Bug Fixes

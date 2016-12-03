@@ -1,5 +1,9 @@
-{
- 	"outputSpeech": {
-        "text": "Hello World!"
-    }
+{ 
+	"custom" : {
+		"response" : {
+			"outputSpeech" : {
+				"text": "Hello World!"
+		    } 
+		}
+	}
 }

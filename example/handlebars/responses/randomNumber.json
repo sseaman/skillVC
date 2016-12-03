@@ -1,5 +1,9 @@
-{
- 	"outputSpeech": {
-        "text": "OK. Your random number is {{numberFormat randomNum}}!"
-    }
+{ 
+	"custom" : {
+		"response" : {
+		 	"outputSpeech": {
+		        "text": "OK. Your random number is {{numberFormat randomNum}}!"
+		    }
+		}
+	}
 }

@@ -1,0 +1,47 @@
+{
+	"custom" : {
+		"version" : "1.0",
+		"sessionAttributes": "",
+		"response" : {
+			"outputSpeech" : {
+				"type": "PlainText",
+				"text": ""
+		    } ,
+			"card" : {
+				"type" : "Simple",
+				"title" : "",
+				"content" : ""
+			},
+			"reprompt" : {
+				"outputSpeech" : {
+					"type": "PlainText",
+			    	"text" : ""
+				}
+			},
+			"shouldEndSession" : true
+		}
+	},
+
+	"smartHome" : {
+		"header": {
+			"payloadVersion": "2",
+			"namespace": "Alexa.ConnectedHome.Discovery",
+			"name": "DiscoverAppliancesResponse"
+		},
+		"payload": {
+			"discoveredAppliances": [
+				{
+					"friendlyDescription": "",
+					"modelName": "",
+					"additionalApplianceDetails": {},
+					"version": "",
+					"manufacturerName": "",
+					"friendlyName": "S",
+					"actions": [],
+					"applianceId": "",
+					"isReachable": true
+				}
+			]
+		}
+	}
+}

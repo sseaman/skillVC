@@ -50,14 +50,14 @@ RandomNumberIntent.prototype.getIntentsList = function() {
 RandomNumberIntent.prototype.handleIntent = function(event, context, svContext) {
 	// to make it simple, we'll check things here to ensure we don't register it twice
 	if (!this.initialized) {
-		svContext.appConfig.responseManager.getResponse('randomNumber').getFormatterManager().addFormatters(
+		svContext.appConfig.responseManager.get('randomNumber').getFormatterManager().addFormatters(
 			{'numberFormat' : new NumberFormatter()}
 		);
 		this.initialized = true;
 	}
 
 	// pass the randomNum into the response which will use Handlebars and the formatter specified to render the response
-	context.succeed(svContext.appConfig.responseManager.getResponse('randomNumber').renderTell(
+	context.succeed(svContext.appConfig.responseManager.render('randomNumber',
 		{
 			'randomNum' : (Math.random() * (10 - 1) + 1)
 		}

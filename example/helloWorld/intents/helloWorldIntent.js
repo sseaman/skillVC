@@ -24,7 +24,7 @@ helloWorldIntents.prototype.handleIntent = function(event, context, svContext) {
 	This intent gets the helloWorld response (defined in helloWorld.js) and renders a tell() with it.  
 	A tell() is a response to Alexa that does not have a followup question.
 	 */
-	context.succeed(svContext.appConfig.responseManager.getResponse('helloWorld').renderTell());
+	context.succeed(svContext.appConfig.responseManager.render('helloWorld'));
 };
 
 module.exports = helloWorldIntents;
