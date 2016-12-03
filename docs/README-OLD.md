@@ -146,8 +146,8 @@ most interest to the Intent Handler are the ResponseManager
 
 The ResponseManager is SkillVC's object for managing the responses registered with the system.  It allows for retrieval of
 responses for use by Intent Handlers.  To get the ResponseManager, access `svContext.appConfig.responseManager`.  Once retrieved, 
-an Intent Handler can call the `getResponse('someResponseId')` method of the ResponseManager to return the instance of the Response
-that is required.  See the API documentation for more information and the example below for a common use case.
+an Intent Handler can call the `get('someResponseId')` method of the ResponseManager to return the instance of the Response
+that is required or `render('someResponseId')` to get and render it at the same time.  See the API documentation for more information and the example below for a common use case.
 
 An example of a simple Intent Handler that uses the above:
 ```
@@ -157,7 +157,7 @@ module.exports = {
     },
 
     handleIntent : function(event, context, svContext) {
-	   context.succeed(svContext.appConfig.responseManager.getResponse('hello').renderTell());
+	   context.succeed(svContext.appConfig.responseManager.render('hello'));
     }
 };
 ```
@@ -178,18 +178,23 @@ Responses are defined by individual JSON files (using CoC and Scanning) that rep
 Alexa.  To simplify the process of creating a response, SkillVC does not require all Response information, only the fields
 you are concerned with (all other information will be filled in for you).
 
-To set any field (or all of them), create a JSON file (or Object if using the Configuration type) with just the fields you want. 
+To set any field (or all of them), create a JSON file (or Object if using the Configuration type) which defines the type of 
+response and the just the fields you want. 
 
 Example:
 ```
-{
- 	"outputSpeech": {
-        "text": "this is some text"
+{ 
+	"custom" : {
+		"response" : {
+ 			"outputSpeech": {
+        		"text": "this is some text"
+        	}
+        }
     }
 }
 ```
 
-This will create a final Response in SkillVC with:
+This will create a final custom skill response in SkillVC with:
 ```
 {
     outputSpeech: {
@@ -204,7 +209,7 @@ This will create a final Response in SkillVC with:
     reprompt: {
         outputSpeech: {
             type: 'PlainText',
-            text: ''
+            text: 'this is some text'
         }
     },
     shouldEndSession: true
@@ -214,7 +219,7 @@ This will create a final Response in SkillVC with:
 #### Response Object
 Once loaded into SkillVC, the response itself is represented as a Response object.  The Response object 
 allows for the continued manipulate of the response as well as the final rendering of the JSON for use by Alexa via the
-`renderAsk()` or `renderTell()` functions of the response.  See the API documentation for more information.
+`render()` functions of the response.  See the API documentation for more information.
 
 #### <a name="responsesHandlebars"/>Handlebars
 By default, SkillVC ships with support for using [Handlebars](http://handlebarsjs.com/) in your Responses.  This is provide
@@ -258,7 +263,7 @@ CalendarDateFormatter.prototype.format = function(value) {
 
 You would then register the formatter with the Response:
 ```
-svContext.appConfig.responseManager.getResponse('theResponseIWant').getFormatterManager().addFormatters(
+svContext.appConfig.responseManager.get('theResponseIWant').getFormatterManager().addFormatters(
 	{ 'date' : new CalendarDateFormatter() }
 );
 ```
@@ -277,6 +282,9 @@ another session outside of what Alexa provides.
 To create a Session Handler an object must implement two functions:
 * `sessionStart(svContext)` - Called when a session is started
 * `sessionEnd(svContext)` - Called when a session ends
+
+As Session Handler could be preforming async operations, the use of a Promise is required to tell SkillVC to continue
+with its execution flow.  The Promise should be returned from the Session Handler so that SkillVC can wait until its completion.
 
 Example:
 ```
@@ -330,15 +338,10 @@ Filters following a loose [Intercepting Filter Pattern](https://en.wikipedia.org
 and can execute before and/or after an Intent Handler has been executed and can implement any (or all) 
 of the following functions:
 * `executePre(svContext)` - Called before an Intent Handler is executed
-* `executePreOnError(svContext)` - Called before an Intent Handler is executed and an error occurred
 * `executePost(svContext)` - Called after an Intent Handler as executed
-* `executePostOnError(svContext)` - Called after an Intent Handler is executed and an error occurred
 
-**callback**
-As Filters could be preforming async operations, the use of a callback is required to tell SkillVC to continue
-with its execution flow.  The callback to be used can be accessed in `svContext.filterChainCallback` and has two methods:
-* `success` - used if the Filter was successful
-* `failure` - used if the Filter had an error or wants to report some other type of issue
+As Filters could be preforming async operations, the use of a Promise is required to tell SkillVC to continue
+with its execution flow.  The Promise should be returned from the Filter so that SkillVC can wait until its completion.
 
 Example:
 ```
@@ -348,17 +351,19 @@ DBSetupFilter.prototype.executePre = function(svContext) {
 	// do what is required to setup the connect
 	// place it in the context for IntentHandlers (or other objects) to use
 	svContext.session.myDbConn = the db.
-
-	// continue the chain so SkillVC can execute the next step
-	svContext.filterChainCallback.success();
 }
 
 DBSetupFilter.prototype.executePost = function(svContext) {
 	//shutdown the db conn
 	svContext.session.myDbConn = null;
 
-	// continue the chain so SkillVC can execute the next step
-	svContext.filterChainCallback.success();
+	// so some async work that SkillVC should wait until completed
+	return new Promise(function(resolve, reject) {
+		setTimeout(function(){
+			console.log('Timer out');
+			resolve();
+		}, 2000);      
+	});
 }
 
 ```
@@ -412,13 +417,11 @@ below.  You can also use this `map` to pass your own objects into SkillVC at tim
 [winston-simple](https://github.com/sseaman/winston-simple/) for configuration options
 * appSession - A `map` that is created when SkillVC is initialized, lives for the life of SkillVC, and can be used to
 store any objects that you want to make available to other objects
-* callback - Has `success` and `failure` functions to be used by Intent Handlers to return Responses and continue SkillVC execution
-* filterChainCallback - Has `success` and `failure` functions to be used by Filters to continue SkillVC execution
 * session - A `map` that is created on every intent event and can be used to store any objects that you want to make
 available to other objects
 
 ## <a name="plugins"/>Plugin Development
-Coming soon (already implemented, just needs documentation. See bin/skillvc if you want to figure it out in the meantime)
+Coming soon (already implemented, just needs documentation. See lib/commands/install if you want to figure it out in the meantime)
 
 
 ### <a name="pluginsDevelopment"/>Developing a Plugin
