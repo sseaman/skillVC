@@ -55,9 +55,9 @@ SkillVC comes with a code generator to allow you to quickly create an intent han
 
 ### Edit Intent Handler
 By default the skeleton Intent Handler that is created does not return anything. To get Alexa to say "Hello Work", modify
-the ```let response = '';``` line to the following
+the ```var response = '';``` line to the following
 ```
-let response = svContext.appConfig.responseManager.tell('Hello World!');
+var response = svContext.appConfig.responseManager.tell('Hello World!');
 ```
 
 This uses SkillVC's response manager to render a valid message to Alexa
