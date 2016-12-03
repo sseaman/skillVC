@@ -289,25 +289,25 @@ svContext.appConfig.responseManager.ask('Want to continue?', 'I didn't hear you.
 Session Handlers are objects that can be registered for when a session is opened or closed.  These objects can do
 whatever the developer chooses and have full access to the svContext.
 
-The location of the session object provided by Alexa is `svContext.lambda.context.session`.  Also, to allow for additional
+The location of the session object provided by Alexa is `context.session`.  Also, to allow for additional
 options, SkillVC provides a new `map` for every skill request at `svContext.session` if developers want 
 another session outside of what Alexa provides.
 
 To create a Session Handler an object must implement two functions:
-* `sessionStart(svContext)` - Called when a session is started
-* `sessionEnd(svContext)` - Called when a session ends
+* `sessionStart(event, context, svContext)` - Called when a session is started
+* `sessionEnd(event, context, svContext)` - Called when a session ends
 
 As Session Handler could be preforming async operations, the use of a Promise is required to tell SkillVC to continue
 with its execution flow.  The Promise should be returned from the Session Handler so that SkillVC can wait until its completion.
 
 Example:
 ```
-sessionStart(svContext) {
+sessionStart(event, context, svContext) {
 	svContext.lambda.context.session = {};  // create a new session
 }
 
 // I don't want to do anything..
-sessionEnd(svContext) {}
+sessionEnd(event, context, svContext) {}
 ```
 
 #### Ordering of execution
@@ -351,8 +351,8 @@ intent that Alexa is invoking.
 Filters following a loose [Intercepting Filter Pattern](https://en.wikipedia.org/wiki/Intercepting_filter_pattern)
 and can execute before and/or after an Intent Handler has been executed and can implement any (or all) 
 of the following functions:
-* `executePre(svContext)` - Called before an Intent Handler is executed
-* `executePost(svContext)` - Called after an Intent Handler as executed
+* `executePre(event, context, svContext)` - Called before an Intent Handler is executed
+* `executePost(event, context, svContext)` - Called after an Intent Handler as executed
 
 As Filters could be preforming async operations, the use of a Promise is required to tell SkillVC to continue
 with its execution flow.  The Promise should be returned from the Filter so that SkillVC can wait until its completion.
@@ -361,13 +361,13 @@ Example:
 ```
 function DBSetupFilter() {}
 
-DBSetupFilter.prototype.executePre = function(svContext) {
+DBSetupFilter.prototype.executePre = function(event, context, svContext) {
 	// do what is required to setup the connect
 	// place it in the context for IntentHandlers (or other objects) to use
 	svContext.session.myDbConn = the db.
 }
 
-DBSetupFilter.prototype.executePost = function(svContext) {
+DBSetupFilter.prototype.executePost = function(event, context, svContext) {
 	//shutdown the db conn
 	svContext.session.myDbConn = null;
 
