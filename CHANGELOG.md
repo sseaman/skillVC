@@ -1,11 +1,16 @@
+### v0.5.1 - (2017-01-10)
+
+#### New Features
+* Added `helper` directory in lib to provide common functions that skills might want to use in there code
+* Added `sessionAttributesHelper` helper which will take any set session attributes and add it to all responses
+
 ### v0.5.0 - (2016-12-01) - BREAKING CHANGES
 
 #### New Features
 * `render()` added to ResponseManager to shorten call length required to send a response back from an intentHandler
-* `task()` and `tell()` added to ResponseManager to make this easier
+* `ask()` and `tell()` added to ResponseManager to make this easier
 * Now supports SmartHome skills
-* Response types json my specify the response type (custom, smarthome, other..)
-
+* Response types json must specify the response type (custom, smarthome, other..)
 
 #### Deprecated
 * ResponseManager `getResponse()` deprecated in favor of shorter `get()`
