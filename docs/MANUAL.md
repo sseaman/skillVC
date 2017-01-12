@@ -438,6 +438,7 @@ available to other objects
 -----
 SkillVC ships with helper objects / functions to make common functions simpler for skill developers.  The following are the helpers
 that ship with SkillVC:
+
 1. SessionAttributesHelper
     The SessionAttribtuesHelper will set any event.session.attribute values into the context response set by an intent.  See the
     [FAQ](#faq) for an example of how to use this helper.
