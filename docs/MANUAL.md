@@ -434,8 +434,19 @@ store any objects that you want to make available to other objects
 * session - A `map` that is created on every intent event and can be used to store any objects that you want to make
 available to other objects
 
-## <a name="plugins"/>Plugin Development
-Coming soon (already implemented, just needs documentation. See lib/commands/install if you want to figure it out in the meantime)
+## <a name="helpers"/>Helpers
+-----
+SkillVC ships with helper objects / functions to make common functions simpler for skill developers.  The following are the helpers
+that ship with SkillVC:
+1. SessionAttributesHelper
+    The SessionAttribtuesHelper will set any event.session.attribute values into the context response set by an intent.  See the
+    [FAQ](#faq) for an example of how to use this helper.
+
+## <a name="plugins"/>Plugins
+-----
+SkillVC support a plugin system to quickly and easily add functionality to your skills.  Current known plugins are:
+* [SkillVC-VoiceInsights](https://www.npmjs.com/package/skillvc-voiceinsights)
+    The VoiceInsights plugin will enable VoiceInsights metrics gathering for your skill.  A VoiceInsights account is required to use this plugin.  Please see the [NPM Package](https://www.npmjs.com/package/skillvc-voiceinsights) for installation and usage instructions.
 
 
 ### <a name="pluginsDevelopment"/>Developing a Plugin
@@ -463,7 +474,7 @@ function HelloIntentHandler() {
 
 HelloIntentHandler.prototype.handleIntent = function(svContext) {
 	svContext.callback.success(
-		svContext.appConfig.responseManager.getResponse('hello').renderTell(
+		svContext.appConfig.responseManager.render('hello',
 			{ 'name' : 'Sloan'}
 		)
 	);
@@ -491,6 +502,52 @@ In your intents definition in developer.amazon.com:
 ```
 
 ## <a name="faq"/>FAQ
+-----
+1. How do I set Session Variables?
+    SkillVC does not by default set the session attributes in the response to the Alexa Skill Kit.  This is because there are multiple places and ways to set the session attributes and SkillVC does not assume that one way is preferred over another.
+
+    Some of the more common ways of setting session attributes are:
+    1. In the intent directly on the response.
+        Example
+        ```
+        var response = svContext.appConfig.responseManager.tell('Hello world');
+        response.sessionAttributes = event.session.attributes
+        ```
+    2. Via Handlebars substitution of a response.
+        First have a response defined that has a sessionAttributes placeholder:
+        response.json
+        ```
+        { 
+			"custom" : {
+				"response" : {
+					"sessionAttributes" : {{sessionAttributes}}
+				 	"outputSpeech": {
+				        "text": "this is some text"
+				    }
+				}
+			}
+		}
+		```
+		then in your intent
+		```
+		svContext.appConfig.responseManager.render('response', 
+			{
+				'sessionAttributes' : event.session.attributes
+			});
+		```
+	3. Always set the session attributes on every response via a filter
+	    Create a filter with the following code:
+	    ```
+	    module.exports = {
+	    	var sessionAttributesHelper = require('skillvc/lib/helper/sessionAttributesHelper');
+
+	    	executePost : function(event, context) {
+	    	    sessionAttributeHelper.setAttributes(event,context);
+	    	}
+	    }
+	    ```
+	    This will use the SessionAttributesHelper and always set the session attributes for every response sent back
+
 
 ## <a name="license"/>License
 -----
