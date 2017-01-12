@@ -509,14 +509,14 @@ In your intents definition in developer.amazon.com:
     Some of the more common ways of setting session attributes are:
     1. In the intent directly on the response.
  		Example
-		```
+		`
 		var response = svContext.appConfig.responseManager.tell('Hello world');
 		response.sessionAttributes = event.session.attributes
-		```
+		`
     2. Via Handlebars substitution of a response.
         First have a response defined that has a sessionAttributes placeholder:
 		response.json
-		```
+		`
         { 
 			"custom" : {
 				"response" : {
@@ -527,17 +527,17 @@ In your intents definition in developer.amazon.com:
 				}
 			}
 		}
-		```
+		`
 		then in your intent
-		```
+		`
 		svContext.appConfig.responseManager.render('response', 
 			{
 				'sessionAttributes' : event.session.attributes
 			});
-		```
+		`
 	3. Always set the session attributes on every response via a filter
 	    Create a filter with the following code:
-		```
+		`
 	    module.exports = {
 	    	var sessionAttributesHelper = require('skillvc/lib/helper/sessionAttributesHelper');
 
@@ -545,7 +545,7 @@ In your intents definition in developer.amazon.com:
 	    	    sessionAttributeHelper.setAttributes(event,context);
 	    	}
 	    }
-		```
+		`
 	    This will use the SessionAttributesHelper and always set the session attributes for every response sent back
 
 
